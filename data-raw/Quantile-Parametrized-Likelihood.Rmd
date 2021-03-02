@@ -1,0 +1,293 @@
+---
+title: "Quantile Parametrized Likelihood"
+bibliography: "`r rbbt::bbt_write_bib('old-qpd-likelihood.bib', overwrite = TRUE)`"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, message=FALSE, warning=FALSE}
+library(qpd)
+library(tidyverse)
+library(hrbrthemes)
+library(gt)
+library(rmetalog)
+
+library(rstan) 
+rstan_options(auto_write = TRUE)
+options(mc.cores = ceiling(parallel::detectCores()/2))
+SEED <- 42 # set random seed for reproducability
+
+fishSize <- rmetalog::fishSize
+```
+
+# Introduction
+
+Assume we want to elicit a quantity of interest from the expert, but also include some uncertainty around her estimates, which can be updated through data. We will use the `fishSize` dataset (weight distribution of the steel-head trout caught in the Babine River in northern British Columbia during 2006-2010) provided in the `rmetalog` package.
+
+# Expert knowledge elicitation
+
+Let's say we conduct an interview with an experienced fly-fisherman to elicit the weights of the steel-head trouts in Canadian rivers. Our interview should include a series of questions that would elicit quantiles of a distinction of interest. In this example, we are following a decision-analytic tradition for "predictive" elicitation, (i.e. @spetzler1975ProbabilityEncodingDecision; @morgan1990UncertaintyGuideDealing), which performs elicitation on the "data level", and not statistical analysis tradition for "parametric" elicitation (i.e. @ohagan2006UncertainJudgementsEliciting; @cooke1991ExpertsUncertaintyOpinion; @burgman2005RisksDecisionsConservation), which mainly focuses on elicitation of priors (distributions of parameters in a data-generative model).
+
+Our elicitation will, however, differ from the "predictive" elicitation in one material aspect: We want to elicit uncertainty in the quantiles separately from the "functional form" of the likelihood. We will adopt an appropriate semi-bounded quantile-parametrized probability distribution and then successively elicit "most likely value" of every quantile and an uncertainty range around it, in order to form a "prior" which will then be updated with the actual data (observations of weights of steel-head trout) to form a "data-informed" posterior (predictive) distribution for the fish weights.
+
+We shall start with elicitation of the "most likely values" for the symmetrical quantile triplet (SPT) for the quantity of interest (probability-value (PV) method according to @spetzler1975ProbabilityEncodingDecision). After walking the expert through important preparatory steps (motivating, structuring, conditioning, encoding and verifying), we got from the expert the following values
+
+```{r}
+qs <- tibble::tribble(~prob, ~value,
+                0.1, 4,
+                0.5, 9,
+                0.9, 17) 
+
+qs %>% 
+  gt() %>% 
+  cols_label(prob="Probability", value="Weight, lbs") %>% 
+  tab_header(
+    title=md("**Weight of steel-head trout in British Columbia**"),
+    subtitle = md("Probabilities correspond to points along *CDF*")
+  ) 
+```
+
+We can now take a QPD, such as semi-bounded Johnson Quantile Parametrized Distibition (JQPD-S) and fit a CDF to these values. Note that the three probabilities provided by the expert divide y-axis of our CDF chart into four bands (highlighted by different colors). We can thnk of those as "categories" into which a "randomly drawn fish" could fall on empirical CDF curve. The width of the band is the increment in probabilities provided by the expert, and their sum is equal to 1. This will later allow us to characterize the uncertainty in the quantiles by Dirichlet distribution.
+
+```{r}
+
+prob_bins <- tibble::tibble(
+  bin=c("0-P1", "P1-P2", "P2-P3", "P3-1"),
+  from=c(0, qs$prob),
+  to=c(qs$prob, 1)
+)
+
+all_probs <- c(0, qs$prob, 1)
+
+tibble::tibble(prob=seq(0, 1, by=0.01)) %>%
+  # will be replaced by semi-bounded distribution. This is good for now
+  mutate(value=qpd::qJQPDB(prob, 
+                           qs$value[1], qs$value[2], qs$value[3], 
+                           lower=0, upper=50, 
+                           alpha = min(qs)),
+         from_y=all_probs[findInterval(prob, all_probs, rightmost.closed = TRUE)],
+         to_y=all_probs[findInterval(prob, all_probs, rightmost.closed = TRUE)+1]) %>% 
+  ggplot()+
+  geom_rect(aes(xmin=min(value), xmax=max(value), 
+                ymin=from_y, ymax=to_y, fill=as.factor(from_y)), alpha=0.05, show.legend = FALSE) +
+    geom_line(aes(x=value, y=prob)) +
+  geom_hline(yintercept=qs$prob, size=0.3, linetype=2, color="white")+
+  geom_vline(xintercept = qs$value, size=0.3, linetype=2, color="white")+
+  scale_fill_viridis_d()+
+  theme_ipsum_rc(grid = FALSE)+
+  labs(x="Weight, lbs", y="CDF")
+```
+
+## Sampling frame for probability assessment
+
+It is worth noting that, in prior predictive elicitation, elicited quantities do not have any uncertainty in them (except for imprecision/inconsistencies in expression of expert's belief). In our case, we are asking the expert to separate aleatory from epistemic uncertainty and therefore consider uncertainty around her quantile assessments. Whenever we use the word "aleatory" we should be thinking "sampling" and therefore, we need to change the assessment frame from assessing the properties of population to assessing the properties of an imaginary sample from a population. 
+
+> Consider a large sample of steel-head trouts caught in British Columbia over the last few years, say 1000 fish. According to your assessment there should be only `r min(qs$prob)*1000` fish that would weight below `r min(qs$value)` lbs.
+
+In this frame, the particular curve that we have drawn through the three points provided by the expert is just one of many empirical CDF curves (given the sampling uncertainty). Admitting uncertainty in the quantiles will allow us to "update" out beliefs about the distinction of interest (fish weight).
+
+# Uncertainty in quantiles
+
+There could be two ways of going about estimating uncertainty in quantiles: 
+
+- Fixing the probabilities (`r glue::glue_collapse(qs$prob, sep=", ", last=", and ")`) and eliciting the values, the V-method, or  
+- Fixing the values (`r glue::glue_collapse(qs$value, sep=", ", last=", and ")`) and eliciting the probabilities, the P-method [@spetzler1975ProbabilityEncodingDecision]. 
+
+Eliciting the values for fixed probabilities is more desirable, because it can correspond to the expert intuition better [citation needed].
+
+However, eliciting probabilities has one very important and convenient property, namely, their boundedness. This, as we will show later, yields some very useful properties which can be exploited for efficient Bayesian updating.
+
+We shall, therefore, proceed with elicitation, asking the expert to consider the fish weight cutoff of `r min(qs$value)` lbs. 
+
+> Let's talk about this hypothetical sample of 1000 fish. You said there will be, `r min(qs$prob)*1000` fish that weigh less than `r min(qs$value)` lbs. We will interpret this assessment as you believing that there's about equal chance that the actual number of "small" fish (below `r min(qs$value)` lbs) in this sample will be above or below `r min(qs$prob)*1000`, i.e we will interpret it as "median" assessment. Would you like to reconsider this value?
+
+At this point the expert might adjust the assessment of the median. Once the value of the median is confirmed, we can proceed with the elicitation. From this point, elicitation takes conventional V-method route: we shall ask the expert for the range of fish counts (which are in fact representing probabilities) corresponding to pre-determined quantiles (say, quartiles or 10th/90th percentile).
+
+Let's say the expert provides the following uncertainty for the "small" fish count from the imaginary sample of 1000 fish. Effectively, we are asking the expert to provide a 50% IQR around the assessed probability of `r min(qs$prob)`.
+
+```{r}
+cat_df <- tibble::tribble(~cat, ~CDFprob, ~count,
+                "Small fish", 0.25, 70,
+                "Small fish", 0.5, 90,
+                "Small fish", 0.75, 120,
+  )
+
+cat_df %>%  
+  group_by(cat) %>% 
+  gt() %>% 
+  cols_label(CDFprob="CDF probability", count="Count") %>% 
+  tab_footnote(glue::glue("Under {qs$value[1]} lbs"),
+               locations = cells_row_groups())
+```
+
+From here we can immediately derive uncertainty in the "width" of our first bin: it is now characterized by a symmetrical probability triplet `r glue::glue_collapse(cat_df$count/1000, sep=", ", last=", and ")`. Using this SPT, we can fit the beta probability distribution following the method proposed in @elfadaly2013ElicitingDirichletConnor.
+
+```{r}
+cat_df %>% 
+  mutate(qntname=paste0("P", CDFprob*100),
+         prob=count/1000) %>% 
+  pivot_wider(id_cols = "cat", names_from="qntname", values_from="prob") %>% 
+  mutate(qpd::fit_beta(P25, P50, P75, alpha=0.25)) %>% 
+  {tibble(p=seq(0,1, by=0.01),
+          q=dbeta(p, shape1 = .$alpha, shape2 = .$beta))} %>% 
+  ggplot()+
+  geom_line(aes(x=p, y=q))+
+  theme_ipsum_rc(grid = FALSE)
+```
+
+Remember that our aim is to characterize the uncertainty in quantiles by a Dirichlet distribution. We shall now proceed to make conditional elicitation of the other quantiles and uncertainties around them [@elfadaly2013ElicitingDirichletConnor]. The question we should ask the expert next is:
+
+> Let's assume that in the 1000 fish sample the number of small fish (those that weigh under `r min(qs$value)` lbs) was in fact found to be exactly `r with(cat_df, count[cat=="Small fish" & CDFprob==0.5])`. What would be your assessment of the number of fish that would measure between `r min(qs$value)` and `r qs$value[2]` lbs? 
+
+Now, because in this question we are asking the expert for conditional probability distribution, we don't have to keep the expert accountable for the previously made assessment, where she implied that there would be roughly half of population with the weight of `r qs$value[2]` lbs. We expect the median number to be close to 500 fish, but not necessarily precisely so. Our objective is to elicit number of fish that weigh between `r min(qs$value)` and `r qs$value[2]` lbs, but if the expert prefers to gives us the count corresponding to "exceedance probability" (i.e. for 2 categories together), we should deduct the median of the first category assessment, i.e. `r with(cat_df, count[cat=="Small fish" & CDFprob==0.5])`. 
+
+For N groups we only need to make N-1 elicitation (so, 3 elicitation of triplets total in our case). It might make sense to elicit the top quantile (the upper tail) as 1-(P1+P2+P3) and leave the quantiles for the "P2-P3" category to be calculated from the rest. @elfadaly2013ElicitingDirichletConnor provide detailed walkthrough for eliciting conditional SPTs for each category and fitting beta distributions to them.
+
+Let's assume that after three quantile SPT (QSPT) elicitations and converting imaginary sample counts to probabilities we got the following assessments back:
+
+```{r}
+cat2_df <- tibble::tribble(~cat, ~CDFprob, ~count,
+                "Medium fish", 0.25, 340,
+                "Medium fish", 0.50, 410,
+                "Medium fish", 0.75, 500,
+  )
+
+cat4_df <- tibble::tribble(~cat, ~CDFprob, ~count,
+                "Huge fish", 0.25, 50,
+                "Huge fish", 0.50, 75,
+                "Huge fish", 0.75, 150,
+  )
+
+elic_df <- cat_df %>%  
+  bind_rows(cat2_df, cat4_df) %>% 
+  mutate(qntname=paste0("P", CDFprob*100),
+         prob=count/1000) %>% 
+  pivot_wider(id_cols = "cat", names_from="qntname", values_from="prob")
+
+  
+elic_df %>% gt() %>% 
+  cols_label(cat="Category") %>% 
+  tab_footnote(c(glue::glue("Under {qs$value[1]} lbs"),
+                 glue::glue("Between {qs$value[1]} and {qs$value[2]} lbs"),
+                 glue::glue("Above {qs$value[3]} lbs")),
+               locations = cells_body(columns = "cat"))
+```
+
+# Fitting Dirichlet and Connor-Mosimann distribution to QSPTs.
+
+First we need to scale the probabilities provided by expert to the "remaining" probability scale, taking into account previously elicited medians.
+
+```{r}
+normalize_cond_quantilies <- function(lq, mq, uq, 
+																		.names=c("lq_norm", "mq_norm", "uq_norm")){
+	d_mq=1-lag(cumsum(mq), default = 0)
+	setNames(tibble::tibble(col1=lq/d_mq,	col2=mq/d_mq,	col3=uq/d_mq),
+										.names)
+}
+
+qs_df <- elic_df %>% 
+	mutate(normalize_cond_quantilies(P25, P50, P75)) %>% 
+	#left_join(fitted_ab, by="cat") %>% 
+	mutate(ab=pmap(list(lq_norm, mq_norm, uq_norm), qpd::fit_beta)) %>% 
+	unnest(ab) %>% 
+  bind_rows(tibble(cat="Large fish", alpha=.$beta[nrow(.)], beta=NA_real_)) %>% 
+	mutate(beta_corr=lead(rev(cumsum(rev(alpha))),1),
+								alf_cum=cumsum(alpha),
+								asum=sum(alf_cum)+sum(beta, na.rm=TRUE),
+								N=asum/n(),
+								mu_rec=ifelse(is.na(beta), alpha/(alf_cum), alpha/(alf_cum + beta)),
+								mu_norm=mu_rec/sum(mu_rec),
+								alpha_norm=mu_norm*N,
+								beta_norm=N-alpha_norm,
+								m_lq=qbeta(0.25, shape1 =alpha_norm , shape2 = beta_norm),
+								m_mq=qbeta(0.50, shape1 =alpha_norm , shape2 = beta_norm),
+								m_uq=qbeta(0.75, shape1 =alpha_norm , shape2 = beta_norm),
+								gd_anorm1 =  ifelse(is.na(beta), 1, alpha/(alpha+beta)), # normalizing for Generalized Dirichlet
+								gd_anorm2 = ifelse(is.na(beta), 1, alpha*(alpha+1)/((alpha+beta)*(alpha+beta+1))),# normalizing for Generalized Dirichlet
+								gd_bnorm1 =  cumprod(beta/(alpha+beta)), # normalizing for Generalized Dirichlet
+								gd_bnorm2 = cumprod(beta*(beta+1)/((alpha+beta)*(alpha+beta+1))),# normalizing for Generalized Dirichlet
+								gd_S=gd_anorm1*lag(gd_bnorm1,1, default = 1),
+								gd_T= gd_anorm2*lag(gd_bnorm2,1, default = 1),
+								gd_C=gd_S*(gd_S-gd_T)/(gd_T-gd_S^2),
+								gd_D=(1-gd_S)*(gd_S-gd_T)/(gd_T-gd_S^2),
+								gm_lq=qbeta(0.25, shape1 = gd_C, shape2 = gd_D),
+								gm_mq=qbeta(0.50, shape1 = gd_C, shape2 = gd_D),
+								gm_uq=qbeta(0.75, shape1 = gd_C, shape2 = gd_D)
+								) # mu reconciled 
+
+# Parameters for Dirichlet distribution
+qs_df %>% 
+  select(cat, alpha_norm)
+
+# Parameters for Connor-Mosimann
+qs_df %>% 
+  select(cat, alpha, beta) %>% 
+  slice(1:3)
+
+```
+
+We can now sample a few quantile triplets to see if they look believable. We will use home-made `rdirichlet` function
+
+```{r}
+rdirichlet <- function(N=1,K=c(1,1)) {
+  # Simulations from the Dirichlet Distribution, according to the method of Wikipedia
+  lk <- length(K)
+  sim <- matrix(0,N,lk)
+  gams <- matrix(0,N,lk)
+  for (i in 1:lk) {
+      gams[,i] <- matrix(rgamma(N,K[i]),N,1)
+  }
+  gamtotal <- matrix(rowSums(gams),N,lk)
+  gams/gamtotal
+}
+
+triplets_sample <- rdirichlet(100, qs_df$alpha_norm)
+head(triplets_sample)
+```
+
+Remember how our categories were assessed and add up relevant columns to get to relevant cumulative probabilities
+
+```{r}
+quantile_sample <- data.frame(
+  lq=triplets_sample[,1],
+  mq=triplets_sample[,1]+triplets_sample[,2],
+  uq=1-triplets_sample[,3]
+) 
+
+quantile_sample %>% 
+  head()
+
+quantile_sample %>% 
+  pivot_longer(cols=everything(), names_to = "quantile", values_to="p") %>% 
+  ggplot+
+  geom_density(aes(x=p, color=quantile))+
+  theme_ipsum_rc(grid = FALSE)
+```
+
+Now we just need to take the cutoff values provided by the expert (`r glue::glue_collapse(qs$value, sep=", ", last=", and ")` lbs) and consider them to be quantiles corresponding to these cumulative probabilities. The last step will be fitting a QPD to these triplets. Note that, we need more flexible QPD function here since the probability triplets will not be symmetrical. Examples of flexible QPDs that are able to handle arbitrary quantile-probability pairs are Q-Normal and Metalog distribution.
+
+# Sampling metalogs
+
+```{r}
+grd <- seq(0.001,0.999,by=0.01)
+
+for (i in 1:100) {
+mtlg <- rmetalog::metalog(qs$value, bounds = 0,  boundedness = "sl", 
+                          term_limit = 3, probs = as.numeric(quantile_sample[i, ]) )
+mtlg_cdf <- qmetalog(mtlg, grd)
+if(i==1){
+  plot(x=mtlg_cdf, y=grd, type="l")
+  }else{
+  lines(x=mtlg_cdf, y=grd)
+  }
+}
+```
+
+
+
+# References

@@ -1,0 +1,229 @@
+---
+title: "Metalog likelihoods in Bayesian models"
+description: |
+  A new article created using the Distill format.
+author:
+  - first_name: "Dmytro"
+    last_name: "Perepolkin"
+    url: https://ddrive.no/
+    affiliation: CEC, Lund University
+    affiliation_url: https://www.cec.lu.se/
+    orcid_id: 0000-0001-8558-6183
+date: "`r Sys.Date()`"
+bibliography: "`r rbbt::bbt_write_bib('bayesian-metalog.bib', overwrite = TRUE)`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+what we want to accomplish
+- elicit predictive distribution with some uncertainty in quantiles (2d prior predictive)
+- get new data
+- use it to update the belief about the uncertainty in the quantiles.
+
+## Glossary
+
+**Cumulative distribution function (CDF)** denoted by $F_X(x|\theta)$ is defined as probability of the random variable $X$ being less than or equal to some given value $x$.
+$$F_X(x|\theta) = P(X \leq x|\theta)$$
+**Probability density function (PDF)**, denoted by $f_X(x)$ is such that: 
+
+$$f_X(x|\theta)dx=P(x\leq X \leq x+dx|\theta)=F_X(x+dx|\theta)-F_X(x|\theta)=\frac{dF_X(x|\theta)}{dx}$$
+
+where $dx$ is infinitesimally small range of $x$. PDF is the first derivative of CDF. The area under the PDF curve $f_X(x)$ is equal to 1.
+
+**Quantile function (QF)**, denoted by $Q_X(u|\theta)$ is related to the probability $u$ defined as $u \text{ for which } P(X \leq u|\theta)=u$. The function $Q_X(u|\theta)$ is called a *quantile function* and it expresses *u-quantile* as a function of *u*. 
+
+$$Q_X(u|\theta)=inf\{u:F_X(x|\theta)\geq u\}, \quad 0 \leq u \leq 1$$
+
+For any pair of values along the CDF $(x,u)$ it can be expressed as $x=Q(u)$ and $u=F(x)$, therefore these functions are inverses of each other $Q(u)=F^{-1}(u)$ and $F(x)=Q^{-1}(x)$.
+
+**Quantile density function (QDF)** denoted by $q_X(u)$ is the first derivative of the Quantile Function (QF), the same way as PDF is a first derivative of CDF.
+$$q_X(u)=\frac{dQ_X(u|\theta)}{du}$$
+Because $q_X(u)$ is the slope of QF, it is non-negative on $0 \leq u \leq 1$.
+
+The advantage of quantile functions is that "quantile functions can be added and, in the right circumstances, multiplied to obtain new quantile functions. Quantile density functions can also be added together to derive new quantile density functions" [@gilchrist2000StatisticalModellingQuantile].
+
+## Important relationships
+
+Because $F_\Theta(\theta)=v$ then $Q_\Theta(v)=\theta$. When CDF $F$ is continuous and strictly increasing (proper CDF) with quantile function $Q$, then $F(Q(u))=u$ and therefore 
+$$f(Q(u))=\frac{dF(Q(u))}{dQ(u)} = \frac{dF(Q(u))/du}{dQ(u)/du}=\frac{dF(F^{-1}(u))/du}{q(u)}=\frac{du/du}{q(u)}= (q(u))^{-1}$$ 
+
+Which implies that $q(u)f(Q(u))=1$.
+
+In reliability-related literature, hazard rate $h(x)$ is defined as:
+
+$$h(x)=f(x)/\bar{F}(x))$$
+where $\bar{F}(x)=1-F(x)$ is survival function (also known as reliability function or complimentary CDF) of $x$ and $F(x)$ is a distribution function (CDF).
+
+Also, hazard quantile function
+
+  $$H(u)=h(Q(u))=[(1-u)q(u)]^{-1}$$
+To learn more about hazard quantile function see @nair2009QuantileBasedReliabilityAnalysis.
+
+## Bayesian updating for quantile functions
+
+The information about the parameter $\theta$ defined on $\theta\in A\subset\mathbb{R}$ can be described by prior distribution of random variable $\Theta$  with $F_\Theta(\theta)=v$.
+
+Let's denote the sample of $x$ (of size $n$) from $F_X(x|\theta)$ as $\underline{x}=(x_1, x_2, ...,x_n)$. 
+
+The posterior density $f_\Theta(\theta|\underline{x})$ is given by:
+
+$$f_{\Theta|\underline{x}}(\theta|\underline{x})=K(\underline{x})f_X(\underline{x}|\theta)f_\Theta(\theta)
+(\#eq:bayes1)$$
+where $f_X(\underline{x}|\theta)=\prod_{i=1}^{n}f_X(x_i|\theta)$ is the likelihood and $K(\underline{x})$ is the normalizing constant, given by
+$$(K(\underline{x}))^{-1}=\int_A f_X(\underline{x}|\theta)f_\Theta(\theta)d\theta$$
+
+The posterior $f_{\Theta|\underline{x}}(\theta|\underline{x})$ in Equation \@ref(eq:bayes1) can be expressed in terms of quantile function $\underline{Q}$ of the sample $\underline{x}$.
+
+$$f_{\Theta|\underline{Q}}(\theta)=K(\underline{Q})f_X(\underline{Q}|\theta)f_\Theta(\theta)
+(\#eq:bayes2)$$
+where $\underline{Q}=(Q_1(u_1), Q_2(u_2), ...,Q_n(u_n))$ and $F(x_i|\theta)=u_i$ for $i=1,2,...,n$.
+
+Whereas $f(Q(u))=(q(u))^{-1}$, for the prior $f_{\Theta|\underline{Q}}(\theta)$ it would mean
+
+$$f_\Theta(\theta)=\frac{dF_\Theta(\theta)}{d\theta}=\frac{dF_\Theta(Q_\Theta(v))}{d(Q_\Theta(v))}=\frac{dF_\Theta(Q_\Theta(v))/dv}{d(Q_\Theta(v))/dv}=\frac{dF_\Theta(F^{-1}_\Theta(v))/dv}{q_\Theta(v)}=\frac{dv/dv}{q_\Theta(v)}=\frac{1}{q_\Theta(v)}=(q_\Theta(v))^{-1}$$
+
+We can substitute these into the formula for the posterior:
+
+$$f_{\Theta|\underline{Q}}(Q_\Theta(v)|\underline{Q})=K_1(\underline{Q})f_X(\underline{Q}|Q_\Theta(v))(q_\Theta(v))^{-1}
+(\#eq:bayes3)$$
+
+where $0\leq u_i, \, v\leq 1$ and $(K_1(\underline{Q}))^{-1}=\int_{0}^{1}f_X(\underline{Q}|Q_\Theta(v))(q_\Theta(v))^{-1} dv$
+
+Therefore posterior QDF of $\Theta|\underline{Q}$ has the form:
+
+$$q_{\Theta|\underline{Q}}(v)=\frac{(K_1(\underline{Q}))^{-1}q_\Theta(v)}{f(\underline{Q}|Q_\Theta(v))}=(K_1(\underline{Q}))^{-1}q_\Theta(v)\prod_{i=1}^{n}q_X(u_i|Q_\Theta(v))
+(\#eq:bayes4)$$
+The Equation \@ref(eq:bayes4) is the quantile version of the Bayes theorem which does not require the density function of the variable $X$.
+
+Because
+$$F_{\Theta|\underline{Q}}(Q_\Theta(v))=K_1(\underline{Q})\int_{0}^{v}f(\underline{Q}|Q_\Theta(p))dp$$
+The right hand side of this equation can be denoted as $H(v)$ and it is a distribution on $[0,1]$ and therefore
+
+$$Q_\Theta(v)=Q_{\Theta|\underline{Q}}(H(v))$$
+Thus the posterior can be expressed as
+
+$$Q_{\Theta|\underline{Q}}(v)=Q_\Theta(H^{-1}(v))
+(\#eq:bayes5)$$
+The equation \@ref(eq:bayes5) expresses the relationship between the prior and the posterior quantile function and how the prior distribution of $\theta$ changes in light of observations on $X$.
+
+Hazard quantile function $H(v)$ can also be alternatively [@nair2020BayesianInferenceQuantile] expressed as:
+
+$$H(v)=K_2\int_{0}^{u}(q(\underline{Q}|Q_{\theta}(p)))^{-1}dp$$
+where $K_2^{-1}=\int_0^{1}(q(\underline{Q}|Q_{\theta}(p)))^{-1}dp$
+
+
+
+## Converting the data to quantiles
+
+Equations [refs] above are expressed in terms of $u_i=F(x_i|\theta)$. In reality only observational values of $\underline{x}$ are known. They can be ordered so that the $r$-th order statistic can be expressed as $x_{(r)}=Q_X(u_{(r)|\theta})$ for every $r = 1,2,...n$. In order to transition from $x_{(r)}$ to $u_{(r)}$, we need to have some value of $0<u_0<1$ 
+
+$$Q_X(u_{(r)})=x_{(r)}=Q_X(u_0)+(u_{(r)}-u_0)q_X(u_0)$$ 
+giving
+
+$$u_{(r)}=\frac{x_{(r)}-Q_X(u_0)}{q_X(u_0)}+u_0$$
+ The initial $Q_X(u_0)$ is obtained by replacing $\theta$ in it by the suitable single point-estimate $\hat{\theta}$ derived from prior distribution of $\theta$ (mean or median).
+
+<aside>
+Need references and more formal math for this method. Is there a way to describe the required iterative procedure using math?
+ </aside> 
+ 
+Once $u_{(r)}$ is obtained from the equation above, it replaces $u_0$ and the process is repeated by successively changing $u_{(r)}$ in previous iteration until $|Q(u_{(r)})-x_{(r)}|<\epsilon$, a predefined small quantity.
+
+
+# Metalog distributions
+
+@keelin2011QuantileParameterizedDistributions defined quantile-parametrized distribution as a continuous probability distribution which quantile function $Q(u)$ can be expressed as:
+
+$$Q_{QPD}(u)=\begin{cases} \begin{aligned}&L_0, \; &u=0,\\&\sum_{i=1}^{n}a_ig_i(u), &0<u<1, \\&L_1, &u=1, \end{aligned}\end{cases}$$
+with constants $L_0=\lim_{u \to 0} Q(u)$ and  $L_1=\lim_{u \to 1} Q(u)$ representing the lower and the upper limit of the quantile function, respectively; $g_i(u), \; i \in 1:n$ is a set of continously differentiateable and linearly independent functions of cumulative probability $u \in [0,1]$ and $a_i, \; i\in 1:n$ is a set of real constants.
+
+Logistic distribution has been widely used and applied in various domains starting from early 19th century [@johnson1994ContinuousUnivariateDistributions]. It is particularly interesting due to the simplicity of its quantile function [@balakrishnan1992HandbookLogisticDistribution], which can be written out as:
+
+$$Q_L(u|\mu,s)=\mu+s\ln\left(\frac{u}{1-u}\right)$$
+
+where $\mu$ is mean and $s$ is proportional to the standard deviation $\sigma=s\pi/\sqrt3$. The Metalog distribution is built from the logistic quantile function by substitution and series expansion of its parameters with the polynomial of the form:
+
+$$\mu=a_1+a_4(u-0.5)+a_5(u-0.5)^2+a_7(u-0.5)^3+a_9(u-0.5)^4+\cdots,\\
+s=a_2+a_3(u-0.5)+a_6(u-0.5)^2+a_8(y-0.5)^3+a_{10}(u-0.5)^4+\cdots,$$
+
+where $a_i, i \in 1..n$ are real constants. The shape flexibility of the distribution increases with the number of terms added into the expansion. The order of the terms $n$ is limited by the number of "QP pairs" quantile-probability pairs $m, n\leq m$ used in  and the concerns about the overfitting. Given a set of $m$ data pairs from the CDF curve $(x,u)$ the parameters $a_i$ can be determined through the set of linear equations.
+
+$$\begin{aligned}
+&x_1=a_1+a_2\text{logit}(u_1)+a_3(u_1-0.5)\text{logit}(u_1)+a_4(u_1-0.5)+\cdots,\\
+&x_2=a_1+a_2\text{logit}(u_2)+a_3(u_2-0.5)\text{logit}(u_2)+a_4(u_2-0.5)+\cdots,\\
+&\vdots\\
+&x_m=a_1+a_2\text{logit}(u_m)+a_3(u_m-0.5)\text{logit}(u_m)+a_4(u_m-0.5)+\cdots.\\
+\end{aligned}$$
+
+where $\text{logit}(u)=\ln(u/(1-u))$ is log-odds of probability $u$. In matrix form this system of equations is equivalen to $\mathbf{x}=\mathbf{U}\mathbf{a}$, where $\mathbf{x}$ and $\mathbf{a}$ are column vectors and $\mathbf{U}$ is a $m \times n$ matrix:
+
+$$\mathbf{U} = \left[\begin{array}
+&1 &\text{logit}(u_1) &(u_1-0.5)\text{logit}(u_1) &(u_1-0.5) &\cdots\\
+1 &\text{logit}(u_2) &(u_2-0.5)\text{logit}(u_2) &(u_2-0.5) &\cdots\\
+& \vdots\\
+1 &\text{logit}(u_m) &(u_m-0.5)\text{logit}(u_m) &(u_m-0.5) &\cdots
+\end{array}\right]$$
+
+  If $m=n$ and $\mathbf{U}$ is invertible, then $\mathbf{a}$ can be uniquely determined by $\mathbf{a}=\mathbf{U}^{-1}\mathbf{x}$ and if $m \geq n$ and $\mathbf{U}$ has a rank of at least $n$, then $\mathbf{a}$ can be estimated using 
+
+$$\mathbf{a}=[\mathbf{U}^T\mathbf{U}]^{-1}\mathbf{U}^T\mathbf{x}
+(\#eq:metalogAsMatrix)$$. 
+
+The matrix in Equation \@ref(eq:metalogAsMatrix) to be inverted is always $n \times n$ regardless of the number of observations $m$ used. 
+
+Therefore, metalog quantile function (QF) with $n$ terms $Q_{M_n}(u|\mathbf{a})$ can be expressed as 
+
+$$Q_{M_n}(u|\mathbf{a})=\begin{cases}\begin{aligned}
+&a_1+a_2\text{logit}(u), &\text{ for } n=2, \\
+&a_1+a_2\text{logit}(u)+a_3(u-0.5)\text{logit}(u), &\text{ for } n=3, \\
+&a_1+a_2\text{logit}(u)+a_3(u-0.5)\text{logit}(u)+a_4(u-0.5), &\text{ for } n=4, \\
+&Q_{M_{n-1}} + a_n(u-0.5)^{(n-1)/2}, &\text{ for odd } n \geq 5, \\
+&Q_{M_{n-1}} + a_n(u-0.5)^{n/2-1}\text{logit}(u), &\text{ for even } n \geq 6, \\
+\end{aligned}
+\end{cases}
+(\#eq:metalogQF)$$
+
+where $u \in (0,1)$ is cumulative probability and $\mathbf{a}$ is a parameter vector of real constants $a_i, i \in 1..n$. Equation \@ref(eq:metalogQF) can used to solve for $\mathbf{a}$ in matrix form similar to Equation \@ref(eq:metalogAsMatrix).
+
+The metalog quantile density function (QDF) can be found by differentiating Equations \@ref(eq:metalogQF) with respect to $u$:
+
+$$q_{M_n}(u)=\begin{cases}\begin{aligned}
+&a_2(u\overline{u})^{-1}, &\text{ for } n=2, \\
+&a_2(u\overline{u})^{-1} + a_3\left((u-0.5)(u\overline{u})^{-1}+\text{logit}(u) \right),  &\text{ for } n=3, \\
+&a_2(u\overline{u})^{-1} + \left((u-0.5)(u\overline{u})^{-1}+\text{logit}(u) \right)+ a_4,  &\text{ for } n=3, \\
+&q_{M_{n-1}} + 0.5a_n(n-1)(u-0.5)^{(n-3)/2}, &\text{ for odd } n \geq 5, \\
+&q_{M_{n-1}} + a_n\left((u-0.5)^{n/2-1}(u\overline{u})^{-1}+ (0.5n-1)(u-0.5)^{n/2-2}\text{logit}(u)\right), &\text{ for even } n \geq 6, \\
+\end{aligned}
+\end{cases}
+(\#eq:metalogQDF)$$
+
+where $\overline{u}=1-u$ and $\text{logit}(u)=\ln(u/(1-u))$. Note that another measure of quantile density is the density of the quantile function which is simply a reciprocal of the QDF $f(Q_{M_n}(u))=(q_{M_n}(u))^{-1}$.
+
+@keelin2016MetalogDistributions showed that the constants $a_i, i\in 1..n$ are feasible iif $q_{M_n}(u)>0$ for all $u \in (0,1)$.
+
+
+
+# Q-dirichlet distribution
+
+
+# Sensitivity to prior estimates for data
+
+# Cases
+
+## Fish Size
+
+## some well known bayesian case
+
+## Acknowledgments {.appendix}
+
+This is a place to recognize people and institutions. It may also be a good place
+to acknowledge and cite software that makes your work possible.
+
+## Author Contributions {.appendix}
+
+We strongly encourage you to include an author contributions statement briefly 
+describing what each author did.

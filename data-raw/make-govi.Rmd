@@ -1,0 +1,416 @@
+---
+title: "Govindarajulu Distribution in Stan"
+author: "Deemah"
+date: "2/14/2021"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 80
+bibliography: "`r rbbt::bbt_write_bib('references.bib', overwrite = TRUE)`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+Flexible quantile density function is
+$$q_X(u)=Ku^\alpha(1-u)^\beta, \quad K>0;  \; \alpha, \beta \; \text{real}$$
+This distribution has various names depending on values of parameters. We will
+be looking at the distribution with
+$\alpha=\gamma>0, \; \beta=1, \; K=\sigma\alpha(\alpha+1)$
+
+This is Govindarajalu ditribution with quantile function
+
+$$Q_X(u)=\sigma((\alpha+1)u^\alpha-\alpha u^{\alpha+1})$$
+
+and quantile density function
+
+$$q_X(u)=Ku^\alpha(1-u)=\sigma\alpha(\alpha-1)u^\alpha(1-u)$$ We will keep the
+alpha-sigma parametrization, even though some literature uses alpha-K
+parametrization.
+
+In order to keep our functions versatile, let's make both vectorized and
+non-vectorized versions. We will differentiate them by the suffix `_s` and `_v`
+for scalar and vector, respectively.
+
+Need to make:
+
+-   `_cdf` equivalent, quantile function, to be named `govindarajulu_qf_s_cdf()`
+    and `govindarajulu_qf_v_cdf()`
+-   `_lcdf` equivalent, log quantile function, to be named
+    `govindarajulu_qf_s_lcdf()` and `govindarajulu_qf_v_lcdf()`
+-   `_lpdf` equivalent, log quantile density function, to be named
+    `govindarajulu_qdf_s_lpdf()` and `govindarajulu_qdf_s_lpdf()` There's no
+    equivalent to `_lccdf`?
+-   `_rng` function is always scalar, which we will call
+    `govindarajulu_q_s_rng()`
+    
+# Govindarajulu distribution
+
+```{r, echo=FALSE}
+library(rstan)
+library(magrittr)
+stan_code <- tempfile("govindarajulu", fileext = ".stan")
+```
+
+```{cat, echo=FALSE, engine.opts=list(file=stan_code, append = TRUE), class.source="stan"}
+functions{ // begin the functions block
+```
+
+## qf (cdf)
+
+Govindarajulu quantile function from @nair2020BayesianInferenceQuantile
+
+$$Q_X(u)=\sigma((\alpha+1)u^\alpha-\alpha u^{\alpha+1})=\sigma a u^a(1+1/a-u)$$
+
+Here for vectorized function we could use the trick that `pow(a,b)` is
+`exp(b*log(a))`. However we need to be aware that this can create errors for
+invalid `log(a)`, so we will have to work around that. The vectorized version of
+the power function has been cooking forever in Stan. Until it becomes available,
+we will have to use loops
+
+```{cat qfcdf, engine.opts=list(file=stan_code, append = TRUE), class.source="stan"}
+  real govindarajulu_qf_s_cdf(real p, real alpha, real sigma) {
+    real inv_alpha = inv(alpha);
+    // govindarajulu quantile function
+    if (alpha<0)
+      reject("alpha<0; found alpha =", alpha);
+    if (sigma<0)
+      reject("sigma<0; found sigma =", sigma);
+  return sigma*alpha*pow(p, alpha)*(1+inv_alpha-p);
+  }
+
+  real govindarajulu_qf_v_cdf(vector p, real alpha, real sigma) {
+    int N = rows(p);
+    real inv_alpha=inv(alpha);
+    // govindarajulu quantile function
+    if (alpha<0)
+      reject("alpha<0; found alpha =", alpha);
+    if (sigma<0)
+      reject("sigma<0; found sigma =", sigma);
+   return exp(N*log(sigma)+N*log(alpha)+alpha*sum(log(p))+sum(log1p(inv_alpha-p)));
+  }
+  
+  real govindarajulu_rng(real alpha, real sigma) {
+    return metalog_qf_s_cdf(uniform_rng(0, 1), alpha, sigma);
+}
+```
+
+## qf (lcdf)
+
+Log of quantile function
+
+$$log(Q_X(u))=ln(\sigma a u^a(1+1/a-u))=ln(\sigma)+ln(\alpha)+\alpha ln(u)+ln(1+1/a-u)$$
+
+```{cat qflcdf, engine.opts=list(file=stan_code, append = TRUE), class.source="stan"}
+  real govindarajulu_qf_s_lcdf(real p, real alpha, real sigma) {
+    real inv_alpha=inv(alpha);
+    // govindarajulu quantile function
+    if (alpha<0)
+      reject("alpha<0; found alpha =", alpha);
+    if (sigma<0)
+      reject("sigma<0; found sigma =", sigma);
+  return log(sigma)+log(alpha)+alpha*log(p)+log(1+inv_alpha-p);
+  }
+
+  real govindarajulu_qf_v_lcdf(vector p, real alpha, real sigma) {
+    int N = rows(p);
+    real inv_alpha=inv(alpha);
+    // govindarajulu quantile function
+    if (alpha<0)
+      reject("alpha<0; found alpha =", alpha);
+    if (sigma<0)
+      reject("sigma<0; found sigma =", sigma);
+   return N*log(sigma)+N*log(alpha)+alpha*sum(log(p))+sum(log1p(inv_alpha-p));
+  }
+```
+
+## qdf (pdf)
+
+Quantile density function
+
+$$q_X(u)=\sigma\alpha(\alpha-1)u^\alpha(1-u)$$
+
+```{cat qdfpdf, engine.opts=list(file=stan_code, append = TRUE), class.source="stan"}
+  real govindarajulu_qdf_s_pdf(real p, real alpha, real sigma) {
+    // govindarajulu quantile function
+    if (alpha<0)
+      reject("alpha<0; found alpha =", alpha);
+    if (sigma<0)
+      reject("sigma<0; found sigma =", sigma);
+  return sigma*alpha*(alpha-1)+pow(p, alpha)*(1-p);
+  }
+
+  real govindarajulu_qdf_v_pdf(vector p, real alpha, real sigma) {
+    int N = rows(p);
+    // govindarajulu quantile function
+    if (alpha<0)
+      reject("alpha<0; found alpha =", alpha);
+    if (sigma<0)
+      reject("sigma<0; found sigma =", sigma);
+   return exp(N*log(sigma)+N*log(alpha)+N*log(alpha-1)+alpha*sum(log(p))+sum(log1m(p)));
+  }
+```
+
+## qdf (lpdf)
+
+Quantile density function
+
+$$q_X(u)=\sigma\alpha(\alpha-1)u^\alpha(1-u)$$
+
+Log quantile density function
+
+$$ln(q_X(u))=ln(\sigma)+ln(\alpha)+ln(\alpha-1)+\alpha*ln(u)+ln(1-u)$$
+
+```{cat qdflpdf, engine.opts=list(file=stan_code, append = TRUE), class.source="stan"}
+  real govindarajulu_qdf_s_lpdf(real p, real alpha, real sigma) {
+    // govindarajulu quantile function
+    if (alpha<0)
+      reject("alpha<0; found alpha =", alpha);
+    if (sigma<0)
+      reject("sigma<0; found sigma =", sigma);
+  return log(sigma)+log(alpha)+log(alpha-1)+alpha*log(p)+log(1-p);
+  }
+  real govindarajulu_qdf_v_lpdf(vector p, real alpha, real sigma) {
+    int N = rows(p);
+    real inv_alpha=inv(alpha);
+    vector[N] pow_p_alpha;
+    // govindarajulu quantile function
+    if (alpha<0)
+      reject("alpha<0; found alpha =", alpha);
+    if (sigma<0)
+      reject("sigma<0; found sigma =", sigma);
+   return N*log(sigma)+N*log(alpha)+N*log(alpha-1)+alpha*sum(log(p))+sum(log1m(p));
+  }
+```
+
+# Generalized Exponential distribution
+
+## cdf
+
+Generalized exponential distribution CDF
+$$F_Y(y|\alpha,\lambda)=(1-e^{-\lambda y})^{\alpha}$$
+where $\alpha>0, \lambda>0$ are shape and scale parameters, respectively.
+
+```{cat genexpcdf, engine.opts=list(file=stan_code, append = TRUE), class.source="stan"}
+//////// generalized exponential CDF ////////////
+  real genexp_s_cdf(real x, real alpha, real lambda) {
+    // generalized exponential cdf 
+    if (alpha<=0)
+      reject("alpha<=0; found alpha =", alpha);
+    if (lambda<=0)
+      reject("lambda<=0; found lambda =", lambda);
+  return (1-exp(-lambda*x))^alpha;
+  }
+  real genexp_v_cdf(vector x, real alpha, real lambda)  {
+    int N = rows(x);
+    real inv_alpha=inv(alpha);
+    // govindarajulu quantile function
+    if (alpha<=0)
+      reject("alpha<=0; found alpha =", alpha);
+    if (lambda<=0)
+      reject("lambda<=0; found lambda =", lambda);
+   return exp(alpha*sum(log1m(exp(-lambda*x))));
+  }
+```
+
+## qf (cdf)
+
+Generalized exponential distribution quantile function
+$$Q_Y(v|\alpha,\lambda)=-\frac{1}{\lambda} ln(1-v^{1/\alpha})$$
+where $\alpha>0, \lambda>0$ are shape and scale parameters, respectively.
+
+```{cat genexpqf, engine.opts=list(file=stan_code, append = TRUE), class.source="stan"}
+//////// generalized exponential QF function ////////////
+ real genexp_qf_s_cdf(real p, real alpha, real lambda) {
+    real inv_lambda = inv(lambda);
+    real inv_alpha =inv(alpha);
+    // generalized exponential quantile function 
+    if (alpha<=0)
+      reject("alpha<=0; found alpha =", alpha);
+    if (lambda<=0)
+      reject("lambda<=0; found lambda =", lambda);
+  return -inv_lambda*log1m(pow(p,inv_alpha));
+  }
+  real genexp_qf_v_cdf(vector p, real alpha, real lambda)  {
+    int N = rows(p);
+    real inv_lambda = inv(lambda);
+    real inv_alpha =inv(alpha);
+    // generalized exponential quantile function 
+    if (alpha<=0)
+      reject("alpha<=0; found alpha =", alpha);
+    if (lambda<=0)
+      reject("lambda<=0; found lambda =", lambda);
+  return -inv_lambda*log1m_exp(inv_alpha*sum(log(p)));
+  }
+//////// generalized exponential LOG QF function ////////////
+  real genexp_qf_s_lcdf(real p, real alpha, real lambda) {
+    real inv_lambda = inv(lambda);
+    real inv_alpha =inv(alpha);
+    // generalized exponential quantile function 
+    if (alpha<=0)
+      reject("alpha<=0; found alpha =", alpha);
+    if (lambda<=0)
+      reject("lambda<=0; found lambda =", lambda);
+  return log(-inv_lambda)+log(log1m(pow(p,inv_alpha)));
+  }
+  real genexp_qf_v_lcdf(vector p, real alpha, real lambda)  {
+    int N = rows(p);
+    real inv_lambda = inv(lambda);
+    real inv_alpha =inv(alpha);
+    // generalized exponential quantile function 
+    if (alpha<=0)
+      reject("alpha<=0; found alpha =", alpha);
+    if (lambda<=0)
+      reject("lambda<=0; found lambda =", lambda);
+  return log(-inv_lambda)*log(log1m_exp(inv_alpha*sum(log(p))));
+  }
+```
+
+## qdf (pdf)
+
+Generalized exponential distribution quantile function
+$$q_Y(v|\alpha,\lambda)=\frac{d}{dv}(-\frac{1}{\lambda} ln(1-v^{1/\alpha}))=-1/\lambda*\frac{1}{(1-v^{1/\alpha})}*\frac{d}{dx}(1-x^{1/a})=$$
+$$=\frac{d}{dx}[1]-\frac{d}{dx}[x^{1/\alpha}]*\frac{1}{\lambda(1-x^{1/a})}=\frac{0-\frac{1}{a}x^{1/a-1}}{\lambda(1-x^{1/a})}=\frac{x^{1/a-1}}{\alpha\lambda(1-x^{1/\alpha})}$$
+
+where $\alpha>0, \lambda>0$ are shape and scale parameters, respectively.
+
+```{cat genexpqdf, engine.opts=list(file=stan_code, append = TRUE), class.source="stan"}
+//////// generalized exponential QDF function /
+  real genexp_qdf_s_pdf(real p, real alpha, real lambda) {
+    real inv_alpha =inv(alpha);
+    // generalized exponential quantile density function 
+    if (alpha<=0)
+      reject("alpha<=0; found alpha =", alpha);
+    if (lambda<=0)
+      reject("lambda<=0; found lambda =", lambda);
+  return pow(p,inv_alpha-1)/(alpha*lambda*(1-pow(p, inv_alpha)));
+  }
+  real genexp_qdf_v_pdf(vector p, real alpha, real lambda)  {
+    int N = rows(p);
+    real inv_alpha =inv(alpha);
+    // generalized exponential quantile density function 
+    if (alpha<=0)
+      reject("alpha<=0; found alpha =", alpha);
+    if (lambda<=0)
+      reject("lambda<=0; found lambda =", lambda);
+  return exp((inv_alpha-1)*sum(log(p))) - log(alpha)-log(lambda)-log1m(inv_alpha*sum(log(p)));
+  }
+//////// generalized exponential LOG QDF function ////////////
+  real genexp_qdf_s_lpdf(real p, real alpha, real lambda) {
+    real inv_alpha =inv(alpha);
+    // generalized exponential quantile density function 
+    if (alpha<=0)
+      reject("alpha<=0; found alpha =", alpha);
+    if (lambda<=0)
+      reject("lambda<=0; found lambda =", lambda);
+  return pow(p,inv_alpha-1)/(alpha*lambda*(1-pow(p, inv_alpha)));
+  }
+  real genexp_qdf_v_lpdf(vector p, real alpha, real lambda)  {
+    int N = rows(p);
+    real inv_alpha =inv(alpha);
+    // generalized exponential quantile density function 
+    if (alpha<=0)
+      reject("alpha<=0; found alpha =", alpha);
+    if (lambda<=0)
+      reject("lambda<=0; found lambda =", lambda);
+  return exp((inv_alpha-1)*sum(log(p))) - log(alpha)-log(lambda)-sum(log1m(inv_alpha*log(p)));
+  }
+```
+
+
+```{cat, echo=FALSE, engine.opts=list(file=stan_code, append = TRUE), class.source="stan"}
+} // finish the functions block
+```
+
+```{r printout, echo=FALSE}
+writeLines(readLines(stan_code))
+readr::write_lines(readLines(stan_code), "govi.stan")
+```
+
+Finish and test
+
+```{r}
+expose_stan_functions("govi.stan")
+
+a <- 2.0915
+sg <- 604.319/(a*(a+1))
+govindarajulu_qdf_s_pdf(0.5, a, sg)
+
+seq(0,1,by=0.001) %>% 
+   sapply(govindarajulu_qf_s_cdf,a, sg) %>% 
+  plot()
+ seq(0,1,by=0.001) %>% 
+   sapply(govindarajulu_qdf_s_pdf,a, sg) %>% 
+   plot()
+
+lam  <- 1
+
+ seq(0,1,by=0.001) %>% 
+   sapply(genexp_qf_s_cdf, a, lam) %>% 
+   plot()
+
+ genexp_qf_s_cdf(0.5, a, lam)
+ 
+ seq(0,1,by=0.001) %>% 
+   sapply(genexp_qdf_s_pdf, a, lam) %>% 
+   plot()
+
+govindarajulu_qf_s_cdf(0.5, a, sg)
+
+```
+
+```{stan output.var="govi_stan_model"}
+#include govi.stan
+data{
+  int N;
+  vector[N] u;
+  real theta;
+  real sigma;
+}
+parameters{
+  real a;
+}
+model{
+  target += genexp_qdf_s_lpdf(a | theta, 1);
+  for(i in 1:N){
+    target += govindarajulu_qdf_s_lpdf(u[i] | a, sigma);
+  }
+}
+```
+
+Prepare data and sample
+
+```{r}
+library(qpd)
+vec_times <- c(0.1,7,36,67,84,0.2,11,40,67,84,1,12,45,67,84,1,18,46,67,85,1,18,47,72,85,1,18, 50,75,85,1,18,55,79,85,2,18,60,82,85,3,21,63,82,86,6,32,63,83,86)
+vec_times_ord <- vec_times[order(vec_times)]
+
+a=2.0915
+sg=604.319/(a*(a+1))
+
+afun <- function(u0, x_r, sg, a){
+ tmp_u_r <- u0 + (x_r-qgovindarajulu(u0, sg, a))/fgovindarajulu(u0, sg, a)
+ tmp_u_r[tmp_u_r<0] <- 0
+ tmp_u_r[tmp_u_r>1] <- 1
+ qgovindarajulu(tmp_u_r, sg, a)-x_r
+}
+
+u0s <- double(length = length(vec_times_ord))
+for (r in seq_along(vec_times_ord)){
+  tmp_u0 <- NULL
+  tmp_u0 <- uniroot(afun, x_r=vec_times_ord[r], sg=sg, a=a, interval = c(0,1), tol = 1e-15)
+  u0s[r] <- ifelse(is.null(tmp_u0), NA, tmp_u0$root)
+}
+
+dt_lst <- list(N=length(u0s), u=u0s, theta=a, sigma=1.265528)
+fit <- sampling(govi_stan_model, data=dt_lst)
+print(fit)
+```
+
+
+
+
+# References

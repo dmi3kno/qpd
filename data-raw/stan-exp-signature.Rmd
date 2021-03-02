@@ -1,0 +1,138 @@
+---
+title: "Stan exp signature"
+author: "Deemah"
+date: "2/13/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rstan)
+```
+
+# Original
+
+```{stan, output.var="orig_stan"}
+data{
+  int LENGTH;
+  vector [LENGTH] Y;
+}
+parameters{
+  real<lower=0> lambda;
+}
+model{
+  lambda ~ gamma(1.0, 1.0);
+  Y ~ exponential(lambda);
+}
+generated quantities{
+  real pred;
+  pred = exponential_rng(lambda);
+}
+```
+
+Test it
+
+```{r}
+lambda <- 1
+dat <- rexp(500, lambda)
+len <- length(dat)
+              
+fit <- sampling(orig_stan, data=list(Y=dat, LENGTH=len))
+print(fit)
+```
+
+# Custom likelihood
+
+I am going to define custom functions both with the first argument of type `vector`. We will then replace the buil-in exponential likelihood with our own custom log likelihood function. 
+
+```{stan, output.var="custlik_stan"}
+functions{
+  real dv_exponential_lpdf(vector x, real lam){
+    return sum(log(lam)-x*lam);
+  }
+  real dv_gamma_lpdf(vector y, real alpha, real beta){
+    real loglik;
+    loglik = sum(alpha*log(beta)+(alpha-1)*log(y)-beta*y-tgamma(alpha));
+    return loglik;
+  }
+}
+data{
+  int LENGTH;
+  vector [LENGTH] Y;
+}
+parameters{
+  real<lower=0> lambda;
+}
+model{
+  lambda ~ gamma(1.0, 1.0);
+  Y ~ dv_exponential(lambda);
+}
+generated quantities{
+  real pred;
+  pred = exponential_rng(lambda);
+}
+```
+
+Test it
+
+```{r}
+lambda <- 1
+dat <- rexp(500, lambda)
+len <- length(dat)
+              
+fit <- sampling(custlik_stan, data=list(Y=dat, LENGTH=len))
+print(fit)
+```
+
+However, if we try to replace the built-in `gamma()` with our own `dv_gamma()` we are going to get the following error message:
+
+```{r}
+#> No matches for: 
+#> 
+#>   real ~ dp_gamma(real, real)
+#> 
+#> Available argument signatures for dp_gamma:
+#> 
+#>   vector ~ dp_gamma(real, real)
+```
+
+This means that we can not use vectorized functions in place of the prior, and we have to rewrite our functions to accept only scalars.
+
+
+```{stan, output.var="s_custlik_stan"}
+functions{
+  real ds_exponential_lpdf(real x, real lam){
+    return log(lam)-x*lam;
+  }
+  real ds_gamma_lpdf(real y, real alpha, real beta){
+    real loglik;
+    loglik = alpha*log(beta)+(alpha-1)*log(y)-beta*y-tgamma(alpha);
+    return loglik;
+  }
+}
+data{
+  int LENGTH;
+  vector [LENGTH] Y;
+}
+parameters{
+  real<lower=0> lambda;
+}
+model{
+  target += ds_gamma_lpdf(lambda | 1.0, 1.0);
+
+  for (i in 1:LENGTH){
+    target += ds_exponential_lpdf(Y[i] | lambda);
+ }
+}
+generated quantities{
+  real pred;
+  pred = exponential_rng(lambda);
+}
+```
+
+
+```{r}
+fit <- sampling(s_custlik_stan, data=list(Y=dat, LENGTH=len))
+print(fit)
+```
+

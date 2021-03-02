@@ -1,0 +1,19 @@
+---
+title: "junk"
+author: "Deemah"
+date: "2/19/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Quantile-parametrized distributions QPDs are developed using re-parametrization of the probability function (CDF) (or a quantile function (QF)) in terms of itself, making it an implicit functions. For example, in the case of a Q-normal distribution introduced in @keelin2011QuantileParameterizedDistributions, parameters $\mu$ and $\sigma$ of the normal distribution $X \sim N(x|\mu,\sigma)$ are substituted by the linear functions of probability $F_X(x):=Pr(X\leq x)=u$. Therefore, the CDF of the Q-normal distribution becomes:
+$$F(x)=\Phi\left(\frac{x-a_1+a_4u}{a_2+a_3u}\right)$$
+where $\Phi()$ is a CDF of a standard normal distribution. Note that equation [ref] above reverts back to the normal distribution when $a_3=a_4=0$. Therefore, Q-normal is an implicit generalization of the normal distribution [@lee2013MethodsGeneratingFamilies]. The advantage of the QPDs is that, given the data expressed in terms of cumulative probabilities $F(x)$, the vector of parameters $a_i, \; i \in 1:4$ can be found using the linear algebra. Alternatively, Q-normal distribution can be expressed using its quantile function $F^{-1}(u)=Q(u)$ as:
+$$F^{-1}(u)=Q(u)=a_1+a_2\Phi^{-1}(u)+a_3u\Phi^{-1}(u)+a_4u, \quad \text{for} \; u\in[0,1]$$
+
+This formulation of Quantile function is key to defining QPDs. 

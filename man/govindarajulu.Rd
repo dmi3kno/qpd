@@ -12,9 +12,9 @@ qgovindarajulu(p, sg, bt)
 
 fgovindarajulu(p, sg, bt)
 
-pgovindarajulu(q, sg, bt)
+pgovindarajulu(q, sg, bt, tol = 1e-06)
 
-dgovindarajulu(x, sg, bt)
+dgovindarajulu(x, sg, bt, tol = 1e-06)
 }
 \arguments{
 \item{p}{vector of probabilities}
@@ -24,6 +24,8 @@ dgovindarajulu(x, sg, bt)
 \item{bt}{parameter beta of Govindarajulu distribution}
 
 \item{q}{vector of quantiles}
+
+\item{tol}{tolerance value for optimization. Default value 1e-06}
 
 \item{x}{numeric vector}
 }

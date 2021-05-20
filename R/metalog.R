@@ -1,16 +1,50 @@
+# function for preparing the vector z for metalog.
+metalog_prepare_z <- function(q, bl, bu){
+  if(!is.null(bl) || !is.null(bu)){
+    z <-log((q-bl)/(bu-q))
+    if(is.null(bu)) z<-log(q-bl) # bl is defined
+    if(is.null(bl)) z<-(-log(bu-q))# bu is defined
+  } else {return(q)}
+  z
+}
+
+# function for preparing the matrix Y for metalog.
+metalog_prepare_Y <- function(p, n, nterms){
+  log_odds <- log(p)-log1p(-p) #stats::qlogis(p) #log(p/(1-p))
+  pmhalf <- p-0.5
+  Y <- matrix(NA_real_, n, nterms)
+  Y[,1] <- 1
+  odd <- TRUE
+  if (nterms>1) Y[,2] <- log_odds;
+  if (nterms>2) Y[,3] <- pmhalf*log_odds;
+  if (nterms>3) Y[,4] <- pmhalf;
+  if (nterms>4)
+    for (m in 5:nterms){
+      if(odd){
+        pmhalf <- pmhalf*pmhalf;
+        Y[,m] <- pmhalf;
+      } else {
+        Y[,m] <- pmhalf*log_odds
+      }
+      odd <- isFALSE(odd)
+    }
+  Y
+}
+
 #' @title Metalog distribution functions
 #' @description Functions for fitting and sampling from metalog distribution
 #' @details
 #' `fit_metalog` is for fitting the metalog function to the set of QP values.
-#' Number of metalog terms will match the number of QP pairs.``
+#' Number of metalog terms will match the number of QP pairs.
+#' `approx_metalog` is for approximating metalog function to the set of data.
 #' `qmetalog` is a quantile function.
 #' `fmetalog` is a quantile density function q(u). The reciprocal of it is density quantile function f(Q(p)).
 #' `pmetalog` is an approximation of the cumulative density function.
 #' `rmetalog` is an RNG.
 #' `is_metalog_valid` is a function for checking if the metalog is valid
 #'
-#' @param p vector of cumulative probabilities
-#' @param q vector of quantile values corresponding to cumulative probabilities `p`
+#' @param p vector of cumulative probabilities corresponding to quantile values
+#' @param q vector of quantile values (data)
 #' @param bl real value of lower boundary (for bounded metalog). Default NULL
 #' @param bu real value of upper boundary (for bounded metalog). Default NULL
 #' @rdname metalog
@@ -19,34 +53,34 @@
 #' p <- c(0.1, 0.5, 0.9)
 #' q <- c(4, 9, 12)
 #' fit_metalog(p,q)
-#' @importFrom stats qlogis
 fit_metalog <- function(p, q, bl=NULL, bu=NULL){
-  if(!is.null(bl) || !is.null(bu)){
-    q1<-log((q-bl)/(bu-q))
-    if(is.null(bu)) q1<-log(q-bl) # bl is defined
-    if(is.null(bl)) q1<-(-log(bu-q))# bu is defined
-  } else {q1 <- q}
-  n <- length(p)
-  log_odds <- log(p/(1-p)) #stats::qlogis(p) #log(p/(1-p))
-  pmhalf <- p-0.5
-  if(length(q)!=n) stop("Length of p and q should be equal")
-  Y <- matrix(NA_real_, n, n)
-  Y[,1] <- 1
-  odd <- TRUE
-  if (n>1) Y[,2] <- log_odds;
-  if (n>2) Y[,3] <- pmhalf*log_odds;
-  if (n>3) Y[,4] <- pmhalf;
-  if (n>4)
-   for (m in 5:n){
-    if(odd){
-      pmhalf <- pmhalf*pmhalf;
-      Y[,m] <- pmhalf;
-    } else {
-      Y[,m] <- pmhalf*log_odds
-    }
-    odd <- isFALSE(odd)
+  n <- length(q)
+  if(length(p)!=n) stop("Length of p and q must be equal")
+  z <- metalog_prepare_z(q, bl, bu)
+  Y <- metalog_prepare_Y(p, n, n)
+  solve(Y, z)
+}
+
+#' @param nterms integer number of terms for approximating metalog. Default is 3
+#' @param thin integer number of quantiles to extract from data, if data vector `q` is longer than this value
+#' @param s in case data thinning is performed, probability grid shape parameter passed to `qpd::make_pgrid()`. Default is 10.
+#' @rdname metalog
+#' @importFrom stats quantile
+#' @export
+approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, thin=100L, s=10L){
+  n <- length(q)
+  if(n > thin){
+    p <- make_pgrid(thin, s=s, trim=TRUE)
+    qs <- unname(stats::quantile(q, probs=p))
+  } else {
+    qs <- sort(q)
+    # ecdf assignment trick to avoid 0 and 1
+    p <- (seq_along(qs)-0.5)/n
   }
-  solve(Y, q1)
+  if(length(nterms)!=1L) stop("Incorrectly specified number of metalog terms")
+  z <- metalog_prepare_z(qs, bl, bu)
+  Y <- metalog_prepare_Y(p, n, nterms)
+  ((solve(t(Y) %*% Y) %*% t(Y)) %*% z)[,1]
 }
 
 #' @param a vector of `a`-coefficient parameters of metalog distribution

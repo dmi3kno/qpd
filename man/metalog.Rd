@@ -2,6 +2,7 @@
 % Please edit documentation in R/metalog.R
 \name{fit_metalog}
 \alias{fit_metalog}
+\alias{approx_metalog}
 \alias{qmetalog}
 \alias{fmetalog}
 \alias{pmetalog}
@@ -10,6 +11,8 @@
 \title{Metalog distribution functions}
 \usage{
 fit_metalog(p, q, bl = NULL, bu = NULL)
+
+approx_metalog(q, nterms = 3L, bl = NULL, bu = NULL, thin = 100L, s = 10L)
 
 qmetalog(p, a, bl = NULL, bu = NULL)
 
@@ -22,13 +25,19 @@ rmetalog(n, a, bl = NULL, bu = NULL)
 is_metalog_valid(a, bl = NULL, bu = NULL)
 }
 \arguments{
-\item{p}{vector of cumulative probabilities}
+\item{p}{vector of cumulative probabilities corresponding to quantile values}
 
-\item{q}{vector of quantile values corresponding to cumulative probabilities \code{p}}
+\item{q}{vector of quantile values (data)}
 
 \item{bl}{real value of lower boundary (for bounded metalog). Default NULL}
 
 \item{bu}{real value of upper boundary (for bounded metalog). Default NULL}
+
+\item{nterms}{integer number of terms for approximating metalog. Default is 3}
+
+\item{thin}{integer number of quantiles to extract from data, if data vector \code{q} is longer than this value}
+
+\item{s}{in case data thinning is performed, probability grid curvature parameter passed to \code{qpd::make_pgrid()}. Default is 10.}
 
 \item{a}{vector of \code{a}-coefficient parameters of metalog distribution}
 
@@ -45,12 +54,13 @@ Functions for fitting and sampling from metalog distribution
 }
 \details{
 \code{fit_metalog} is for fitting the metalog function to the set of QP values.
-Number of metalog terms will match the number of QP pairs.``
+Number of metalog terms will match the number of QP pairs.
+\code{approx_metalog} is for approximating metalog function to the set of data.
 \code{qmetalog} is a quantile function.
-`fmetalog` is a quantile density function q(u). The reciprocal of it is density quantile function f(Q(p)).
-`pmetalog` is an approximation of the cumulative density function.
-`rmetalog` is an RNG.
-`is_metalog_valid` is a function for checking if the metalog is valid
+\code{fmetalog} is a quantile density function q(u). The reciprocal of it is density quantile function f(Q(p)).
+\code{pmetalog} is an approximation of the cumulative density function.
+\code{rmetalog} is an RNG.
+\code{is_metalog_valid} is a function for checking if the metalog is valid
 }
 \examples{
 p <- c(0.1, 0.5, 0.9)

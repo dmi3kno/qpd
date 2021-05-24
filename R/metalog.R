@@ -62,15 +62,17 @@ fit_metalog <- function(p, q, bl=NULL, bu=NULL){
 }
 
 #' @param nterms integer number of terms for approximating metalog. Default is 3
-#' @param thin integer number of quantiles to extract from data, if data vector `q` is longer than this value
+#' @param thin logical. Should original data be thinned. Default is FALSE.
+#' @param thin_to integer number of quantiles to extract from data, if data vector `q` is longer than this value
 #' @param s in case data thinning is performed, probability grid shape parameter passed to `qpd::make_pgrid()`. Default is 10.
 #' @rdname metalog
 #' @importFrom stats quantile
 #' @export
-approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, thin=100L, s=10L){
+approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, thin=FALSE, thin_to=1000L, s=2L){
   n <- length(q)
-  if(n > thin){
-    p <- make_pgrid(thin, s=s, trim=TRUE)
+  if(thin){
+    n <- thin_to
+    p <- make_pgrid(thin_to, s=s, trim=TRUE)
     qs <- unname(stats::quantile(q, probs=p))
   } else {
     qs <- sort(q)
@@ -78,8 +80,8 @@ approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, thin=100L, s=10L){
     p <- (seq_along(qs)-0.5)/n
   }
   if(length(nterms)!=1L) stop("Incorrectly specified number of metalog terms")
-  z <- metalog_prepare_z(qs, bl, bu)
-  Y <- metalog_prepare_Y(p, n, nterms)
+  z <- matrix(metalog_prepare_z(qs[is.finite(qs)], bl, bu), ncol=1, byrow=FALSE)
+  Y <- metalog_prepare_Y(p[is.finite(qs)], n, nterms)
   ((solve(t(Y) %*% Y) %*% t(Y)) %*% z)[,1]
 }
 
@@ -182,6 +184,7 @@ pmetalog <- function(x, a, bl=NULL, bu=NULL, tol=1e-6, maxiter=1e6){
 #' @export
 #'
 #' @examples
+#' a <- c(2.4, 0.4, -0.08)
 #' rmetalog(100, a)
 #' @importFrom stats runif
 rmetalog <- function(n, a, bl=NULL, bu=NULL){

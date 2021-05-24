@@ -4,12 +4,12 @@
 \alias{make_pgrid}
 \title{Make probability grid using beta-distribution method}
 \usage{
-make_pgrid(n = 100, s = 10, trim = TRUE)
+make_pgrid(n = 100L, s = 10L, trim = TRUE)
 }
 \arguments{
 \item{n}{integer length of the grid. Default is 100}
 
-\item{s}{beta distribution shape parameter. For uniform grid choose 1. Default is 10.}
+\item{s}{beta distribution shape parameter, passed to both \code{shape1} and \code{shape2} of \code{pbeta()}. For uniform grid choose 1. Default is 10.}
 
 \item{trim}{logical, should the 0 and 1 (tails of the grid) be trimmed. Default is \code{TRUE}}
 }

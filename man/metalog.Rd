@@ -12,7 +12,15 @@
 \usage{
 fit_metalog(p, q, bl = NULL, bu = NULL)
 
-approx_metalog(q, nterms = 3L, bl = NULL, bu = NULL, thin = 100L, s = 10L)
+approx_metalog(
+  q,
+  nterms = 3L,
+  bl = NULL,
+  bu = NULL,
+  thin = FALSE,
+  thin_to = 1000L,
+  s = 2L
+)
 
 qmetalog(p, a, bl = NULL, bu = NULL)
 
@@ -35,9 +43,11 @@ is_metalog_valid(a, bl = NULL, bu = NULL)
 
 \item{nterms}{integer number of terms for approximating metalog. Default is 3}
 
-\item{thin}{integer number of quantiles to extract from data, if data vector \code{q} is longer than this value}
+\item{thin}{logical. Should original data be thinned. Default is FALSE.}
 
-\item{s}{in case data thinning is performed, probability grid curvature parameter passed to \code{qpd::make_pgrid()}. Default is 10.}
+\item{thin_to}{integer number of quantiles to extract from data, if data vector \code{q} is longer than this value}
+
+\item{s}{in case data thinning is performed, probability grid shape parameter passed to \code{qpd::make_pgrid()}. Default is 10.}
 
 \item{a}{vector of \code{a}-coefficient parameters of metalog distribution}
 
@@ -71,6 +81,7 @@ qmetalog(p, a)
 fmetalog(p, a)
 x <- c(5, 9, 14)
 pmetalog(x, a)
+a <- c(2.4, 0.4, -0.08)
 rmetalog(100, a)
 is_metalog_valid(a)
 }

@@ -1,4 +1,4 @@
-# function for preparing the vector z for metalog.
+# internal function for preparing the vector z for metalog.
 metalog_prepare_z <- function(q, bl, bu){
   if(!is.null(bl) || !is.null(bu)){
     z <-log((q-bl)/(bu-q))
@@ -8,7 +8,7 @@ metalog_prepare_z <- function(q, bl, bu){
   z
 }
 
-# function for preparing the matrix Y for metalog.
+# internal function for preparing the matrix Y for metalog.
 metalog_prepare_Y <- function(p, n, nterms){
   log_odds <- log(p)-log1p(-p) #stats::qlogis(p) #log(p/(1-p))
   pmhalf <- p-0.5
@@ -31,23 +31,19 @@ metalog_prepare_Y <- function(p, n, nterms){
   Y
 }
 
-#' @title Metalog distribution functions
+#' @title Fitting the metalog functions
 #' @description Functions for fitting and sampling from metalog distribution
 #' @details
 #' `fit_metalog` is for fitting the metalog function to the set of QP values.
 #' Number of metalog terms will match the number of QP pairs.
 #' `approx_metalog` is for approximating metalog function to the set of data.
-#' `qmetalog` is a quantile function.
-#' `fmetalog` is a quantile density function q(u). The reciprocal of it is density quantile function f(Q(p)).
-#' `pmetalog` is an approximation of the cumulative density function.
-#' `rmetalog` is an RNG.
 #' `is_metalog_valid` is a function for checking if the metalog is valid
-#'
+#' @param a vector of `a`-coefficient parameters of metalog distribution
 #' @param p vector of cumulative probabilities corresponding to quantile values
 #' @param q vector of quantile values (data)
 #' @param bl real value of lower boundary (for bounded metalog). Default NULL
 #' @param bu real value of upper boundary (for bounded metalog). Default NULL
-#' @rdname metalog
+#' @rdname fit_metalog
 #' @export
 #' @examples
 #' p <- c(0.1, 0.5, 0.9)
@@ -65,7 +61,7 @@ fit_metalog <- function(p, q, bl=NULL, bu=NULL){
 #' @param thin logical. Should original data be thinned. Default is FALSE.
 #' @param thin_to integer number of quantiles to extract from data, if data vector `q` is longer than this value
 #' @param s in case data thinning is performed, probability grid shape parameter passed to `qpd::make_pgrid()`. Default is 10.
-#' @rdname metalog
+#' @rdname fit_metalog
 #' @importFrom stats quantile
 #' @export
 approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, thin=FALSE, thin_to=1000L, s=2L){
@@ -85,14 +81,23 @@ approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, thin=FALSE, thin_to=1
   ((solve(t(Y) %*% Y) %*% t(Y)) %*% z)[,1]
 }
 
+#' @title Metalog distribution functions
+#' @description Functions for sampling from metalog distribution
+#' @details
+#' `qmetalog` is a quantile function.
+#' `fmetalog` is a quantile density function q(u). The reciprocal of it is density quantile function f(Q(p)).
+#' `pmetalog` is an approximation of the cumulative density function.
+#' `rmetalog` is an RNG.
 #' @param a vector of `a`-coefficient parameters of metalog distribution
-#'
+#' @param p vector of cumulative probabilities corresponding to quantile values
+#' @param bl real value of lower boundary (for bounded metalog). Default NULL
+#' @param bu real value of upper boundary (for bounded metalog). Default NULL
 #' @rdname metalog
 #' @export
 #' @examples
 #' a <- c(9,  1.8, -1.13)
+#' p <- c(0.1, 0.5, 0.9)
 #' qmetalog(p, a)
-#' @importFrom stats qlogis
 qmetalog <- function(p, a, bl=NULL, bu=NULL){
   n <- length(a)
   res <- a[1]
@@ -125,7 +130,6 @@ qmetalog <- function(p, a, bl=NULL, bu=NULL){
 #' @export
 #' @examples
 #' fmetalog(p, a)
-#' @importFrom stats qlogis
 fmetalog <- function(p, a, bl=NULL, bu=NULL){
   n <- length(a)
   pt1mp <- p*(1-p)
@@ -191,8 +195,9 @@ rmetalog <- function(n, a, bl=NULL, bu=NULL){
   qmetalog(stats::runif(n), a, bl,bu)
 }
 
-#' @rdname metalog
+#' @rdname fit_metalog
 #' @examples
+#' a <- c(9,  1.8, -1.13)
 #' is_metalog_valid(a)
 #' @export
 is_metalog_valid <- function(a, bl=NULL, bu=NULL){

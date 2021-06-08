@@ -43,15 +43,17 @@ metalog_prepare_Y <- function(p, n, nterms){
 #' @param q vector of quantile values (data)
 #' @param bl real value of lower boundary (for bounded metalog). Default NULL
 #' @param bu real value of upper boundary (for bounded metalog). Default NULL
+#' @param log.p are probabilities provided on log scale. Default FALSE
 #' @rdname fit_metalog
 #' @export
 #' @examples
 #' p <- c(0.1, 0.5, 0.9)
 #' q <- c(4, 9, 12)
 #' fit_metalog(p,q)
-fit_metalog <- function(p, q, bl=NULL, bu=NULL){
+fit_metalog <- function(p, q, bl=NULL, bu=NULL, log.p=FALSE){
   n <- length(q)
   if(length(p)!=n) stop("Length of p and q must be equal")
+  if(log.p) p <- exp(p)
   z <- metalog_prepare_z(q, bl, bu)
   Y <- metalog_prepare_Y(p, n, n)
   solve(Y, z)
@@ -85,21 +87,25 @@ approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, thin=FALSE, thin_to=1
 #' @description Functions for sampling from metalog distribution
 #' @details
 #' `qmetalog` is a quantile function.
-#' `fmetalog` is a quantile density function q(u). The reciprocal of it is density quantile function f(Q(p)).
+#' `fmetalog` is a quantile density function q(u).
+#' `dqmetalog` is the reciprocal of it is density quantile function f(Q(p)).
 #' `pmetalog` is an approximation of the cumulative density function.
 #' `rmetalog` is an RNG.
 #' @param a vector of `a`-coefficient parameters of metalog distribution
 #' @param p vector of cumulative probabilities corresponding to quantile values
 #' @param bl real value of lower boundary (for bounded metalog). Default NULL
 #' @param bu real value of upper boundary (for bounded metalog). Default NULL
+#' @param log.p are probabilities provided on log scale. Default FALSE
+#' @param log should the log density be returned. Default FALSE
 #' @rdname metalog
 #' @export
 #' @examples
 #' a <- c(9,  1.8, -1.13)
 #' p <- c(0.1, 0.5, 0.9)
 #' qmetalog(p, a)
-qmetalog <- function(p, a, bl=NULL, bu=NULL){
+qmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE){
   n <- length(a)
+  if(log.p) p <- exp(p)
   res <- a[1]
   logitp <- log(p/(1-p)) #stats::qlogis(p) #log(p/(1-p))
   pmhalf <- p-0.5
@@ -130,8 +136,9 @@ qmetalog <- function(p, a, bl=NULL, bu=NULL){
 #' @export
 #' @examples
 #' fmetalog(p, a)
-fmetalog <- function(p, a, bl=NULL, bu=NULL){
+fmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE, log=FALSE){
   n <- length(a)
+  if(log.p) p <- exp(p)
   pt1mp <- p*(1-p)
   logitp <- log(p/(1-p)) #stats::qlogis(p) #log(p/(1-p))
   pmhalf <- p-0.5
@@ -149,12 +156,22 @@ fmetalog <- function(p, a, bl=NULL, bu=NULL){
     }
     odd=isFALSE(odd)
    }
-  if(is.null(bl) && is.null(bu)) return(res)
+  if(is.null(bl) && is.null(bu)){if(log) return(log(res)) else return(res)}
   eQm <- exp(qmetalog(p,a))
-  if(is.null(bu)) return(ifelse(p==0, 0, (res*eQm)))# bl is defined
-  if(is.null(bl)) return(ifelse(p==1, 0, (res/eQm)))# bu is defined
+  if(is.null(bu)) {res <- ifelse(p==0, 0, (res*eQm)); if(log) return(log(res)) else return(res)}# bl is defined
+  if(is.null(bl)) {res <- ifelse(p==1, 0, (res/eQm)); if(log) return(log(res)) else return(res)}# bu is defined
     #both are defined, logitmetalog case
-  ifelse(p==0 | p==1, 0, res*(bu-bl)*eQm/(1+eQm)^2)
+  res <- ifelse(p==0 | p==1, 0, res*(bu-bl)*eQm/(1+eQm)^2)
+  if(log) return(log(res)) else return(res)
+}
+
+#' @rdname metalog
+#' @export
+#' @examples
+#' dqmetalog(p, a)
+dqmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE, log=FALSE){
+  if(log) return(log(1/exp(fmetalog(p,a,bl, bu, log.p, log))))
+  1/fmetalog(p,a,bl, bu, log.p, log)
 }
 
 #' @param x real vector of values
@@ -167,20 +184,21 @@ fmetalog <- function(p, a, bl=NULL, bu=NULL){
 #' x <- c(5, 9, 14)
 #' pmetalog(x, a)
 #' @importFrom stats approx
-pmetalog <- function(x, a, bl=NULL, bu=NULL, tol=1e-6, maxiter=1e6){
-  afun <- function(x, u, a, bl, bu, tol, maxiter){
+pmetalog <- function(x, a, bl=NULL, bu=NULL, tol=1e-6, maxiter=1e6, log.p=FALSE){
+  afun <- function(x, u, a, bl, bu, tol, maxiter, log.p){
     i <- 1
-    while(abs(x-qmetalog(u,a,bl,bu))>tol && i <= maxiter){
-      u=u+(x-qmetalog(u,a,bl,bu))/fmetalog(u,a,bl,bu)
+    while(abs(x-qmetalog(u,a,bl,bu,log.p))>tol && i <= maxiter){
+      u=u+(x-qmetalog(u,a,bl,bu,log.p))/fmetalog(u,a,bl,bu,log.p)
       i<-i+1
     }
     u
   }
   p_grd <- make_pgrid(500, 25, trim=TRUE)
-  q_grd <- qmetalog(p_grd, a, bl, bu)
+  if(log.p) p_grd <- log(p_grd)
+  q_grd <- qmetalog(p_grd, a, bl, bu, log.p)
   is_ok <- !is.na(q_grd)
   p_guess <- stats::approx(q_grd[is_ok], p_grd[is_ok], x, ties = "ordered")[["y"]]
-  mapply(afun, x, p_guess, MoreArgs = list(a=a, tol=tol, bl=bl, bu=bu, maxiter=maxiter))
+  mapply(afun, x, p_guess, MoreArgs = list(a=a, tol=tol, bl=bl, bu=bu, maxiter=maxiter, log.p))
 }
 
 #' @param n integer value correponding to number of samples to draw

@@ -3,15 +3,26 @@
 \name{qmetalog}
 \alias{qmetalog}
 \alias{fmetalog}
+\alias{dqmetalog}
 \alias{pmetalog}
 \alias{rmetalog}
 \title{Metalog distribution functions}
 \usage{
-qmetalog(p, a, bl = NULL, bu = NULL)
+qmetalog(p, a, bl = NULL, bu = NULL, log.p = FALSE)
 
-fmetalog(p, a, bl = NULL, bu = NULL)
+fmetalog(p, a, bl = NULL, bu = NULL, log.p = FALSE, log = FALSE)
 
-pmetalog(x, a, bl = NULL, bu = NULL, tol = 1e-06, maxiter = 1e+06)
+dqmetalog(p, a, bl = NULL, bu = NULL, log.p = FALSE, log = FALSE)
+
+pmetalog(
+  x,
+  a,
+  bl = NULL,
+  bu = NULL,
+  tol = 1e-06,
+  maxiter = 1e+06,
+  log.p = FALSE
+)
 
 rmetalog(n, a, bl = NULL, bu = NULL)
 }
@@ -23,6 +34,10 @@ rmetalog(n, a, bl = NULL, bu = NULL)
 \item{bl}{real value of lower boundary (for bounded metalog). Default NULL}
 
 \item{bu}{real value of upper boundary (for bounded metalog). Default NULL}
+
+\item{log.p}{are probabilities provided on log scale. Default FALSE}
+
+\item{log}{should the log density be returned. Default FALSE}
 
 \item{x}{real vector of values}
 
@@ -37,7 +52,8 @@ Functions for sampling from metalog distribution
 }
 \details{
 \code{qmetalog} is a quantile function.
-\code{fmetalog} is a quantile density function q(u). The reciprocal of it is density quantile function f(Q(p)).
+\code{fmetalog} is a quantile density function q(u).
+\code{dqmetalog} is the reciprocal of it is density quantile function f(Q(p)).
 \code{pmetalog} is an approximation of the cumulative density function.
 \code{rmetalog} is an RNG.
 }
@@ -46,6 +62,7 @@ a <- c(9,  1.8, -1.13)
 p <- c(0.1, 0.5, 0.9)
 qmetalog(p, a)
 fmetalog(p, a)
+dqmetalog(p, a)
 x <- c(5, 9, 14)
 pmetalog(x, a)
 a <- c(2.4, 0.4, -0.08)

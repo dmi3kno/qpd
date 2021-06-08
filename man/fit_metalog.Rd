@@ -6,7 +6,7 @@
 \alias{is_metalog_valid}
 \title{Fitting the metalog functions}
 \usage{
-fit_metalog(p, q, bl = NULL, bu = NULL)
+fit_metalog(p, q, bl = NULL, bu = NULL, log.p = FALSE)
 
 approx_metalog(
   q,
@@ -28,6 +28,8 @@ is_metalog_valid(a, bl = NULL, bu = NULL)
 \item{bl}{real value of lower boundary (for bounded metalog). Default NULL}
 
 \item{bu}{real value of upper boundary (for bounded metalog). Default NULL}
+
+\item{log.p}{are probabilities provided on log scale. Default FALSE}
 
 \item{nterms}{integer number of terms for approximating metalog. Default is 3}
 

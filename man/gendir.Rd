@@ -5,7 +5,7 @@
 \alias{rgendir}
 \title{Generalized Dirichlet (Connor-Mosimann) distribution}
 \usage{
-dgendir(x, a, b)
+dgendir(x, a, b, log = FALSE)
 
 rgendir(n, a, b)
 }
@@ -15,6 +15,8 @@ rgendir(n, a, b)
 \item{a}{parameter vector a of length n-1}
 
 \item{b}{parameter vector b of length n-1}
+
+\item{log}{logical indicating whether log density should be returned instead. Default FALSE}
 
 \item{n}{number of observations to draw}
 }

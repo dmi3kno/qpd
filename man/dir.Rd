@@ -7,7 +7,7 @@
 \usage{
 rdir(n, k)
 
-ddir(x, k)
+ddir(x, k, log = FALSE)
 }
 \arguments{
 \item{n}{number of observations to draw from the Dirichlet distribution}
@@ -15,6 +15,8 @@ ddir(x, k)
 \item{k}{vector of parameters}
 
 \item{x}{matrix \code{n*m} of \code{n} (rows) simplices of dimension \code{m} (columns)}
+
+\item{log}{logical indicating whether log density should be returned instead. Default FALSE}
 }
 \value{
 returns a matrix of samples from the Dirichlet distribution

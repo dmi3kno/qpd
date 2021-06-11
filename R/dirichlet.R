@@ -3,6 +3,7 @@
 #' @param x simplex vector x of length n
 #' @param a parameter vector a of length n-1
 #' @param b parameter vector b of length n-1
+#' @param log logical indicating whether log density should be returned instead. Default FALSE
 #' @rdname gendir
 #'
 #' @export
@@ -12,7 +13,7 @@
 #' a <- c(4.6, 6.7, 1.32)
 #' b <- c(39.4, 7.77, 5.10)
 #' dgendir(x,a,b)
-dgendir <- function(x, a, b){
+dgendir <- function(x, a, b, log=FALSE){
   if(!inherits(x, "matrix"))
     x <- matrix(x, 1, length(x))
   k <- ncol(x)-1 # length of simplex
@@ -20,6 +21,7 @@ dgendir <- function(x, a, b){
   for (i in 1:(k-1))
     res <- res * x[,i]^(a[i]-1)*(1-rowSums(x[, 1:i, drop=FALSE]))^(b[i]-a[i+1]-b[i+1])/beta(a[i], b[i])
   res <- res * x[,k]^(a[k]-1)*(1-rowSums(x[,1:k, drop=FALSE])^(b[k]-1))/beta(a[k],b[k])
+  if(log) return(log(res))
   res
 }
 
@@ -73,6 +75,7 @@ rdir <- function(n,k) {
 #' Title
 #'
 #' @param x matrix `n*m` of `n` (rows) simplices of dimension `m` (columns)
+#' @param log logical indicating whether log density should be returned instead. Default FALSE
 #'
 #' @rdname dir
 #' @export
@@ -80,10 +83,12 @@ rdir <- function(n,k) {
 #' @examples
 #' x <- rdir(5, k)
 #' ddir(x, k)
-ddir <- function(x, k){
+ddir <- function(x, k, log=FALSE){
   stopifnot(ncol(x)==length(k))
   bk <- prod(gamma(k))/gamma(sum(k))
-  apply(x, 1, function(xx) prod(xx^(k-1))/bk)
+  res <- apply(x, 1, function(xx) prod(xx^(k-1))/bk)
+  if(log) return(log(res))
+  res
 }
 
 

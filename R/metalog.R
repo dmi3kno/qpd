@@ -219,6 +219,6 @@ rmetalog <- function(n, a, bl=NULL, bu=NULL){
 #' is_metalog_valid(a)
 #' @export
 is_metalog_valid <- function(a, bl=NULL, bu=NULL){
- grd <- seq(1e-15, 1-1e-15, by=0.001)
+ grd <- make_tgrid()
  all(fmetalog(grd, a, bl, bu)>0)
 }

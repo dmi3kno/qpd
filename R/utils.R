@@ -2,15 +2,6 @@
 #' @keywords  internal
 is.odd <- function(x){round(x,0) %% 2 != 0}
 
-#' internal function for making a scaled equispaced, non-bounded grid
-#' @param f from value
-#' @param t to value
-#' @param n number of equispaced values
-#' @keywords  internal
-seq_grid <- function(f, t, n){
-  f+(t-f)*(seq_len(n)-0.5)/n
-}
-
 #' internal function for splitting the integer value into a homogenous vector
 #' @param x integer value to split
 #' @param d integer divisor
@@ -21,54 +12,45 @@ split_int <- function(x, d){
     c(rep(1, x%%d), rep(0, d-x%%d))
 }
 
-
-#' Make probability grid
-#' @description Functions for creating a probability grid using different method
-#' `make_pgrid` uses beta-distribution method
-#' `make_tgrid` uses tiered linear method
-#'
-#' @param n integer length of the grid. Default is 50
-#' @param s beta distribution shape parameter, passed to both `shape1` and `shape2` of `pbeta()`. For uniform grid choose 1. Default is 5.
-#' @param trim logical, should the 0 and 1 (tails of the grid) be trimmed. Default is `TRUE`
-#'
-#' @return probability grid vector of length n
-#' @rdname make_grid
-#' @export
-#'
-#' @examples
-#' make_pgrid(100)
-#' make_pgrid(100, 1, FALSE) #uniform grid including 0 and 1
-#' @importFrom utils head tail
-#' @importFrom stats pbeta
-make_pgrid <- function(n=50L, s=5L, trim=TRUE){
-  if(trim) n <- n + 2L
-  x<- seq(0, 1, length.out=n)
-  res <- stats::pbeta(x, s, s)
-  if(trim) return(utils::tail(utils::head(res, -1),-1))
-  res
+#' internal function for hyperbolic secant borrowed from {pracma}
+#' @param x numeric vector
+#' @return vector of hyperbolic secants
+#' @keywords  internal
+sech <- function(x){
+  stopifnot(is.numeric(x) || is.complex(x))
+  1 / cosh(x)  # 2 / (exp(x) + exp(-x))
 }
 
-#' @param tier integer number of tiers in the linear grid. Each tier contains `tail` share of the previous tier. Default is 3.
-#' @param tail real number representing share of grid in each tier
+#' Diagonal matrix with offset
 #'
-#' @rdname make_grid
-#' @export
+#' @param x a matrix, vector or 1D array, or missing.
+#' @param nrow,ncol optional dimensions for the result when x is not a matrix.
+#' @param names (when x is a matrix) logical indicating if the resulting vector,
+#' the diagonal of x, should inherit names from dimnames(x) if available.
+#' @param offset an integer value to offset the diagonal by. Default is 1
 #'
-#' @examples
-#' make_tgrid(100,3,0.1)
+#' @return a square matrix
 #' @importFrom utils head tail
-#' @importFrom stats pbeta
-make_tgrid <- function(n=50L, tier=3L, tail=0.1){
-  from <- 0
-  nn <- split_int(n%/%2, tier)
-  res <- vector(mode="list", length = tier)
-  for(i in rev(seq_len(tier))){
-    a <- seq_grid(from, min(tail^(i-1),0.5), nn[i])
-    from <- tail^i
-    res[[i]] <- c(a, 1-a)
+#' @export
+diago <- function(x=1, nrow=NA, ncol=NA, names=TRUE, offset = 1L){
+  if(is.na(nrow) && is.na(ncol))
+    nrow <- ncol <- length(x)
+  m <- diag(x, nrow, ncol, names)
+  if(offset==0) return(m)
+  nr  <- nrow(m)
+  nc <- ncol(m)
+  col_idx <- seq(nc)
+  ma <- matrix(rep(0, times=nr*abs(offset)), nrow=nr)
+  pre <- post<- NULL
+  if(offset>0) {
+    pre <- ma
+    s_col_idx <- utils::head(col_idx,-offset)
+  } else {
+    post <-ma
+    s_col_idx <- utils::tail(col_idx,offset)
   }
-  if(is.odd(n)) {res <- c(0.5, res) }
-  sort(unlist(res))
+
+  cbind(pre,
+        m[, s_col_idx],
+        post)
 }
-
-

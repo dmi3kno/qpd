@@ -5,12 +5,12 @@
 \alias{ab_to_m11}
 \title{Transform values from any interval to [-1, 1] and back}
 \usage{
-m11_to_ab(z, interval = c(0, 1))
+m11_to_ab(z, from = 0, to = 1)
 
-ab_to_m11(x, interval = c(0, 1))
+ab_to_m11(x, from = 0, to = 1)
 }
 \arguments{
-\item{interval}{vector of length 2 indicating the interval to which x values belong. Default is c(0,1)}
+\item{from, to}{the interval(s) to which x values belong. Defaults are from=0,to=1}
 
 \item{x, z}{vector of values on regular and [-1,1] scale, respectively}
 }

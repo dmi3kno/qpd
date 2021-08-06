@@ -30,7 +30,7 @@ pgnh(
   maxiter = 1000
 )
 
-is_gnh_valid(A, B, C = 0.8, g, h)
+is_gnh_valid(A, B, C = 0.8, g, h, n_grid = 100L, s_grid = 2L)
 }
 \arguments{
 \item{p}{numeric vector of probabilities}

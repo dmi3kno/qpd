@@ -19,7 +19,7 @@ rgld(n, l1, l2, l3, l4)
 
 pgld(q, l1, l2, l3, l4, n_grid = 50L, s_grid = 5L, tol = 1e-15, maxiter = 1000)
 
-is_gld_valid(l1, l2, l3, l4)
+is_gld_valid(l1, l2, l3, l4, n_grid = 100L, s_grid = 2L)
 }
 \arguments{
 \item{u}{numeric vector of probabilities}

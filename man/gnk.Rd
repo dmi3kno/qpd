@@ -7,7 +7,6 @@
 \alias{rgnk}
 \alias{pgnk}
 \alias{is_gnk_valid}
-\alias{is_gnk_valid_u}
 \title{Functions for g-and-k distribution}
 \usage{
 qgnk(p, A, B, C = 0.8, g, k, zscale = FALSE)
@@ -32,9 +31,7 @@ pgnk(
   zscale = FALSE
 )
 
-is_gnk_valid(A, B, C = 0.8, g, k)
-
-is_gnk_valid_u(A, B, C = 0.8, g, k, maxiter = 100L)
+is_gnk_valid(A, B, C = 0.8, g, k, n_grid = 100L, s_grid = 2L)
 }
 \arguments{
 \item{p}{numeric vector of probabilities}
@@ -67,12 +64,12 @@ is_gnk_valid_u(A, B, C = 0.8, g, k, maxiter = 100L)
 }
 \value{
 vector of quantiles for g-and-k distribution
-
-vector of quantiles for g-and-h distribution
 }
 \description{
 Functions for g-and-k distribution
 }
 \examples{
 qgnk(0.1, 3,1,0.8, 2,0.5)
+is_gnk_valid(A=5, B=5, C=0.8, g=0.5, k=-0.3) #FALSE
+is_gnk_valid(A=5, B=5, C=0.8, g=0.5, k=-0.1) #TRUE
 }

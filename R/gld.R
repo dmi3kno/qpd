@@ -71,8 +71,8 @@ pgld <- function(q, l1, l2, l3, l4, n_grid=50L, s_grid=5L, tol=1e-15, maxiter=1e
 
 #' @export
 #' @rdname gld
-is_gld_valid <- function(l1, l2, l3, l4){
-  grd <- make_tgrid()
+is_gld_valid <- function(l1, l2, l3, l4, n_grid=100L, s_grid=2L){
+  grd <- make_pgrid(n_grid, s_grid)
   all(fgld(grd, l1,l2,l3,l4)>0)
 }
 

@@ -7,20 +7,20 @@
 \alias{fasteval_chebyshev_poly}
 \title{Approximate a function by Chebyshev polynomials and find proxy roots}
 \usage{
-get_chebyshev_coeffs(fun, interval = c(0, 1), n, ..., adjusted = FALSE)
+get_chebyshev_coeffs(fun, n, from = 0, to = 1, ..., adjusted = FALSE)
 
-find_chebyshev_roots(a, interval = c(0, 1))
+find_chebyshev_roots(a, from = 0, to = 1)
 
-eval_chebyshev_poly(a, x, interval = c(0, 1))
+eval_chebyshev_poly(a, x, from = 0, to = 1)
 
-fasteval_chebyshev_poly(a, x, interval = c(0, 1))
+fasteval_chebyshev_poly(a, x, from = 0, to = 1)
 }
 \arguments{
 \item{fun}{function to evaluate}
 
-\item{interval}{interval for input argument}
-
 \item{n}{degree of Chebyshev polynomial}
+
+\item{from, to}{the interval for the input argument}
 
 \item{...}{other arguments passed to a function}
 

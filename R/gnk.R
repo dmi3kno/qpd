@@ -23,7 +23,6 @@ qgnk <- function(p,A,B,C=0.8,g,k, zscale=FALSE){
 
 #' @param log logical should the result be returned as log(). Default is FALSE
 #'
-#' @return vector of quantiles for g-and-h distribution
 #' @rdname gnk
 #' @export
 #'
@@ -86,17 +85,12 @@ pgnk <- function(q, A,B,C=0.8, g, k, n_grid=100L, s_grid=5L, tol=1e-15, maxiter=
 #' @export
 #' @rdname gnk
 #' @importFrom stats uniroot
-is_gnk_valid <- function(A, B, C=0.8, g, k){
-  res <- stats::optimize(fgnk, interval=c(0, 1), A=A, B=B, C=C, g=g, k=k, maximum=FALSE)
-  res$objective>0
+#' @examples
+#' is_gnk_valid(A=5, B=5, C=0.8, g=0.5, k=-0.3) #FALSE
+#' is_gnk_valid(A=5, B=5, C=0.8, g=0.5, k=-0.1) #TRUE
+is_gnk_valid <- function(A, B, C=0.8, g, k, n_grid=100L, s_grid=2L){
+  grd <- make_pgrid(n_grid, s_grid)
+  all(fgnk(grd, A, B, C, g, k, zscale = FALSE)>0)
 }
 
-#' @export
-#' @rdname gnk
-is_gnk_valid_u <- function(A, B, C=0.8, g, k, maxiter=100L){
-  mtol <- .Machine$double.eps
-  res <- try(uniroot(fgnk, interval=c(mtol, 1-mtol), A=A, B=B, C=C, g=g, k=k,
-                 extendInt = "no", maxiter = maxiter))
-  isFALSE(inherits(res, "try-error"))
-}
 

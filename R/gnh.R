@@ -87,8 +87,10 @@ pgnh <- function(q, A,B,C=0.8, g,h, n_grid=100L, s_grid=5L, tol=1e-15, maxiter=1
 
 #' @export
 #' @rdname gnh
-is_gnh_valid <- function(A, B, C=0.8, g, h){
-  grd <- make_tgrid()
+#' @example
+#' is_gnh_valid(A=5, B=5, C=0.8, g=0.5, h=0.5)
+is_gnh_valid <- function(A, B, C=0.8, g, h, n_grid=100L, s_grid=2L){
+  grd <- make_pgrid(n_grid, s_grid)
   all(fgnh(grd, A, B, C, g, h)>0)
 }
 

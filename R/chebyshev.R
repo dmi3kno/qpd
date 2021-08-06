@@ -116,9 +116,6 @@ check_roots <- function(fun, ..., n=13, interval=c(0,1), parts=10, s=1){
 #' @rdname chebyshev
 eval_chebyshev_poly <- function(a, x, from=0, to=1){
   stopifnot(length(from)==1 && length(to)==1 && to>from)
-  # n is up-to and including
-  # evaluate at value x
-  stopifnot(is.numeric(n) & n>0 & n%%1==0)
   # remap vector to [-1,1] space
   z <- ab_to_m11(x, from=from, to=to)
   N <- length(a) # order of polynomial

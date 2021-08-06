@@ -71,4 +71,5 @@ Functions for g-and-h distribution
 }
 \examples{
 qgnh(0.1, 3,1,0.8, 2,0.5)
+is_gnh_valid(A=5, B=5, C=0.8, g=0.5, h=0.5)
 }

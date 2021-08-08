@@ -160,8 +160,8 @@ fasteval_chebyshev_poly <- function(a, x, from=0, to=1){
 is_qdf_valid <- function(fun, ..., n=13L, parts=10, s=1){
   rs <- check_roots(fun, n=n, parts=parts, interval=c(0,1), s=s, ...)
   if(length(rs)==0) return(TRUE)
-  n2 <- min(length(rs),2)
-  mid <- stats::na.omit(stats::filter(rs, rep(1, n2), sides=1)/n2)
+  if(length(rs)==1) rs <- c(0, rs, 1)
+  mid <- stats::na.omit(stats::filter(rs, rep(1, 2), sides=1)/2)
   vals <- fun(mid, ...)
   all(vals>0)
 }

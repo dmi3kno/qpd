@@ -11,21 +11,21 @@
 \alias{ffwakeby}
 \title{Wakeby distribution}
 \usage{
-qwakeby(u, alpha, beta, gamma, sigma, epsilon)
+qwakeby(u, alpha, beta, gamma, delta, xi)
 
-fwakeby(u, alpha, beta, gamma, sigma, epsilon, log = FALSE)
+fwakeby(u, alpha, beta, gamma, delta, xi, log = FALSE)
 
-dqwakeby(u, alpha, beta, gamma, sigma, epsilon, log = FALSE)
+dqwakeby(u, alpha, beta, gamma, delta, xi, log = FALSE)
 
-rwakeby(n, alpha, beta, gamma, sigma, epsilon)
+rwakeby(n, alpha, beta, gamma, delta, xi)
 
 pwakeby(
   q,
   alpha,
   beta,
   gamma,
-  sigma,
-  epsilon,
+  delta,
+  xi,
   n_grid = 50L,
   s_grid = 5L,
   tol = 1e-15,
@@ -37,8 +37,8 @@ dwakeby(
   alpha,
   beta,
   gamma,
-  sigma,
-  epsilon,
+  delta,
+  xi,
   n_grid = 50L,
   s_grid = 5L,
   tol = 1e-15,
@@ -46,9 +46,9 @@ dwakeby(
   log = FALSE
 )
 
-is_wakeby_valid(alpha, beta, gamma, sigma, epsilon, n_grid = 50L, s_grid = 5L)
+is_wakeby_valid(alpha, beta, gamma, delta, xi, n_grid = 50L, s_grid = 5L)
 
-ffwakeby(u, alpha, beta, gamma, sigma, epsilon)
+ffwakeby(u, alpha, beta, gamma, delta, xi)
 }
 \arguments{
 \item{u}{numeric vector of probabilities}
@@ -59,9 +59,9 @@ ffwakeby(u, alpha, beta, gamma, sigma, epsilon)
 
 \item{gamma}{Wakeby scale parameter \eqn{\gamma}}
 
-\item{sigma}{Wakeby shape parameter \eqn{\sigma}}
+\item{delta}{Wakeby shape parameter \eqn{\delta}}
 
-\item{epsilon}{Wakeby location parameter \eqn{\epsilon}}
+\item{xi}{Wakeby location parameter \eqn{\xi}}
 
 \item{log}{should the log density be returned}
 
@@ -86,7 +86,7 @@ quantiles, QDF, DQF, random samples or probabilities of Wakeby disribution
 Wakeby distribution
 }
 \details{
-Support \eqn{\epsilon} to \eqn{\infty} if  \eqn{\sigma \geq 0, \gamma>0} or \eqn{\epsilon} to \eqn{\epsilon+(\alpha/\beta)-(\gamma/\sigma)} otherwise.
+Support \eqn{\xi} to \eqn{\infty} if  \eqn{\delta \geq 0, \gamma>0} or \eqn{\xi} to \eqn{\xi+(\alpha/\beta)-(\gamma/\delta)} otherwise.
 }
 \examples{
 p_grd <- make_pgrid()
@@ -96,4 +96,5 @@ dq_grd <- dqwakeby(p_grd, 5, 3, 0.1, 0.2, 0)
 d_grd <- dwakeby(q_grd,5, 3, 0.1, 0.2, 0)
 plot(q_grd,dq_grd, type="l", lwd=1, lty=2)
 lines(q_grd,d_grd, col="firebrick")
+is_wakeby_valid(10,5,1,0.3,0)
 }

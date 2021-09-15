@@ -174,9 +174,12 @@ dqmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE, log=FALSE){
   1/fmetalog(p,a,bl, bu, log.p, log)
 }
 
-#' @param x real vector of values
+#' @param q real vector of values
+#' @param n_grid integer size of helper grid to be passed to `make_pgrid`. Default is 50
+#' @param s_grid integer beta shape of helper grid to be passed to `make_pgrid`. Default is 5
 #' @param tol tolerance value, default is 1e-6
 #' @param maxiter maximum number of iterations for approximation, default is 1e6
+#' @param log.p should log probability be returned
 #' @rdname metalog
 #' @export
 #'
@@ -184,21 +187,27 @@ dqmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE, log=FALSE){
 #' x <- c(5, 9, 14)
 #' pmetalog(x, a)
 #' @importFrom stats approx
-pmetalog <- function(x, a, bl=NULL, bu=NULL, tol=1e-6, maxiter=1e6, log.p=FALSE){
-  afun <- function(x, u, a, bl, bu, tol, maxiter, log.p){
-    i <- 1
-    while(abs(x-qmetalog(u,a,bl,bu,log.p))>tol && i <= maxiter){
-      u=u+(x-qmetalog(u,a,bl,bu,log.p))/fmetalog(u,a,bl,bu,log.p)
-      i<-i+1
-    }
-    u
-  }
-  p_grd <- make_pgrid(500, 25, trim=TRUE)
-  if(log.p) p_grd <- log(p_grd)
-  q_grd <- qmetalog(p_grd, a, bl, bu, log.p)
-  is_ok <- !is.na(q_grd)
-  p_guess <- stats::approx(q_grd[is_ok], p_grd[is_ok], x, ties = "ordered")[["y"]]
-  mapply(afun, x, p_guess, MoreArgs = list(a=a, tol=tol, bl=bl, bu=bu, maxiter=maxiter, log.p))
+
+pmetalog <- function(q, a, bl=NULL, bu=NULL, n_grid=50L, s_grid=2L, tol=1e-15, maxiter=1e3, log.p=FALSE){
+
+  afun <- function(u, q, a, bl, bu) {q - qmetalog(u, a, bl, bu)}
+  p_grd <- sort(c(tol, qpd::make_pgrid(n=n_grid, s=s_grid), 1-tol))
+  q_grd <- qmetalog(p_grd, a, bl, bu)
+  idx_lower <- findInterval(q, q_grd, all.inside = TRUE)
+  idx_upper <- idx_lower+1L
+  int_lower <- p_grd[idx_lower]
+  int_upper <- p_grd[idx_upper]
+  ps <- mapply(function(.q, .il, .iu) {
+    tmp_us <- NULL
+    tmp_us <- stats::uniroot(afun, q=.q, a=a, bl=bl, bu=bu,
+                             interval=c(.il, .iu), extendInt="no", check.conv=TRUE, tol = tol, maxiter = maxiter)
+    if(is.null(tmp_us)) res <- NA else res <- tmp_us$root
+    #tmp_ps
+  },  q, int_lower, int_upper)
+  ps <- pmin(1, pmax(0, ps))
+
+  ps[!is.finite(ps)] <- NA
+  if(log.p) return(log(ps)) else return(ps)
 }
 
 #' @param n integer value correponding to number of samples to draw

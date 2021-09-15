@@ -15,7 +15,7 @@
 #' @examples
 #' qgnh(0.1, 3,1,0.8, 2,0.5)
 qgnh <- function(p,A,B,C=0.8,g,h, zscale=FALSE){
-  stopifnot(B>0 & h>=0)
+  stopifnot(B>0 && h>=0)
   if(zscale){z <-p} else {z <- qnorm(p)}
   res <- A+B*(1+C*tanh(g*z/2))*z*exp(h*z^2/2)
   res
@@ -28,7 +28,7 @@ qgnh <- function(p,A,B,C=0.8,g,h, zscale=FALSE){
 #' @export
 fgnh <- function(p,A,B,C=0.8,g,h, log=FALSE, zscale=FALSE){
   # from gk paper
-  stopifnot(B>0 & h>=0)
+  stopifnot(B>0 && h>=0)
   if(zscale){z <-p} else {z <- qnorm(p)}
   dQdz <- B*exp(h/2*z^2)*((1+C*tanh(g*z/2))*(1+h*z^2)+C*g*z/(2*cosh(g*z/2)^2))
   res <- dQdz*fnorm(p)
@@ -39,7 +39,7 @@ fgnh <- function(p,A,B,C=0.8,g,h, log=FALSE, zscale=FALSE){
 #' @rdname gnh
 #' @export
 dqgnh <- function(p,A,B,C=0.8,g,h, log=FALSE, zscale=FALSE){
-  stopifnot(B>0 & h>=0)
+  stopifnot(B>0 && h>=0)
   res <- fgnh(p, A,B, C, g, h, log=FALSE, zscale)
   if (log) return(log(1/res))
   1/res
@@ -61,7 +61,7 @@ rgnh <- function(n,A,B,C=0.8,g,h){
 #' @importFrom stats pnorm qnorm uniroot
 pgnh <- function(q, A,B,C=0.8, g,h, n_grid=100L, s_grid=5L, tol=1e-15, maxiter=1e3){
   afun <- function(z, q, A,B, C, g, h) {q - qgnh(z,A,B,C,g,h, zscale=TRUE)}
-  stopifnot(B>0 & h>=0)
+  stopifnot(B>0 && h>=0)
   mtol <- .Machine$double.eps
   p_grd <- make_pgrid(n=n_grid, s=s_grid)
   q_grd <- qgnh(p_grd, A,B,C, g,h, zscale=FALSE)

@@ -33,7 +33,7 @@ expect_equal(round(dqmetalog(0.12, ab, 0, 50),4), 0.0664)
 expect_equal(round(pmetalog(7.11, a),4), 0.3501)
 expect_equal(round(pmetalog(7.11, a, log.p = TRUE),4), -1.0496)
 expect_equal(round(pmetalog(7.11, al,0),4), 0.3452)
-expect_equal(round(pmetalog(0.2, al,0, maxiter=1e4, log.p = TRUE),4), -10.3057)
+expect_equal(round(pmetalog(0.2, al, 0, maxiter=1e4, log.p = TRUE),4), -10.3052)
 expect_equal(round(pmetalog(7.11, au, bu=50),4), 0.3585)
 expect_equal(round(pmetalog(7.11, ab, 0, 50),4), 0.3472)
 

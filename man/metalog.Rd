@@ -15,12 +15,14 @@ fmetalog(p, a, bl = NULL, bu = NULL, log.p = FALSE, log = FALSE)
 dqmetalog(p, a, bl = NULL, bu = NULL, log.p = FALSE, log = FALSE)
 
 pmetalog(
-  x,
+  q,
   a,
   bl = NULL,
   bu = NULL,
-  tol = 1e-06,
-  maxiter = 1e+06,
+  n_grid = 50L,
+  s_grid = 2L,
+  tol = 1e-15,
+  maxiter = 1000,
   log.p = FALSE
 )
 
@@ -35,11 +37,15 @@ rmetalog(n, a, bl = NULL, bu = NULL)
 
 \item{bu}{real value of upper boundary (for bounded metalog). Default NULL}
 
-\item{log.p}{are probabilities provided on log scale. Default FALSE}
+\item{log.p}{should log probability be returned}
 
 \item{log}{should the log density be returned. Default FALSE}
 
-\item{x}{real vector of values}
+\item{q}{real vector of values}
+
+\item{n_grid}{integer size of helper grid to be passed to \code{make_pgrid}. Default is 50}
+
+\item{s_grid}{integer beta shape of helper grid to be passed to \code{make_pgrid}. Default is 5}
 
 \item{tol}{tolerance value, default is 1e-6}
 

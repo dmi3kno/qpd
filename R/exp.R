@@ -12,17 +12,20 @@
 #' dqexp(0.1, 0.5)
 #' ffexp(0.1, 0.5)
 fexp <- function(u, lambda){
+  stopifnot(lambda>0)
   1/(lambda*(1-u))
 }
 
 #' @rdname exp
 #' @export
 dqexp <- function(u, lambda){
+  stopifnot(lambda>0)
   lambda*(1-u)
 }
 
 #' @rdname exp
 #' @export
 ffexp <- function(u, lambda){
+  stopifnot(lambda>0)
   1/(lambda*(1-u)^2)
 }

@@ -52,14 +52,14 @@ pgld <- function(q, l1, l2, l3, l4, n_grid=50L, s_grid=5L, tol=1e-15, maxiter=1e
   afun <- function(u, q, l1, l2, l3, l4) {q - qgld(u,l1, l2, l3, l4)}
   p_grd <- sort(c(tol, qpd::make_pgrid(n=n_grid, s=s_grid), 1-tol))
   q_grd <- qgld(p_grd, l1, l2, l3, l4)
-  idx_lower <- findInterval(q, q_grd)
+  idx_lower <- findInterval(q, q_grd, all.inside = TRUE)
   idx_upper <- idx_lower+1L
   int_lower <- p_grd[idx_lower]
   int_upper <- p_grd[idx_upper]
   ps <- mapply(function(.q, .il, .iu) {
     tmp_us <- NULL
     tmp_us <- stats::uniroot(afun, q=.q, l1=l1, l2=l2, l3=l3, l4=l4,
-                             interval=c(0,1), extendInt="no", check.conv=TRUE, tol = tol, maxiter = maxiter)
+                             interval=c(.il, .iu), extendInt="no", check.conv=TRUE, tol = tol, maxiter = maxiter)
     if(is.null(tmp_us)) res <- NA else res <- tmp_us$root
     #tmp_ps
   },  q, int_lower, int_upper)

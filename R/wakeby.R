@@ -73,14 +73,14 @@ pwakeby <- function(q, alpha, beta, gamma, delta, xi, n_grid=50L, s_grid=5L, tol
   afun <- function(u, q, alpha, beta, gamma, delta, xi) {q - qwakeby(u, alpha, beta, gamma, delta, xi)}
   p_grd <- sort(c(tol, qpd::make_pgrid(n=n_grid, s=s_grid), 1-tol))
   q_grd <- qwakeby(p_grd, alpha, beta, gamma, delta, xi)
-  idx_lower <- findInterval(q, q_grd)
+  idx_lower <- findInterval(q, q_grd, all.inside = TRUE)
   idx_upper <- idx_lower+1L
   int_lower <- p_grd[idx_lower]
   int_upper <- p_grd[idx_upper]
   ps <- mapply(function(.q, .il, .iu) {
     tmp_us <- NULL
     tmp_us <- stats::uniroot(afun, q=.q, alpha=alpha, beta=beta, gamma=gamma, delta=delta, xi=xi,
-                             interval=c(0,1), extendInt="no", check.conv=TRUE, tol = tol, maxiter = maxiter)
+                             interval=c(.il, .iu), extendInt="no", check.conv=TRUE, tol = tol, maxiter = maxiter)
     if(is.null(tmp_us)) res <- NA else res <- tmp_us$root
   },  q, int_lower, int_upper)
   ps <- pmin(1, pmax(0, ps))

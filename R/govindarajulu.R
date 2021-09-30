@@ -28,6 +28,13 @@ fgovindarajulu <- function(p, sg, bt){
   sg*bt*bp1*p^(bt-1)*(1-p)
 }
 
+#' @rdname govindarajulu
+#' @export
+dqgovindarajulu <- function(p, sg, bt){
+  stopifnot(sg>0 & bt>0)
+  1/fgovindarajulu(p, sg, bt)
+}
+
 #' @param q vector of quantiles
 #' @param tol tolerance value for optimization. Default value 1e-06
 #' @rdname govindarajulu

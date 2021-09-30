@@ -4,6 +4,7 @@
 \alias{govindarajulu}
 \alias{qgovindarajulu}
 \alias{fgovindarajulu}
+\alias{dqgovindarajulu}
 \alias{pgovindarajulu}
 \alias{dgovindarajulu}
 \title{Govindarajulu probability distribution}
@@ -11,6 +12,8 @@
 qgovindarajulu(p, sg, bt)
 
 fgovindarajulu(p, sg, bt)
+
+dqgovindarajulu(p, sg, bt)
 
 pgovindarajulu(q, sg, bt, tol = 1e-06)
 

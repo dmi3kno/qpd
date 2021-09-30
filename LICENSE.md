@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2021 qpd authors
+Copyright (c) 2021 Dmytro Perepolkin
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -13,7 +13,7 @@ seq_grid <- function(f, t, n){
 #' `make_tgrid` uses tiered linear method
 #'
 #' @param n integer length of the grid. Default is 50
-#' @param s beta distribution shape parameter, passed to both `shape1` and `shape2` of `pbeta()`. For uniform grid choose 1. Default is 5.
+#' @param s beta distribution shape parameter, passed to both `shape1` and `shape2` of `pbeta()`. For uniform grid choose 1. Default is 2.
 #' @param trim logical, should the 0 and 1 (tails of the grid) be trimmed. Default is `TRUE`
 #'
 #' @return probability grid vector of length n
@@ -25,7 +25,7 @@ seq_grid <- function(f, t, n){
 #' make_pgrid(100, 1, FALSE) #uniform grid including 0 and 1
 #' @importFrom utils head tail
 #' @importFrom stats pbeta
-make_pgrid <- function(n=50L, s=5L, trim=TRUE){
+make_pgrid <- function(n=50L, s=2L, trim=TRUE){
   if(trim) n <- n + 2L
   x<- seq(0, 1, length.out=n)
   res <- stats::pbeta(x, s, s)
@@ -34,7 +34,7 @@ make_pgrid <- function(n=50L, s=5L, trim=TRUE){
 }
 
 #' @param tier integer number of tiers in the linear grid. Each tier contains `tail` share of the previous tier. Default is 3.
-#' @param tail real number representing share of grid in each tier
+#' @param tail real number representing share of grid in each tier. Default is 0.25
 #'
 #' @rdname make_grid
 #' @export
@@ -43,7 +43,7 @@ make_pgrid <- function(n=50L, s=5L, trim=TRUE){
 #' make_tgrid(100,3,0.1)
 #' @importFrom utils head tail
 #' @importFrom stats pbeta
-make_tgrid <- function(n=50L, tier=3L, tail=0.1){
+make_tgrid <- function(n=50L, tier=3L, tail=0.25){
   from <- 0
   nn <- split_int(n%/%2, tier)
   res <- vector(mode="list", length = tier)

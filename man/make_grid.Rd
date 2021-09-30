@@ -5,20 +5,20 @@
 \alias{make_tgrid}
 \title{Make probability grid}
 \usage{
-make_pgrid(n = 50L, s = 5L, trim = TRUE)
+make_pgrid(n = 50L, s = 2L, trim = TRUE)
 
-make_tgrid(n = 50L, tier = 3L, tail = 0.1)
+make_tgrid(n = 50L, tier = 3L, tail = 0.25)
 }
 \arguments{
 \item{n}{integer length of the grid. Default is 50}
 
-\item{s}{beta distribution shape parameter, passed to both \code{shape1} and \code{shape2} of \code{pbeta()}. For uniform grid choose 1. Default is 5.}
+\item{s}{beta distribution shape parameter, passed to both \code{shape1} and \code{shape2} of \code{pbeta()}. For uniform grid choose 1. Default is 2.}
 
 \item{trim}{logical, should the 0 and 1 (tails of the grid) be trimmed. Default is \code{TRUE}}
 
 \item{tier}{integer number of tiers in the linear grid. Each tier contains \code{tail} share of the previous tier. Default is 3.}
 
-\item{tail}{real number representing share of grid in each tier}
+\item{tail}{real number representing share of grid in each tier. Default is 0.25}
 }
 \value{
 probability grid vector of length n

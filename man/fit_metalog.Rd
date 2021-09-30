@@ -3,6 +3,7 @@
 \name{fit_metalog}
 \alias{fit_metalog}
 \alias{approx_metalog}
+\alias{approx_max_metalog}
 \alias{is_metalog_valid}
 \title{Fitting the metalog functions}
 \usage{
@@ -14,8 +15,19 @@ approx_metalog(
   bl = NULL,
   bu = NULL,
   thin = FALSE,
-  thin_to = 1000L,
-  s = 2L
+  n_grid = 1000,
+  s_grid = 2L,
+  tol = 1e-07
+)
+
+approx_max_metalog(
+  q,
+  bl = NULL,
+  bu = NULL,
+  thin = FALSE,
+  n_grid = 1000,
+  s_grid = 2L,
+  tol = 1e-07
 )
 
 is_metalog_valid(a, bl = NULL, bu = NULL)
@@ -35,9 +47,11 @@ is_metalog_valid(a, bl = NULL, bu = NULL)
 
 \item{thin}{logical. Should original data be thinned. Default is FALSE.}
 
-\item{thin_to}{integer number of quantiles to extract from data, if data vector \code{q} is longer than this value}
+\item{n_grid}{in case data thinning is performed, integer number of quantiles to extract from data, if data vector \code{q} is longer than this value}
 
-\item{s}{in case data thinning is performed, probability grid shape parameter passed to \code{qpd::make_pgrid()}. Default is 10.}
+\item{s_grid}{in case data thinning is performed, probability grid shape parameter passed to \code{qpd::make_pgrid()}. Default is 10.}
+
+\item{tol}{tolerance for qr.solve()}
 
 \item{a}{vector of \code{a}-coefficient parameters of metalog distribution}
 }

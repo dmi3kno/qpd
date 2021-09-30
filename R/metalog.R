@@ -61,16 +61,18 @@ fit_metalog <- function(p, q, bl=NULL, bu=NULL, log.p=FALSE){
 
 #' @param nterms integer number of terms for approximating metalog. Default is 3
 #' @param thin logical. Should original data be thinned. Default is FALSE.
-#' @param thin_to integer number of quantiles to extract from data, if data vector `q` is longer than this value
-#' @param s in case data thinning is performed, probability grid shape parameter passed to `qpd::make_pgrid()`. Default is 10.
+#' @param n_grid in case data thinning is performed, integer number of quantiles to extract from data, if data vector `q` is longer than this value
+#' @param s_grid in case data thinning is performed, probability grid shape parameter passed to `qpd::make_pgrid()`. Default is 10.
+#' @param tol tolerance for qr.solve()
 #' @rdname fit_metalog
 #' @importFrom stats quantile
 #' @export
-approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, thin=FALSE, thin_to=1000L, s=2L){
+approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
+  stopifnot("Metalog should have at least 2 terms!"=nterms>1)
   n <- length(q)
-  if(thin){
-    n <- thin_to
-    p <- make_pgrid(thin_to, s=s, trim=TRUE)
+  if(thin && (n > n_grid)){
+    n <- n_grid
+    p <- make_pgrid(n_grid, s=s_grid, trim=TRUE)
     qs <- unname(stats::quantile(q, probs=p))
   } else {
     qs <- sort(q)
@@ -80,7 +82,43 @@ approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, thin=FALSE, thin_to=1
   if(length(nterms)!=1L) stop("Incorrectly specified number of metalog terms")
   z <- matrix(metalog_prepare_z(qs[is.finite(qs)], bl, bu), ncol=1, byrow=FALSE)
   Y <- metalog_prepare_Y(p[is.finite(qs)], n, nterms)
-  ((solve(t(Y) %*% Y) %*% t(Y)) %*% z)[,1]
+  M4i <- t(Y) %*% Y
+  Mi <- tryCatch({
+     #message("Trying to invert the matrix with solve()")
+     solve(M4i)
+    },
+    error = function(e) {
+      #message("Solve failed. Trying Cholesky decomposition.")
+      res <- tryCatch(
+        chol2inv(chol(M4i)),
+        error=function(ee){
+        #  message("Cholesky also failed. Trying QR decomposition.")
+          return(qr.solve(M4i, tol=tol))
+        }
+      )
+      return(res)
+    }#,
+    #finally = {
+    #  message("Solved!")
+    #}
+    )
+  ((Mi %*% t(Y)) %*% z)[,1]
+}
+
+#' @rdname fit_metalog
+#' @importFrom stats  median
+#' @export
+approx_max_metalog <- function(q, bl=NULL, bu=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
+  nterms <- 2
+  a <- stats::median(q)
+  metalog_valid <- TRUE
+  while(metalog_valid){
+    tmp_a <- approx_metalog(q, nterms =nterms, bl=bl, bu=bu, thin=thin, n_grid=n_grid, s_grid=s_grid, tol=tol)
+    metalog_valid <- is_metalog_valid(tmp_a, bl=bl, bu=bu)
+    if(metalog_valid) a <- tmp_a
+    nterms <- nterms+1L
+  }
+  a
 }
 
 #' @title Metalog distribution functions

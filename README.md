@@ -143,7 +143,8 @@ plot(qpd::dMyerson(q, 4,9,17, alpha=0.1)~q, type="l", main="Myerson PDF")
 ```
 
 <img src="man/figures/README-myerson-1.png" width="45%" /><img src="man/figures/README-myerson-2.png" width="45%" /><img src="man/figures/README-myerson-3.png" width="45%" />
-\#\# Skew-Normal distribution
+
+## Skew-Normal distribution
 
 Quantile-parametrized Skew-Normal is a special case of Myerson
 distribution
@@ -181,13 +182,13 @@ plot((qpd::dqmetalog(p_grd, as, bl=0))~q, type="l", main="Metalog (4-terms) DQF"
 
 `qpd` can also fit (using conditional beta distributions) and sample
 from Dirichlet and Connor-Mosimann distributions (Perepolkin, Goodrich,
-and Sahlin 2021a). There are also functions for proxy fitting Chebyshev
-polynomials to arbitrary functions and automatic checking of roots for a
-user-defined quantile density function (Perepolkin, Goodrich, and Sahlin
-2021b). The package also has quantile versions of density (DQF and QDF)
-for some standard distributions, including normal, exponential,
-Rayleigh, and generalized exponential. There’s also fixed-seed HDR
-pseudo-random number generator.
+and Sahlin 2021a). There are also functions for fitting Chebyshev
+polynomials to arbitrary functions and automatic proxy root-finding for
+validation of a user-defined quantile density function (Perepolkin,
+Goodrich, and Sahlin 2021b). The package also has quantile versions of
+density (DQF and QDF) for some standard distributions, including normal,
+exponential, Rayleigh, and generalized exponential. There’s also
+fixed-seed HDR pseudo-random number generator.
 
 ## References
 

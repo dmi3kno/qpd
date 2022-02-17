@@ -60,6 +60,7 @@ fit_metalog <- function(p, q, bl=NULL, bu=NULL, log.p=FALSE){
 }
 
 #' @param nterms integer number of terms for approximating metalog. Default is 3
+#' @param p_grid the grid of probability values the quantiles q correspond to. This would be specified if metalog is fitted to the empirical CDF. Default is NULL.
 #' @param thin logical. Should original data be thinned. Default is FALSE.
 #' @param n_grid in case data thinning is performed, integer number of quantiles to extract from data, if data vector `q` is longer than this value
 #' @param s_grid in case data thinning is performed, probability grid shape parameter passed to `qpd::make_pgrid()`. Default is 10.
@@ -67,18 +68,26 @@ fit_metalog <- function(p, q, bl=NULL, bu=NULL, log.p=FALSE){
 #' @rdname fit_metalog
 #' @importFrom stats quantile
 #' @export
-approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
+approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, p_grid=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
   stopifnot("Metalog should have at least 2 terms!"=nterms>1)
   n <- length(q)
-  if(thin && (n > n_grid)){
-    n <- n_grid
-    p <- make_pgrid(n_grid, s=s_grid, trim=TRUE)
-    qs <- unname(stats::quantile(q, probs=p))
+  if (is.null(p_grid)){ # do it if p_grid is not specified
+    if(thin && (n > n_grid)){
+      n <- n_grid
+      p <- make_pgrid(n_grid, s=s_grid, trim=TRUE)
+      qs <- unname(stats::quantile(q, probs=p))
+    } else {
+      qs <- sort(q)
+      # ecdf assignment trick to avoid 0 and 1
+      p <- (seq_along(qs)-0.5)/n
+    }
   } else {
-    qs <- sort(q)
-    # ecdf assignment trick to avoid 0 and 1
-    p <- (seq_along(qs)-0.5)/n
+    stopifnot("Lengths of q and p_grid vectors do not match"=length(p_grid)==n)
+    idx <- p_grid!=0 & p_grid!=1
+    p <-p_grid[idx]
+    qs <- q[idx]
   }
+
   if(length(nterms)!=1L) stop("Incorrectly specified number of metalog terms")
   z <- matrix(metalog_prepare_z(qs[is.finite(qs)], bl, bu), ncol=1, byrow=FALSE)
   Y <- metalog_prepare_Y(p[is.finite(qs)], n, nterms)
@@ -108,12 +117,12 @@ approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, thin=FALSE, n_grid=1e
 #' @rdname fit_metalog
 #' @importFrom stats  median
 #' @export
-approx_max_metalog <- function(q, bl=NULL, bu=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
+approx_max_metalog <- function(q, bl=NULL, bu=NULL, p_grid=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
   nterms <- 2
   a <- stats::median(q)
   metalog_valid <- TRUE
   while(metalog_valid){
-    tmp_a <- approx_metalog(q, nterms =nterms, bl=bl, bu=bu, thin=thin, n_grid=n_grid, s_grid=s_grid, tol=tol)
+    tmp_a <- approx_metalog(q, nterms =nterms, bl=bl, bu=bu, p_grid=p_grid, thin=thin, n_grid=n_grid, s_grid=s_grid, tol=tol)
     metalog_valid <- is_metalog_valid(tmp_a, bl=bl, bu=bu)
     if(metalog_valid) a <- tmp_a
     nterms <- nterms+1L

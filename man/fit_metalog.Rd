@@ -14,6 +14,7 @@ approx_metalog(
   nterms = 3L,
   bl = NULL,
   bu = NULL,
+  p_grid = NULL,
   thin = FALSE,
   n_grid = 1000,
   s_grid = 2L,
@@ -24,6 +25,7 @@ approx_max_metalog(
   q,
   bl = NULL,
   bu = NULL,
+  p_grid = NULL,
   thin = FALSE,
   n_grid = 1000,
   s_grid = 2L,
@@ -44,6 +46,8 @@ is_metalog_valid(a, bl = NULL, bu = NULL)
 \item{log.p}{are probabilities provided on log scale. Default FALSE}
 
 \item{nterms}{integer number of terms for approximating metalog. Default is 3}
+
+\item{p_grid}{the grid of probability values the quantiles q correspond to. This would be specified if metalog is fitted to the empirical CDF. Default is NULL.}
 
 \item{thin}{logical. Should original data be thinned. Default is FALSE.}
 

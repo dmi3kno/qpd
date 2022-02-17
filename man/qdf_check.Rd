@@ -5,9 +5,9 @@
 \alias{is_qdf_valid}
 \title{Validate quantile function by checking the corresponding quantile density function}
 \usage{
-check_roots(fun, ..., n = 13, interval = c(0, 1), parts = 10, s = 1)
+check_roots(fun, ..., n = 13, interval = c(0, 1), parts = 10)
 
-is_qdf_valid(fun, ..., n = 13L, parts = 10, s = 1)
+is_qdf_valid(fun, ..., n = 13L, parts = 10)
 }
 \arguments{
 \item{fun}{quantile density function (QDF) to check}
@@ -19,8 +19,6 @@ is_qdf_valid(fun, ..., n = 13L, parts = 10, s = 1)
 \item{interval}{interval to check the roots on}
 
 \item{parts}{integer number of parts to split the function range. Default is 10}
-
-\item{s}{numeric beta parameter passed to \code{make_pgrid} to partition the function range. Default is 1, which correspond to linear partitioning of the QDF range.}
 }
 \value{
 logical value indicating if the QDF is valid (i.e. returns only non-negative values)

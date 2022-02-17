@@ -4,16 +4,13 @@
 \alias{get_chebyshev_coeffs}
 \alias{find_chebyshev_roots}
 \alias{eval_chebyshev_poly}
-\alias{fasteval_chebyshev_poly}
 \title{Approximate a function by Chebyshev polynomials and find proxy roots}
 \usage{
-get_chebyshev_coeffs(fun, n, from = 0, to = 1, ..., adjusted = FALSE)
+get_chebyshev_coeffs(fun, n, from = 0, to = 1, ...)
 
 find_chebyshev_roots(a, from = 0, to = 1)
 
 eval_chebyshev_poly(a, x, from = 0, to = 1)
-
-fasteval_chebyshev_poly(a, x, from = 0, to = 1)
 }
 \arguments{
 \item{fun}{function to evaluate}
@@ -23,8 +20,6 @@ fasteval_chebyshev_poly(a, x, from = 0, to = 1)
 \item{from, to}{the interval for the input argument}
 
 \item{...}{other arguments passed to a function}
-
-\item{adjusted}{should Chebyshev polynomial be adjusted}
 
 \item{a}{numeric vector of Chebyshev coefficients}
 

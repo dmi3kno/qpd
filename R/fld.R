@@ -10,7 +10,11 @@
 #' @name fld
 #'
 #' @examples
-#' qfld(0.1, 0.5, 0.3, 1)
+#' qfld(0.1, 0.5, 0.3, 0.5)
+#' # centered fld
+#' p <- runif(1e4)
+#' x <- qfld(p, 0.25, 1)-qfld(0.5, 0.25, 1)
+#' hist(x,30)
 #' @export
 qfld<- function(p, bt, k, dlt=0.5){
   stopifnot("Beta parameter should be non-negative!"=(bt>=0))

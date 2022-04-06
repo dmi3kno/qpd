@@ -36,5 +36,9 @@ vector
 Defines quantile function (ICDF), probability density and quantile density function as well as probability function (CDF) for flattened generalized logistic distribution
 }
 \examples{
-qfld(0.1, 0.5, 0.3, 1)
+qfld(0.1, 0.5, 0.3, 0.5)
+# centered fld
+p <- runif(1e4)
+x <- qfld(p, 0.25, 1)-qfld(0.5, 0.25, 1)
+hist(x,30)
 }

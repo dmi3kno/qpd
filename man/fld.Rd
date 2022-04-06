@@ -8,22 +8,22 @@
 \alias{pfld}
 \title{Flattened Generalized Logistic Distribution (FLD)}
 \usage{
-qfld(p, bt, dlt, k)
+qfld(p, bt, k, dlt = 0.5)
 
-ffld(p, bt, dlt, k)
+ffld(p, bt, k, dlt = 0.5)
 
-dqfld(p, bt, dlt, k)
+dqfld(p, bt, k, dlt = 0.5)
 
-pfld(q, bt, dlt, k, tol = 1e-06)
+pfld(q, bt, k, dlt = 0.5, tol = 1e-06)
 }
 \arguments{
 \item{p}{vector of probabilities}
 
-\item{bt}{parameter beta of FGLD distribution}
+\item{bt}{parameter beta of FGLD distribution (scale). Should be non-negative.}
 
-\item{dlt}{parameter delta of FGLD distribution}
+\item{k}{parameter k of FGLD distribution (shape). Should be non-negative.}
 
-\item{k}{parameter k of FGLD distribution}
+\item{dlt}{parameter delta of FGLD distribution(mixing parameter). Should be within the interval (0,1), default is 0.5}
 
 \item{q}{vector of quantiles}
 

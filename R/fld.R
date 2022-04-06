@@ -2,9 +2,9 @@
 #'
 #' Defines quantile function (ICDF), probability density and quantile density function as well as probability function (CDF) for flattened generalized logistic distribution
 #' @param p vector of probabilities
-#' @param bt parameter beta of FGLD distribution
-#' @param dlt parameter delta of FGLD distribution
-#' @param k parameter k of FGLD distribution
+#' @param bt parameter beta of FGLD distribution (scale). Should be non-negative.
+#' @param k parameter k of FGLD distribution (shape). Should be non-negative.
+#' @param dlt parameter delta of FGLD distribution(mixing parameter). Should be within the interval (0,1), default is 0.5
 #'
 #' @return vector
 #' @name fld
@@ -12,7 +12,7 @@
 #' @examples
 #' qfld(0.1, 0.5, 0.3, 1)
 #' @export
-qfld<- function(p, bt, dlt, k){
+qfld<- function(p, bt, k, dlt=0.5){
   stopifnot("Beta parameter should be non-negative!"=(bt>=0))
   stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
   stopifnot("k parameter should be non-negative!"=(k>=0))
@@ -22,7 +22,7 @@ qfld<- function(p, bt, dlt, k){
 
 #' @rdname fld
 #' @export
-ffld <- function(p, bt, dlt, k){
+ffld <- function(p, bt, k, dlt=0.5){
   stopifnot("Beta parameter should be non-negative!"=(bt>=0))
   stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
   stopifnot("k parameter should be non-negative!"=(k>=0))
@@ -31,7 +31,7 @@ ffld <- function(p, bt, dlt, k){
 
 #' @rdname fld
 #' @export
-dqfld <- function(p, bt, dlt, k){
+dqfld <- function(p, bt, k, dlt=0.5){
   stopifnot("Beta parameter should be non-negative!"=(bt>=0))
   stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
   stopifnot("k parameter should be non-negative!"=(k>=0))
@@ -43,7 +43,7 @@ dqfld <- function(p, bt, dlt, k){
 #' @rdname fld
 #' @importFrom stats uniroot
 #' @export
-pfld <- function(q, bt, dlt, k, tol=1e-06){
+pfld <- function(q, bt, k, dlt=0.5, tol=1e-06){
   stopifnot("Beta parameter should be non-negative!"=(bt>=0))
   stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
   stopifnot("k parameter should be non-negative!"=(k>=0))

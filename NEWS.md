@@ -20,3 +20,4 @@
 * HDR pseudo random numbers algorithm by Hubbard Decision Research
 * Service functions for eliciting QDirichlet distributions
 * Service functions for checking the validity of quantile functions by proxy root finding with Chebyshev polynomials
+* Added generic inverse quantile function factory `iqf` for creating approximated CDFs for quantile distributions.

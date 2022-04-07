@@ -52,7 +52,7 @@ pfld <- function(q, bt, k, dlt=0.5, tol=1e-06){
   stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
   stopifnot("k parameter should be non-negative!"=(k>=0))
 
-  afun <- function(x, p) {x - qfld(p, bt, dlt, k)}
+  afun <- function(x, p) {x - qfld(p, bt=bt, k=k, dlt=dlt)}
   ps <- sapply(q, function(.q) {
     tmp_ps <- NULL
     tmp_ps <- try(stats::uniroot(afun, lower=0, upper = 1, x=.q, tol = tol), silent=TRUE)

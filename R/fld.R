@@ -33,13 +33,13 @@ ffld <- function(p, bt, k, dlt=0.5){
   return(bt*(1-dlt)/p+dlt/(1-p)+k)
 }
 
+#' @param log logical; if TRUE, log density is returnes. Default is FALSE
 #' @rdname fld
 #' @export
-dqfld <- function(p, bt, k, dlt=0.5){
-  stopifnot("Beta parameter should be non-negative!"=(bt>=0))
-  stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
-  stopifnot("k parameter should be non-negative!"=(k>=0))
-  return(1/ffld(p, bt, dlt, k))
+dqfld <- function(p, bt, k, dlt=0.5, log=FALSE){
+  res <- 1/ffld(p, bt, dlt, k)
+  if(log) return(log(res))
+  res
 }
 
 #' @param q vector of quantiles

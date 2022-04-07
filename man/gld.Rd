@@ -32,7 +32,7 @@ is_gld_valid(l1, l2, l3, l4, n_grid = 100L, s_grid = 2L)
 
 \item{l4}{GLD parameter \eqn{\lambda_4}}
 
-\item{log}{should the log density be returned}
+\item{log}{should the log density be returned. Default=FALSE}
 
 \item{n}{numeric number of samples to draw}
 

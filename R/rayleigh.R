@@ -38,13 +38,16 @@ rrayleigh2 <- function(n, mu, lambda){
 #' @rdname rayleigh
 #' @export
 frayleigh2 <- function(p, mu, lambda){
-  1/dqrayleigh2(p,mu,lambda)
+  1/dqrayleigh2(p,mu,lambda, log=FALSE)
 }
 
+#' @param log logical; if TRUE, log density is returned
 #' @rdname rayleigh
 #' @export
-dqrayleigh2 <- function(p, mu, lambda){
-  2*lambda*sqrt(-log1p(-p)/lambda)*(1-p)
+dqrayleigh2 <- function(p, mu, lambda, log=FALSE){
+  res <- 2*lambda*sqrt(-log1p(-p)/lambda)*(1-p)
+  if (log) return(log(res))
+  res
 }
 
 #' @rdname rayleigh

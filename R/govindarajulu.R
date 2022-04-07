@@ -28,11 +28,14 @@ fgovindarajulu <- function(p, sg, bt){
   sg*bt*bp1*p^(bt-1)*(1-p)
 }
 
+#' @param log logical; if TRUE, log density is returned. Default is FALSE
 #' @rdname govindarajulu
 #' @export
-dqgovindarajulu <- function(p, sg, bt){
+dqgovindarajulu <- function(p, sg, bt, log=FALSE){
   stopifnot(sg>0 & bt>0)
-  1/fgovindarajulu(p, sg, bt)
+  res <- fgovindarajulu(p, sg, bt)
+  if(log) return(log(1/res))
+  1/res
 }
 
 #' @param q vector of quantiles

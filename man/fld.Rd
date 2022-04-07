@@ -12,7 +12,7 @@ qfld(p, bt, k, dlt = 0.5)
 
 ffld(p, bt, k, dlt = 0.5)
 
-dqfld(p, bt, k, dlt = 0.5)
+dqfld(p, bt, k, dlt = 0.5, log = FALSE)
 
 pfld(q, bt, k, dlt = 0.5, tol = 1e-06)
 }
@@ -24,6 +24,8 @@ pfld(q, bt, k, dlt = 0.5, tol = 1e-06)
 \item{k}{parameter k of FGLD distribution (shape). Should be non-negative.}
 
 \item{dlt}{parameter delta of FGLD distribution(mixing parameter). Should be within the interval (0,1), default is 0.5}
+
+\item{log}{logical; if TRUE, log density is returnes. Default is FALSE}
 
 \item{q}{vector of quantiles}
 

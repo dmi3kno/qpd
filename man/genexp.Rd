@@ -5,6 +5,7 @@
 \alias{dgenexp}
 \alias{qgenexp}
 \alias{fgenexp}
+\alias{dqgenexp}
 \alias{rgenexp}
 \title{Generalized exponential distribution}
 \usage{
@@ -16,6 +17,8 @@ qgenexp(p, alpha, lambda)
 
 fgenexp(p, alpha, lambda)
 
+dqgenexp(p, alpha, lambda, log = FALSE)
+
 rgenexp(n, alpha, lambda)
 }
 \arguments{
@@ -26,6 +29,8 @@ rgenexp(n, alpha, lambda)
 \item{lambda}{parameter of generalized exponential distribution}
 
 \item{p}{numeric vector of cumulative probabilities}
+
+\item{log}{logical; if TRUE, log density is returned. Default is FALSE}
 
 \item{n}{number of samples to draw}
 }

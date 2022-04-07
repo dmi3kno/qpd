@@ -8,7 +8,7 @@
 \usage{
 fexp(u, lambda)
 
-dqexp(u, lambda)
+dqexp(u, lambda, log = FALSE)
 
 ffexp(u, lambda)
 }
@@ -16,6 +16,8 @@ ffexp(u, lambda)
 \item{u}{numeric probability vector}
 
 \item{lambda}{parameter of exponential distribution}
+
+\item{log}{logical; if TRUE log density is returned. Default is FALSE}
 }
 \value{
 quantile density, density quantile or quantile convexity for \code{fexp}, \code{dqexp} and \code{ffexp}, respectively

@@ -13,7 +13,7 @@ qgovindarajulu(p, sg, bt)
 
 fgovindarajulu(p, sg, bt)
 
-dqgovindarajulu(p, sg, bt)
+dqgovindarajulu(p, sg, bt, log = FALSE)
 
 pgovindarajulu(q, sg, bt, tol = 1e-06)
 
@@ -25,6 +25,8 @@ dgovindarajulu(x, sg, bt, tol = 1e-06)
 \item{sg}{parameter sigma of Govindarajulu distribution}
 
 \item{bt}{parameter beta of Govindarajulu distribution}
+
+\item{log}{logical; if TRUE, log density is returned. Default is FALSE}
 
 \item{q}{vector of quantiles}
 

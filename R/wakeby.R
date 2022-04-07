@@ -48,7 +48,7 @@ fwakeby <- function(u, alpha, beta, gamma, delta, xi, log=FALSE){
 #' @rdname wakeby
 #' @export
 dqwakeby <- function(u, alpha, beta, gamma, delta, xi, log=FALSE){
-   res <- fwakeby(u, alpha, beta, gamma, delta, xi)
+   res <- fwakeby(u, alpha, beta, gamma, delta, xi, log=FALSE)
    if(log) return(log(1/res))
    1/res
 }

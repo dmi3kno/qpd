@@ -209,7 +209,8 @@ fmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE, log=FALSE){
   if(is.null(bl)) {res <- ifelse(p==1, 0, (res/eQm)); if(log) return(log(res)) else return(res)}# bu is defined
     #both are defined, logitmetalog case
   res <- ifelse(p==0 | p==1, 0, res*(bu-bl)*eQm/(1+eQm)^2)
-  if(log) return(log(res)) else return(res)
+  if(log) return(log(res))
+  res
 }
 
 #' @rdname metalog
@@ -217,8 +218,9 @@ fmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE, log=FALSE){
 #' @examples
 #' dqmetalog(p, a)
 dqmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE, log=FALSE){
-  if(log) return(log(1/exp(fmetalog(p,a,bl, bu, log.p, log))))
-  1/fmetalog(p,a,bl, bu, log.p, log)
+  res <- 1/fmetalog(p,a,bl, bu, log.p, log=FALSE)
+  if(log) return(log(res))
+  res
 }
 
 #' @param q real vector of values

@@ -19,7 +19,7 @@ qgld <- function(u, l1, l2, l3, l4){
 }
 #' @rdname gld
 #' @export
-#' @param log should the log density be returned
+#' @param log should the log density be returned. Default=FALSE
 fgld <- function(u, l1, l2, l3, l4, log=FALSE){
   res <- (l3*u^(l3-1)+l4*(1-u)^(l4-1))/l2
   if(log) return(log(res))

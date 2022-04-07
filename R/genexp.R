@@ -49,6 +49,15 @@ fgenexp <- function(p, alpha, lambda){
   p^(inv_alpha-1)/(alpha*lambda*(1-p^inv_alpha))
 }
 
+#' @param log logical; if TRUE, log density is returned. Default is FALSE
+#' @rdname genexp
+#' @export
+dqgenexp <- function(p, alpha, lambda, log=FALSE){
+  res <- fgenexp(p, alpha, lambda)
+  if (log) return(log(1/res))
+  1/res
+}
+
 #' @param n number of samples to draw
 #' @rdname genexp
 #' @export

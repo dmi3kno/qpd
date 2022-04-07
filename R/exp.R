@@ -16,11 +16,14 @@ fexp <- function(u, lambda){
   1/(lambda*(1-u))
 }
 
+#' @param log logical; if TRUE log density is returned. Default is FALSE
 #' @rdname exp
 #' @export
-dqexp <- function(u, lambda){
+dqexp <- function(u, lambda, log=FALSE){
   stopifnot(lambda>0)
-  lambda*(1-u)
+  res <- lambda*(1-u)
+  if(log) return(log(res))
+  res
 }
 
 #' @rdname exp

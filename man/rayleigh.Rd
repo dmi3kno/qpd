@@ -20,7 +20,7 @@ rrayleigh2(n, mu, lambda)
 
 frayleigh2(p, mu, lambda)
 
-dqrayleigh2(p, mu, lambda)
+dqrayleigh2(p, mu, lambda, log = FALSE)
 
 ffrayleigh2(p, mu, lambda)
 }
@@ -34,6 +34,8 @@ ffrayleigh2(p, mu, lambda)
 \item{p}{numeric vector of probabilities}
 
 \item{n}{numeric number of random values to draw}
+
+\item{log}{logical; if TRUE, log density is returned}
 }
 \value{
 density, probability, quantile value or random variable from  two-parameter Rayleigh distribution

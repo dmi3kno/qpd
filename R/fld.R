@@ -37,7 +37,7 @@ ffld <- function(p, bt, k, dlt=0.5){
 #' @rdname fld
 #' @export
 dqfld <- function(p, bt, k, dlt=0.5, log=FALSE){
-  res <- 1/ffld(p, bt, dlt, k)
+  res <- 1/ffld(p, bt=bt, k=k, dlt=dlt)
   if(log) return(log(res))
   res
 }

@@ -7,37 +7,37 @@
 #' @param l4 GLD parameter \eqn{\lambda_4}
 #'
 #' @return quantiles, QDF, DQF, random samples or probabilities of GLD
-#' @rdname gldrs
+#' @rdname GLDrs
 #' @export
 #'
 #' @examples
 #' p_grd <- make_pgrid()
-#' qgldrs(p_grd, 1, -1, -1/8, -1/32)
-qgldrs <- function(u, l1, l2, l3, l4){
+#' qGLDrs(p_grd, 1, -1, -1/8, -1/32)
+qGLDrs <- function(u, l1, l2, l3, l4){
   res <- l1+(u^l3-(1-u)^l4)/l2
   res
 }
-#' @rdname gldrs
+#' @rdname GLDrs
 #' @export
 #' @param log should the log density be returned. Default=FALSE
-fgldrs <- function(u, l1, l2, l3, l4, log=FALSE){
+fGLDrs <- function(u, l1, l2, l3, l4, log=FALSE){
   res <- (l3*u^(l3-1)+l4*(1-u)^(l4-1))/l2
   if(log) return(log(res))
   res
 }
-#' @rdname gldrs
+#' @rdname GLDrs
 #' @export
-dqgldrs <- function(u, l1, l2, l3, l4, log=FALSE){
-  res <- fgldrs(u, l1, l2, l3, l4, log=FALSE)
+dqGLDrs <- function(u, l1, l2, l3, l4, log=FALSE){
+  res <- fGLDrs(u, l1, l2, l3, l4, log=FALSE)
   if(log) return(log(1/res))
   1/res
 }
 
-#' @rdname gldrs
+#' @rdname GLDrs
 #' @export
 #' @param n numeric number of samples to draw
-rgldrs <- function(n, l1, l2, l3, l4){
-  qgldrs(runif(n), l1, l2, l3, l4)
+rGLDrs <- function(n, l1, l2, l3, l4){
+  qGLDrs(runif(n), l1, l2, l3, l4)
 }
 
 #' @param q quantile value for which the corresponding cumulative probability value should be found.
@@ -45,13 +45,13 @@ rgldrs <- function(n, l1, l2, l3, l4){
 #' @param maxiter numeric maximum number of iteration
 #' @param n_grid integer size of helper grid to be passed to `make_pgrid`. Default is 50
 #' @param s_grid integer beta shape of helper grid to be passed to `make_pgrid`. Default is 5
-#' @rdname gldrs
+#' @rdname GLDrs
 #' @export
-pgldrs <- function(q, l1, l2, l3, l4, n_grid=50L, s_grid=5L, tol=1e-15, maxiter=1e3){
+pGLDrs <- function(q, l1, l2, l3, l4, n_grid=50L, s_grid=5L, tol=1e-15, maxiter=1e3){
 
-  afun <- function(u, q, l1, l2, l3, l4) {q - qgldrs(u,l1, l2, l3, l4)}
+  afun <- function(u, q, l1, l2, l3, l4) {q - qGLDrs(u,l1, l2, l3, l4)}
   p_grd <- sort(c(tol, qpd::make_pgrid(n=n_grid, s=s_grid), 1-tol))
-  q_grd <- qgldrs(p_grd, l1, l2, l3, l4)
+  q_grd <- qGLDrs(p_grd, l1, l2, l3, l4)
   idx_lower <- findInterval(q, q_grd, all.inside = TRUE)
   idx_upper <- idx_lower+1L
   int_lower <- p_grd[idx_lower]
@@ -70,9 +70,9 @@ pgldrs <- function(q, l1, l2, l3, l4, n_grid=50L, s_grid=5L, tol=1e-15, maxiter=
 }
 
 #' @export
-#' @rdname gldrs
-is_gldrs_valid <- function(l1, l2, l3, l4, n_grid=100L, s_grid=2L){
+#' @rdname GLDrs
+is_GLDrs_valid <- function(l1, l2, l3, l4, n_grid=100L, s_grid=2L){
   grd <- make_pgrid(n_grid, s_grid)
-  all(fgldrs(grd, l1,l2,l3,l4)>0)
+  all(fGLDrs(grd, l1,l2,l3,l4)>0)
 }
 

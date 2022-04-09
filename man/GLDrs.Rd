@@ -13,7 +13,7 @@
 \usage{
 qGLDrs(u, l1, l2, l3, l4)
 
-fGLDrs(u, l1, l2, l3, l4, log = FALSE)
+fGLDrs(u, l1, l2, l3, l4)
 
 dqGLDrs(u, l1, l2, l3, l4, log = FALSE)
 

@@ -1,5 +1,9 @@
 #' Generalized Lambda Distribution (GLD) FKML parameterization
 #'
+#' Quantile function, quantile density, density quantile and inverse quantile
+#' functions for GLD distribution with FKML parameterization.
+#' `aGLDfkml_mean` and `aGLDfkml_median` are theoretical mean and median, which can be used
+#'  for adjusting the quantile likelihood.
 #' @param u numeric vector of probabilities
 #' @param l1 GLD parameter \eqn{\lambda_1}, (FKML parameterization)
 #' @param l2 GLD parameter \eqn{\lambda_2}, (FKML parameterization)
@@ -82,3 +86,14 @@ is_GLDfkml_valid <- function(l1, l2, l3, l4){
   (l2>=0)
 }
 
+#' @export
+#' @rdname GLDfkml
+aGLDfkml_mean<- function(l1, l2, l3, l4){
+  l1-((1/(l3+1))-(1/(l4+1)))/l2
+}
+
+#' @export
+#' @rdname GLDfkml
+aGLDfkml_median <- function(l1, l2, l3, l4){
+  qGLDfkml(0.5, l1, l2, l3, l4)
+}

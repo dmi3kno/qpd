@@ -1,5 +1,9 @@
 #' Generalized Lambda Distribution (GLD) RS parameterization
 #'
+#' Quantile function, quantile density, density quantile and inverse quantile
+#' functions for GLD distribution with RS parameterization.
+#' `aGLDrs_mean` and `aGLDrs_median` are theoretical mean and median, which can be used
+#'  for adjusting the quantile likelihood.
 #' @param u numeric vector of probabilities
 #' @param l1 GLD parameter \eqn{\lambda_1}
 #' @param l2 GLD parameter \eqn{\lambda_2}
@@ -88,3 +92,14 @@ is_GLDrs_valid <- function(l1, l2, l3, l4){
   return(FALSE)
 }
 
+#' @export
+#' @rdname GLDfkml
+aGLDrs_mean<- function(l1, l2, l3, l4){
+  l1+((1/(l3+1))-(1/(l4+1)))/l2
+}
+
+#' @export
+#' @rdname GLDfkml
+aGLDrs_median <- function(l1, l2, l3, l4){
+  qGLDrs(0.5, l1, l2, l3, l4)
+}

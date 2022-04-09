@@ -2,6 +2,10 @@
 
 S3method(isim_to_cprob,matrix)
 S3method(isim_to_cprob,numeric)
+export(aGLDfkml_mean)
+export(aGLDfkml_median)
+export(aGLDrs_mean)
+export(aGLDrs_median)
 export(ab_to_m11)
 export(approx_max_metalog)
 export(approx_metalog)

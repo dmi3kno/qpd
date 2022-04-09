@@ -60,7 +60,10 @@ is_GLDrs_valid(l1, l2, l3, l4)
 quantiles, QDF, DQF, random samples or probabilities of GLD
 }
 \description{
-Generalized Lambda Distribution (GLD) RS parameterization
+Quantile function, quantile density, density quantile and inverse quantile
+functions for GLD distribution with RS parameterization.
+\code{aGLDrs_mean} and \code{aGLDrs_median} are theoretical mean and median, which can be used
+for adjusting the quantile likelihood.
 }
 \examples{
 p_grd <- make_pgrid()

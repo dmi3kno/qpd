@@ -7,6 +7,8 @@
 \alias{rGLDrs}
 \alias{pGLDrs}
 \alias{is_GLDrs_valid}
+\alias{aGLDrs_mean}
+\alias{aGLDrs_median}
 \title{Generalized Lambda Distribution (GLD) RS parameterization}
 \usage{
 qGLDrs(u, l1, l2, l3, l4)
@@ -30,6 +32,10 @@ pGLDrs(
 )
 
 is_GLDrs_valid(l1, l2, l3, l4)
+
+aGLDrs_mean(l1, l2, l3, l4)
+
+aGLDrs_median(l1, l2, l3, l4)
 }
 \arguments{
 \item{u}{numeric vector of probabilities}

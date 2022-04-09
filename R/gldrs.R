@@ -93,13 +93,13 @@ is_GLDrs_valid <- function(l1, l2, l3, l4){
 }
 
 #' @export
-#' @rdname GLDfkml
+#' @rdname GLDrs
 aGLDrs_mean<- function(l1, l2, l3, l4){
   l1+((1/(l3+1))-(1/(l4+1)))/l2
 }
 
 #' @export
-#' @rdname GLDfkml
+#' @rdname GLDrs
 aGLDrs_median <- function(l1, l2, l3, l4){
   qGLDrs(0.5, l1, l2, l3, l4)
 }

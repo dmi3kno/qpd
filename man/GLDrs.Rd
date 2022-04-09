@@ -29,7 +29,7 @@ pGLDrs(
   maxiter = 1000
 )
 
-is_GLDrs_valid(l1, l2, l3, l4, n_grid = 100L, s_grid = 2L)
+is_GLDrs_valid(l1, l2, l3, l4)
 }
 \arguments{
 \item{u}{numeric vector of probabilities}
@@ -64,5 +64,6 @@ Generalized Lambda Distribution (GLD) RS parameterization
 }
 \examples{
 p_grd <- make_pgrid()
+is_GLDrs_valid(1, -1, -1/8, -1/32)
 qGLDrs(p_grd, 1, -1, -1/8, -1/32)
 }

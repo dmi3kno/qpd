@@ -29,7 +29,7 @@ pGLDfkml(
   maxiter = 1000
 )
 
-is_GLDfkml_valid(l1, l2, l3, l4, n_grid = 100L, s_grid = 2L)
+is_GLDfkml_valid(l1, l2, l3, l4)
 }
 \arguments{
 \item{u}{numeric vector of probabilities}
@@ -64,5 +64,5 @@ Generalized Lambda Distribution (GLD) FKML parameterization
 }
 \examples{
 p_grd <- make_pgrid()
-qGLDfkml(p_grd, 1, -1, -1/8, -1/32)
+qGLDfkml(p_grd, 1, 1, -1/8, -1/32)
 }

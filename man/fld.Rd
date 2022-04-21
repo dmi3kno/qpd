@@ -5,6 +5,7 @@
 \alias{qfld}
 \alias{ffld}
 \alias{dqfld}
+\alias{rfld}
 \alias{pfld}
 \title{Flattened Generalized Logistic Distribution (FLD)}
 \usage{
@@ -13,6 +14,8 @@ qfld(p, bt, k, dlt = 0.5)
 ffld(p, bt, k, dlt = 0.5)
 
 dqfld(p, bt, k, dlt = 0.5, log = FALSE)
+
+rfld(n, bt, k, dlt = 0.5)
 
 pfld(q, bt, k, dlt = 0.5, tol = 1e-06)
 }
@@ -26,6 +29,8 @@ pfld(q, bt, k, dlt = 0.5, tol = 1e-06)
 \item{dlt}{parameter delta of FGLD distribution(mixing parameter). Should be within the interval (0,1), default is 0.5}
 
 \item{log}{logical; if TRUE, log density is returnes. Default is FALSE}
+
+\item{n}{numeric; number of samples to draw from FLD distribution}
 
 \item{q}{vector of quantiles}
 

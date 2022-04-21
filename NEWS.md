@@ -11,7 +11,7 @@
  - Wakeby distribution
  - Exponential distribution (quantile density functions)
  - g-and-h distribution, g-and-k distribution
- - two-parameter Rayleigh distribution
+ - Singe and two-parameter Rayleigh distribution
  - Normal distribution (quantile density functions)
  - Generalized Exponential distribution
  - Myerson distribution
@@ -21,3 +21,4 @@
 * Service functions for eliciting QDirichlet distributions
 * Service functions for checking the validity of quantile functions by proxy root finding with Chebyshev polynomials
 * Added generic inverse quantile function factory `iqf` for creating approximated CDFs for quantile distributions.
+* Change default metalog bounds to (-Inf,Inf)

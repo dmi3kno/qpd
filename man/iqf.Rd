@@ -12,7 +12,7 @@ iqf(QFUN)
 \value{
 function. Approximated CDF for a given quantile function.
 The inverse function will have the following additional arguments, passed to stats::uniroot()
-lower=0, upper=1, tol=1e-6, silent=TRUE.
+lower=0, upper=1, tol=1e-6, silent=TRUE, trace=0.
 The resulting inverse quantile function is fully vectorized with regards to
 all of its arguments (shorter vectors are recycled).
 }

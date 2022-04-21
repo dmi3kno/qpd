@@ -7,13 +7,13 @@
 \alias{is_metalog_valid}
 \title{Fitting the metalog functions}
 \usage{
-fit_metalog(p, q, bl = NULL, bu = NULL, log.p = FALSE)
+fit_metalog(p, q, bl = -Inf, bu = Inf, log.p = FALSE)
 
 approx_metalog(
   q,
   nterms = 3L,
-  bl = NULL,
-  bu = NULL,
+  bl = -Inf,
+  bu = Inf,
   p_grid = NULL,
   thin = FALSE,
   n_grid = 1000,
@@ -23,8 +23,8 @@ approx_metalog(
 
 approx_max_metalog(
   q,
-  bl = NULL,
-  bu = NULL,
+  bl = -Inf,
+  bu = Inf,
   p_grid = NULL,
   thin = FALSE,
   n_grid = 1000,
@@ -32,16 +32,16 @@ approx_max_metalog(
   tol = 1e-07
 )
 
-is_metalog_valid(a, bl = NULL, bu = NULL)
+is_metalog_valid(a, bl = -Inf, bu = Inf)
 }
 \arguments{
 \item{p}{vector of cumulative probabilities corresponding to quantile values}
 
 \item{q}{vector of quantile values (data)}
 
-\item{bl}{real value of lower boundary (for bounded metalog). Default NULL}
+\item{bl}{real value of lower boundary (for bounded metalog). Default -Inf}
 
-\item{bu}{real value of upper boundary (for bounded metalog). Default NULL}
+\item{bu}{real value of upper boundary (for bounded metalog). Default Inf}
 
 \item{log.p}{are probabilities provided on log scale. Default FALSE}
 

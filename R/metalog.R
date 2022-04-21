@@ -1,9 +1,9 @@
 # internal function for preparing the vector z for metalog.
 metalog_prepare_z <- function(q, bl, bu){
-  if(!is.null(bl) || !is.null(bu)){
+  if(is.finite(bl) || is.finite(bu)){
     z <-log((q-bl)/(bu-q))
-    if(is.null(bu)) z<-log(q-bl) # bl is defined
-    if(is.null(bl)) z<-(-log(bu-q))# bu is defined
+    if(is.infinite(bu)) z<-log(q-bl) # bl is defined
+    if(is.infinite(bl)) z<-(-log(bu-q))# bu is defined
   } else {return(q)}
   z
 }
@@ -41,8 +41,8 @@ metalog_prepare_Y <- function(p, n, nterms){
 #' @param a vector of `a`-coefficient parameters of metalog distribution
 #' @param p vector of cumulative probabilities corresponding to quantile values
 #' @param q vector of quantile values (data)
-#' @param bl real value of lower boundary (for bounded metalog). Default NULL
-#' @param bu real value of upper boundary (for bounded metalog). Default NULL
+#' @param bl real value of lower boundary (for bounded metalog). Default -Inf
+#' @param bu real value of upper boundary (for bounded metalog). Default Inf
 #' @param log.p are probabilities provided on log scale. Default FALSE
 #' @rdname fit_metalog
 #' @export
@@ -50,7 +50,7 @@ metalog_prepare_Y <- function(p, n, nterms){
 #' p <- c(0.1, 0.5, 0.9)
 #' q <- c(4, 9, 12)
 #' fit_metalog(p,q)
-fit_metalog <- function(p, q, bl=NULL, bu=NULL, log.p=FALSE){
+fit_metalog <- function(p, q, bl=-Inf, bu=Inf, log.p=FALSE){
   n <- length(q)
   if(length(p)!=n) stop("Length of p and q must be equal")
   if(log.p) p <- exp(p)
@@ -68,7 +68,7 @@ fit_metalog <- function(p, q, bl=NULL, bu=NULL, log.p=FALSE){
 #' @rdname fit_metalog
 #' @importFrom stats quantile
 #' @export
-approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, p_grid=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
+approx_metalog <- function(q, nterms=3L, bl=-Inf, bu=Inf, p_grid=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
   stopifnot("Metalog should have at least 2 terms!"=nterms>1)
   n <- length(q)
   if (is.null(p_grid)){ # do it if p_grid is not specified
@@ -117,7 +117,7 @@ approx_metalog <- function(q, nterms=3L, bl=NULL, bu=NULL, p_grid=NULL, thin=FAL
 #' @rdname fit_metalog
 #' @importFrom stats  median
 #' @export
-approx_max_metalog <- function(q, bl=NULL, bu=NULL, p_grid=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
+approx_max_metalog <- function(q, bl=-Inf, bu=Inf, p_grid=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
   nterms <- 2
   a <- stats::median(q)
   metalog_valid <- TRUE
@@ -140,8 +140,8 @@ approx_max_metalog <- function(q, bl=NULL, bu=NULL, p_grid=NULL, thin=FALSE, n_g
 #' `rmetalog` is an RNG.
 #' @param a vector of `a`-coefficient parameters of metalog distribution
 #' @param p vector of cumulative probabilities corresponding to quantile values
-#' @param bl real value of lower boundary (for bounded metalog). Default NULL
-#' @param bu real value of upper boundary (for bounded metalog). Default NULL
+#' @param bl real value of lower boundary (for bounded metalog). Default -Inf
+#' @param bu real value of upper boundary (for bounded metalog). Default Inf
 #' @param log.p are probabilities provided on log scale. Default FALSE
 #' @param log should the log density be returned. Default FALSE
 #' @rdname metalog
@@ -150,7 +150,7 @@ approx_max_metalog <- function(q, bl=NULL, bu=NULL, p_grid=NULL, thin=FALSE, n_g
 #' a <- c(9,  1.8, -1.13)
 #' p <- c(0.1, 0.5, 0.9)
 #' qmetalog(p, a)
-qmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE){
+qmetalog <- function(p, a, bl=-Inf, bu=Inf, log.p=FALSE){
   n <- length(a)
   if(log.p) p <- exp(p)
   res <- a[1]
@@ -158,9 +158,9 @@ qmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE){
   pmhalf <- p-0.5
   odd <- TRUE
   #stopifnot(n>0)
-  if(n>1) res = res+a[2]*logitp
-  if(n>2) res = res+a[3]*pmhalf*logitp
-  if(n>3) res = res+a[4]*pmhalf
+  if(n>1) res <- res+a[2]*logitp
+  if(n>2) res <- res+a[3]*pmhalf*logitp
+  if(n>3) res <- res+a[4]*pmhalf
   if(n>4)
    for(m in 5:n){
     if(odd){
@@ -170,20 +170,19 @@ qmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE){
     }
     odd=isFALSE(odd)
    }
-  if(is.null(bl) && is.null(bu)) return(res)
-  if(is.null(bu)) return(ifelse(p==0, bl, bl+exp(res)))# bl is defined
-  if(is.null(bl)) return(ifelse(p==1, bu, bu-exp(-res)))# bu is defined
-  ifelse(p==0, bl,
-          ifelse(p==1, bu,
-                       (bl+bu*exp(res))/(1+exp(res)))
-                         ) #logitmetalog case
+  res <- ifelse(p==0, bl,
+                  ifelse(p==1, bu, res))
+  if(is.infinite(bl) && is.infinite(bu)) return(res)
+  if(is.infinite(bu)) return(ifelse(p==0, bl, bl+exp(res)))# bl is defined
+  if(is.infinite(bl)) return(ifelse(p==1, bu, bu-exp(-res)))# bu is defined
+  (bl+bu*exp(res))/(1+exp(res))  #logitmetalog case
 }
 
 #' @rdname metalog
 #' @export
 #' @examples
 #' fmetalog(p, a)
-fmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE, log=FALSE){
+fmetalog <- function(p, a, bl=-Inf, bu=Inf, log.p=FALSE, log=FALSE){
   n <- length(a)
   if(log.p) p <- exp(p)
   pt1mp <- p*(1-p)
@@ -191,24 +190,27 @@ fmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE, log=FALSE){
   pmhalf <- p-0.5
   odd <- TRUE
   #stopifnot(n>0)
-  if(n>1) res = a[2]/pt1mp
-  if(n>2) res = res+a[3]*(pmhalf/pt1mp+logitp)
-  if(n>3) res = res+a[4]
+  if(n>1) res <- a[2]/pt1mp
+  if(n>2) res <- res+a[3]*(pmhalf/pt1mp+logitp)
+  if(n>3) res <- res+a[4]
   if(n>4)
    for(m in 5:n){
     if(odd){
-      res = res+a[m]*(m-1)/2*pmhalf^((m-3)/2)
+      res <- res+a[m]*(m-1)/2*pmhalf^((m-3)/2)
     }else{
-      res = res+a[m]*(pmhalf^(m/2-1)/pt1mp+(m/2-1)*pmhalf^(m/2-2)*logitp)
+      res<- res+a[m]*(pmhalf^(m/2-1)/pt1mp+(m/2-1)*pmhalf^(m/2-2)*logitp)
     }
     odd=isFALSE(odd)
    }
-  if(is.null(bl) && is.null(bu)){if(log) return(log(res)) else return(res)}
+  res <- ifelse(p==0, bl,
+                ifelse(p==1, bu, res))
+  if(is.infinite(bl) && is.infinite(bu)){if(log) return(log(res)) else return(res)}
   eQm <- exp(qmetalog(p,a))
-  if(is.null(bu)) {res <- ifelse(p==0, 0, (res*eQm)); if(log) return(log(res)) else return(res)}# bl is defined
-  if(is.null(bl)) {res <- ifelse(p==1, 0, (res/eQm)); if(log) return(log(res)) else return(res)}# bu is defined
+  if(is.infinite(bu)) {res <- ifelse(p==0, 0, (res*eQm)); if(log) return(log(res)) else return(res)}# bl is defined
+  if(is.infinite(bl)) {res <- ifelse(p==1, 0, (res/eQm)); if(log) return(log(res)) else return(res)}# bu is defined
     #both are defined, logitmetalog case
-  res <- ifelse(p==0 | p==1, 0, res*(bu-bl)*eQm/(1+eQm)^2)
+   res <- res*(bu-bl)*eQm/(1+eQm)^2
+  #res <- ifelse(p==0 | p==1, 0, res*(bu-bl)*eQm/(1+eQm)^2)
   if(log) return(log(res))
   res
 }
@@ -217,9 +219,9 @@ fmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE, log=FALSE){
 #' @export
 #' @examples
 #' dqmetalog(p, a)
-dqmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE, log=FALSE){
+dqmetalog <- function(p, a, bl=-Inf, bu=Inf, log.p=FALSE, log=FALSE){
   res <- 1/fmetalog(p,a,bl, bu, log.p, log=FALSE)
-  if(log) return(log(res))
+  if(log) return(ifelse(is.finite(res),log(res),res))
   res
 }
 
@@ -237,7 +239,7 @@ dqmetalog <- function(p, a, bl=NULL, bu=NULL, log.p=FALSE, log=FALSE){
 #' pmetalog(x, a)
 #' @importFrom stats approx
 
-pmetalog <- function(q, a, bl=NULL, bu=NULL, n_grid=50L, s_grid=2L, tol=1e-15, maxiter=1e3, log.p=FALSE){
+pmetalog <- function(q, a, bl=-Inf, bu=Inf, n_grid=50L, s_grid=2L, tol=1e-15, maxiter=1e3, log.p=FALSE){
 
   afun <- function(u, q, a, bl, bu) {q - qmetalog(u, a, bl, bu)}
   p_grd <- sort(c(tol, qpd::make_pgrid(n=n_grid, s=s_grid), 1-tol))
@@ -267,7 +269,7 @@ pmetalog <- function(q, a, bl=NULL, bu=NULL, n_grid=50L, s_grid=2L, tol=1e-15, m
 #' a <- c(2.4, 0.4, -0.08)
 #' rmetalog(100, a)
 #' @importFrom stats runif
-rmetalog <- function(n, a, bl=NULL, bu=NULL){
+rmetalog <- function(n, a, bl=-Inf, bu=Inf){
   qmetalog(stats::runif(n), a, bl,bu)
 }
 
@@ -276,7 +278,7 @@ rmetalog <- function(n, a, bl=NULL, bu=NULL){
 #' a <- c(9,  1.8, -1.13)
 #' is_metalog_valid(a)
 #' @export
-is_metalog_valid <- function(a, bl=NULL, bu=NULL){
+is_metalog_valid <- function(a, bl=-Inf, bu=Inf){
  grd <- make_tgrid()
  all(fmetalog(grd, a, bl, bu)>0)
 }

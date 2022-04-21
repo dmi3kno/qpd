@@ -8,17 +8,17 @@
 \alias{rmetalog}
 \title{Metalog distribution functions}
 \usage{
-qmetalog(p, a, bl = NULL, bu = NULL, log.p = FALSE)
+qmetalog(p, a, bl = -Inf, bu = Inf, log.p = FALSE)
 
-fmetalog(p, a, bl = NULL, bu = NULL, log.p = FALSE, log = FALSE)
+fmetalog(p, a, bl = -Inf, bu = Inf, log.p = FALSE, log = FALSE)
 
-dqmetalog(p, a, bl = NULL, bu = NULL, log.p = FALSE, log = FALSE)
+dqmetalog(p, a, bl = -Inf, bu = Inf, log.p = FALSE, log = FALSE)
 
 pmetalog(
   q,
   a,
-  bl = NULL,
-  bu = NULL,
+  bl = -Inf,
+  bu = Inf,
   n_grid = 50L,
   s_grid = 2L,
   tol = 1e-15,
@@ -26,16 +26,16 @@ pmetalog(
   log.p = FALSE
 )
 
-rmetalog(n, a, bl = NULL, bu = NULL)
+rmetalog(n, a, bl = -Inf, bu = Inf)
 }
 \arguments{
 \item{p}{vector of cumulative probabilities corresponding to quantile values}
 
 \item{a}{vector of \code{a}-coefficient parameters of metalog distribution}
 
-\item{bl}{real value of lower boundary (for bounded metalog). Default NULL}
+\item{bl}{real value of lower boundary (for bounded metalog). Default -Inf}
 
-\item{bu}{real value of upper boundary (for bounded metalog). Default NULL}
+\item{bu}{real value of upper boundary (for bounded metalog). Default Inf}
 
 \item{log.p}{should log probability be returned}
 

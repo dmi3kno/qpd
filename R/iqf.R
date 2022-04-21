@@ -4,7 +4,7 @@
 #'
 #' @return function. Approximated CDF for a given quantile function.
 #' The inverse function will have the following additional arguments, passed to stats::uniroot()
-#' lower=0, upper=1, tol=1e-6, silent=TRUE.
+#' lower=0, upper=1, tol=1e-6, silent=TRUE, trace=0.
 #' The resulting inverse quantile function is fully vectorized with regards to
 #' all of its arguments (shorter vectors are recycled).
 #'
@@ -17,7 +17,7 @@
 #' x <- qmyfun(1:9/10, 2, 3)
 #' pmyfun(x, 2, 3)
 iqf <- function(QFUN){
-  function(q, ..., lower=0, upper=1, tol=1e-6, silent=TRUE){
+  function(q, ..., lower=0, upper=1, tol=1e-6, silent=TRUE, trace=0){
    dots <- list(...)
    dots_rec <- lapply(dots, rep, length.out=length(q)) # crude recycling
    dots_t <- do.call(Map, c(f = list, dots_rec))
@@ -25,7 +25,7 @@ iqf <- function(QFUN){
 
    ps <- sapply(seq_along(q), function(i) {
     tmp_ps <- NULL
-    tmp_ps <- try(stats::uniroot(afun, .fun=QFUN, .arglst=dots_t[[i]],
+    tmp_ps <- try(stats::uniroot(afun, .fun=QFUN, .arglst=dots_t[[i]], extendInt = "no", trace=trace,
                                  lower=lower, upper = upper, x=q[i], tol = tol),
                   silent=silent)
     ifelse(is.null(tmp_ps) || inherits(tmp_ps, "try-error"), NA, tmp_ps$root)

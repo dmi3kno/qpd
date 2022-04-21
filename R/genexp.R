@@ -53,9 +53,9 @@ fgenexp <- function(p, alpha, lambda){
 #' @rdname genexp
 #' @export
 dqgenexp <- function(p, alpha, lambda, log=FALSE){
-  res <- fgenexp(p, alpha, lambda)
-  if (log) return(log(1/res))
-  1/res
+  res <- 1/fgenexp(p, alpha, lambda)
+  if(log) return(ifelse(is.finite(res),log(res),res))
+  res
 }
 
 #' @param n number of samples to draw

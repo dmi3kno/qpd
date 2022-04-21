@@ -39,9 +39,9 @@ fgnk <- function(p,A,B,C=0.8,g,k, log=FALSE, zscale=FALSE){
 #' @export
 dqgnk <- function(p,A,B,C=0.8,g,k, log=FALSE, zscale=FALSE){
   stopifnot(B>0 && k>=-0.5)
-  res <- fgnk(p, A,B, C, g, k, log=FALSE, zscale)
-  if (log) return(log(1/res))
-  1/res
+  res <- 1/fgnk(p, A,B, C, g, k, log=FALSE, zscale)
+  if(log) return(ifelse(is.finite(res),log(res),res))
+  res
 }
 
 #' @param n numeric number of samples to draw

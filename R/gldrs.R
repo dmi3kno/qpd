@@ -32,9 +32,9 @@ fGLDrs <- function(u, l1, l2, l3, l4){
 #' @rdname GLDrs
 #' @export
 dqGLDrs <- function(u, l1, l2, l3, l4, log=FALSE){
-  res <- fGLDrs(u, l1, l2, l3, l4)
-  if(log) return(log(1/res))
-  1/res
+  res <- 1/fGLDrs(u, l1, l2, l3, l4)
+  if(log) return(ifelse(is.finite(res),log(res),res))
+  res
 }
 
 #' @rdname GLDrs

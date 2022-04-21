@@ -21,7 +21,7 @@ qfld<- function(p, bt, k, dlt=0.5){
   stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
   stopifnot("k parameter should be non-negative!"=(k>=0))
 
-  return(bt*(1-dlt)*log(p)-dlt*log(1-p)+k*p)
+  return(bt*((1-dlt)*log(p)-dlt*log(1-p)+k*p))
 }
 
 #' @rdname fld
@@ -30,7 +30,7 @@ ffld <- function(p, bt, k, dlt=0.5){
   stopifnot("Beta parameter should be non-negative!"=(bt>=0))
   stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
   stopifnot("k parameter should be non-negative!"=(k>=0))
-  return(bt*(1-dlt)/p+dlt/(1-p)+k)
+  return(bt*((1-dlt)/p+dlt/(1-p)+k))
 }
 
 #' @param log logical; if TRUE, log density is returnes. Default is FALSE
@@ -38,8 +38,15 @@ ffld <- function(p, bt, k, dlt=0.5){
 #' @export
 dqfld <- function(p, bt, k, dlt=0.5, log=FALSE){
   res <- 1/ffld(p, bt=bt, k=k, dlt=dlt)
-  if(log) return(log(res))
+  if(log) return(ifelse(is.finite(res),log(res),res))
   res
+}
+
+#' @param n numeric; number of samples to draw from FLD distribution
+#' @rdname fld
+#' @export
+rfld <- function(n, bt, k, dlt=0.5){
+  qfld(runif(n), bt, k, dlt=dlt)
 }
 
 #' @param q vector of quantiles

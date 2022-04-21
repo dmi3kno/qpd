@@ -29,6 +29,6 @@ dqnorm <- function(p, mean=0, sd=1, log=FALSE){
   ifelse(p<0 | p>1, NA_real_, p) # replace invalid inputs with NA
   z <- stats::qnorm(p, mean, sd)
   res <- stats::dnorm(z, mean, sd)
-  if(log) return(log(res))
+  if(log) return(ifelse(is.finite(res),log(res),res))
   res
 }

@@ -22,7 +22,7 @@ fexp <- function(u, lambda){
 dqexp <- function(u, lambda, log=FALSE){
   stopifnot(lambda>0)
   res <- lambda*(1-u)
-  if(log) return(log(res))
+  if(log) return(ifelse(is.finite(res),log(res),res))
   res
 }
 

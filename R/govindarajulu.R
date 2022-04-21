@@ -33,9 +33,9 @@ fgovindarajulu <- function(p, sg, bt){
 #' @export
 dqgovindarajulu <- function(p, sg, bt, log=FALSE){
   stopifnot(sg>0 & bt>0)
-  res <- fgovindarajulu(p, sg, bt)
-  if(log) return(log(1/res))
-  1/res
+  res <- 1/fgovindarajulu(p, sg, bt)
+  if(log) return(ifelse(is.finite(res),log(res),res))
+  res
 }
 
 #' @param q vector of quantiles

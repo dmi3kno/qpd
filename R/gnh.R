@@ -40,9 +40,9 @@ fgnh <- function(p,A,B,C=0.8,g,h, log=FALSE, zscale=FALSE){
 #' @export
 dqgnh <- function(p,A,B,C=0.8,g,h, log=FALSE, zscale=FALSE){
   stopifnot(B>0 && h>=0)
-  res <- fgnh(p, A,B, C, g, h, log=FALSE, zscale)
-  if (log) return(log(1/res))
-  1/res
+  res <- 1/fgnh(p, A,B, C, g, h, log=FALSE, zscale)
+  if(log) return(ifelse(is.finite(res),log(res),res))
+  res
 }
 #' @param n numeric number of samples to draw
 #' @rdname gnh

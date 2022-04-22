@@ -46,7 +46,7 @@ dwakeby(
   log = FALSE
 )
 
-is_wakeby_valid(alpha, beta, gamma, delta, xi, n_grid = 50L, s_grid = 5L)
+is_wakeby_valid(alpha, beta, gamma, delta, xi, n_grid = 100L, s_grid = 2L)
 
 ffwakeby(u, alpha, beta, gamma, delta, xi)
 }

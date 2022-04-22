@@ -45,7 +45,7 @@ rmetalog(n, a, bl = -Inf, bu = Inf)
 
 \item{n_grid}{integer size of helper grid to be passed to \code{make_pgrid}. Default is 50}
 
-\item{s_grid}{integer beta shape of helper grid to be passed to \code{make_pgrid}. Default is 5}
+\item{s_grid}{integer beta shape of helper grid to be passed to \code{make_pgrid}. Default is 2}
 
 \item{tol}{tolerance value, default is 1e-6}
 

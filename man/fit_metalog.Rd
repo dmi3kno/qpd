@@ -32,7 +32,7 @@ approx_max_metalog(
   tol = 1e-07
 )
 
-is_metalog_valid(a, bl = -Inf, bu = Inf)
+is_metalog_valid(a, bl = -Inf, bu = Inf, n_grid = 50L, s_grid = 2L)
 }
 \arguments{
 \item{p}{vector of cumulative probabilities corresponding to quantile values}

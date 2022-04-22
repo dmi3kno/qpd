@@ -104,7 +104,7 @@ dwakeby <- function(x, alpha, beta, gamma, delta, xi, n_grid=50L, s_grid=5L, tol
 
 #' @rdname wakeby
 #' @export
-is_wakeby_valid <- function(alpha, beta, gamma, delta, xi, n_grid=50L, s_grid=5L){
+is_wakeby_valid <- function(alpha, beta, gamma, delta, xi, n_grid=100L, s_grid=2L){
   grd <- make_pgrid(n_grid, s_grid)
   all(fwakeby(grd, alpha, beta, gamma, delta, xi)>0)
 }

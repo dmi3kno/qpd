@@ -204,14 +204,17 @@ fmetalog <- function(p, a, bl=-Inf, bu=Inf, log.p=FALSE, log=FALSE){
    }
   res <- ifelse(p==0, bl,
                 ifelse(p==1, bu, res))
-  if(is.infinite(bl) && is.infinite(bu)){if(log) return(log(res)) else return(res)}
+  if(is.infinite(bl) && is.infinite(bu)){
+     if(log) return(ifelse(is.finite(res),log(res),res)) else return(res)}
   eQm <- exp(qmetalog(p,a))
-  if(is.infinite(bu)) {res <- ifelse(p==0, 0, (res*eQm)); if(log) return(log(res)) else return(res)}# bl is defined
-  if(is.infinite(bl)) {res <- ifelse(p==1, 0, (res/eQm)); if(log) return(log(res)) else return(res)}# bu is defined
+  if(is.infinite(bu)) {res <- ifelse(p==0, 0, (res*eQm));
+     if(log) return(ifelse(is.finite(res),log(res),res)) else return(res)}# bl is defined
+  if(is.infinite(bl)) {res <- ifelse(p==1, 0, (res/eQm));
+     if(log) return(ifelse(is.finite(res),log(res),res)) else return(res)}# bu is defined
     #both are defined, logitmetalog case
    res <- res*(bu-bl)*eQm/(1+eQm)^2
   #res <- ifelse(p==0 | p==1, 0, res*(bu-bl)*eQm/(1+eQm)^2)
-  if(log) return(log(res))
+  if(log) return(ifelse(is.finite(res),log(res),res))
   res
 }
 
@@ -227,7 +230,7 @@ dqmetalog <- function(p, a, bl=-Inf, bu=Inf, log.p=FALSE, log=FALSE){
 
 #' @param q real vector of values
 #' @param n_grid integer size of helper grid to be passed to `make_pgrid`. Default is 50
-#' @param s_grid integer beta shape of helper grid to be passed to `make_pgrid`. Default is 5
+#' @param s_grid integer beta shape of helper grid to be passed to `make_pgrid`. Default is 2
 #' @param tol tolerance value, default is 1e-6
 #' @param maxiter maximum number of iterations for approximation, default is 1e6
 #' @param log.p should log probability be returned
@@ -278,7 +281,7 @@ rmetalog <- function(n, a, bl=-Inf, bu=Inf){
 #' a <- c(9,  1.8, -1.13)
 #' is_metalog_valid(a)
 #' @export
-is_metalog_valid <- function(a, bl=-Inf, bu=Inf){
- grd <- make_tgrid()
+is_metalog_valid <- function(a, bl=-Inf, bu=Inf, n_grid=50L, s_grid=2L){
+ grd <- make_pgrid(n_grid, s_grid)
  all(fmetalog(grd, a, bl, bu)>0)
 }

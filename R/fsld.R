@@ -1,4 +1,4 @@
-#' Generalized Flattened Logistic Distribution (FLD)
+#' Flattened Skew-Logistic Distribution (FSLD)
 #'
 #' Defines quantile function (ICDF), probability density and quantile density function as well as probability function (CDF) for generalized flattened logistic distribution
 #' @param p vector of probabilities
@@ -11,34 +11,35 @@
 #' @name fld
 #'
 #' @examples
-#' qgfld(0.1, 0.5, 0.3, 0.5)
+#' qfsld(0.1, 0.5, 0.3, 0.5)
 #' # centered gfld
 #' p <- runif(1e4)
-#' x <- qgfld(p, 0.25, 1)-qgfld(0.5, 0.25, 1)
+#' x <- qfsld(p, 0.25, 1)-qfsld(0.5, 0.25, 1)
 #' hist(x,30)
 #' @export
-qgfld<- function(p, bt, k, dlt=0.5, a=0){
+qfsld<- function(p, bt, k, dlt=0.5, a=0){
   stopifnot("Beta parameter should be non-negative!"=(bt>=0))
   stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
   stopifnot("k parameter should be non-negative!"=(k>=0))
-
-  return(a+bt/dlt*((1-dlt)*log(p)-dlt*log(1-p)+dlt*k*p))
+  Qslogis <- (1-dlt)*log(p)-dlt*log(1-p)
+  Qunf <- k*p
+  return(a+bt*(Qslogis+Qunf))
 }
 
 #' @rdname fld
 #' @export
-fgfld <- function(p, bt, k, dlt=0.5, a=0){
+ffsld <- function(p, bt, k, dlt=0.5, a=0){
   stopifnot("Beta parameter should be non-negative!"=(bt>=0))
   stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
   stopifnot("k parameter should be non-negative!"=(k>=0))
-  return(bt/dlt*((1-dlt)/p+dlt/(1-p)+dlt*k))
+  return(bt*((1-dlt)/p+dlt/(1-p)+k))
 }
 
 #' @param log logical; if TRUE, log density is returnes. Default is FALSE
 #' @rdname fld
 #' @export
-dqgfld <- function(p, bt, k, dlt=0.5, a=0, log=FALSE){
-  res <- 1/fgfld(p, bt=bt, k=k, dlt=dlt, a=a)
+dqfsld <- function(p, bt, k, dlt=0.5, a=0, log=FALSE){
+  res <- 1/ffsld(p, bt=bt, k=k, dlt=dlt, a=a)
   if(log) return(ifelse(is.finite(res),log(res),res))
   res
 }
@@ -46,8 +47,8 @@ dqgfld <- function(p, bt, k, dlt=0.5, a=0, log=FALSE){
 #' @param n numeric; number of samples to draw from FLD distribution
 #' @rdname fld
 #' @export
-rgfld <- function(n, bt, k, dlt=0.5, a=0){
-  qgfld(runif(n), bt, k, dlt=dlt, a=a)
+rfsld <- function(n, bt, k, dlt=0.5, a=0){
+  qfsld(runif(n), bt, k, dlt=dlt, a=a)
 }
 
 #' @param q vector of quantiles
@@ -55,12 +56,12 @@ rgfld <- function(n, bt, k, dlt=0.5, a=0){
 #' @rdname fld
 #' @importFrom stats uniroot
 #' @export
-pgfld <- function(q, bt, k, dlt=0.5, a=a, tol=1e-06){
+pfsld <- function(q, bt, k, dlt=0.5, a=a, tol=1e-06){
   stopifnot("Beta parameter should be non-negative!"=(bt>=0))
   stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
   stopifnot("k parameter should be non-negative!"=(k>=0))
 
-  afun <- function(x, p) {x - qgfld(p, bt=bt, k=k, dlt=dlt, a=a)}
+  afun <- function(x, p) {x - qfsld(p, bt=bt, k=k, dlt=dlt, a=a)}
   ps <- sapply(q, function(.q) {
     tmp_ps <- NULL
     tmp_ps <- try(stats::uniroot(afun, lower=0, upper = 1, x=.q, tol = tol), silent=TRUE)

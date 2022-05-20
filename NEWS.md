@@ -7,7 +7,7 @@
  - Generalized Normal distribution with skew parameter (QPD)
  - Govindarajulu distribution
  - Generalized Lambda Distribution (RS parameterization)
- - (Generalized) Flattened Logistic Distribution
+ - Flattened (Skew-) Logistic Distribution
  - Wakeby distribution
  - Exponential distribution (quantile density functions)
  - g-and-h distribution, g-and-k distribution

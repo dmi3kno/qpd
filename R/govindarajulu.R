@@ -10,6 +10,7 @@
 #'
 #' @examples
 #' qgovindarajulu(0.1, 1, 5)
+#' fgovindarajulu((1:5)/10, 1, 5)
 #' @export
 qgovindarajulu <- function(p, sg, bt){
   stopifnot(sg>0 & bt>0)
@@ -22,7 +23,7 @@ qgovindarajulu <- function(p, sg, bt){
 #' @export
 fgovindarajulu <- function(p, sg, bt){
   stopifnot(sg>0 & bt>0)
-  stopifnot(all(p>=0 & p<=1 || is.na(p)))
+  stopifnot(all(p>=0 & p<=1 | is.na(p)))
   bp1 <- bt+1
   #sg*bt*bp1*p^bt*(1-p) # wrong formula in Nair et al 2020
   sg*bt*bp1*p^(bt-1)*(1-p)

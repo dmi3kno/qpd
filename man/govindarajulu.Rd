@@ -42,4 +42,5 @@ Defines quantile function (ICDF), probability density and quantile density funct
 }
 \examples{
 qgovindarajulu(0.1, 1, 5)
+fgovindarajulu((1:5)/10, 1, 5)
 }

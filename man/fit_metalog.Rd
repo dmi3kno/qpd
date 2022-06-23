@@ -7,7 +7,14 @@
 \alias{is_metalog_valid}
 \title{Fitting the metalog functions}
 \usage{
-fit_metalog(p, q, bl = -Inf, bu = Inf, log.p = FALSE)
+fit_metalog(
+  p,
+  q,
+  bl = -Inf,
+  bu = Inf,
+  log.p = FALSE,
+  tol = .Machine$double.eps^2
+)
 
 approx_metalog(
   q,
@@ -18,7 +25,7 @@ approx_metalog(
   thin = FALSE,
   n_grid = 1000,
   s_grid = 2L,
-  tol = 1e-07
+  tol = .Machine$double.eps^2
 )
 
 approx_max_metalog(
@@ -45,6 +52,8 @@ is_metalog_valid(a, bl = -Inf, bu = Inf, n_grid = 50L, s_grid = 2L)
 
 \item{log.p}{are probabilities provided on log scale. Default FALSE}
 
+\item{tol}{tolerance for solve() and qr.solve(), default is .Machine$double.eps^2}
+
 \item{nterms}{integer number of terms for approximating metalog. Default is 3}
 
 \item{p_grid}{the grid of probability values the quantiles q correspond to. This would be specified if metalog is fitted to the empirical CDF. Default is NULL.}
@@ -54,8 +63,6 @@ is_metalog_valid(a, bl = -Inf, bu = Inf, n_grid = 50L, s_grid = 2L)
 \item{n_grid}{in case data thinning is performed, integer number of quantiles to extract from data, if data vector \code{q} is longer than this value}
 
 \item{s_grid}{in case data thinning is performed, probability grid shape parameter passed to \code{qpd::make_pgrid()}. Default is 10.}
-
-\item{tol}{tolerance for qr.solve()}
 
 \item{a}{vector of \code{a}-coefficient parameters of metalog distribution}
 }

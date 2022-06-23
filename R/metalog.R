@@ -44,19 +44,20 @@ metalog_prepare_Y <- function(p, n, nterms){
 #' @param bl real value of lower boundary (for bounded metalog). Default -Inf
 #' @param bu real value of upper boundary (for bounded metalog). Default Inf
 #' @param log.p are probabilities provided on log scale. Default FALSE
+#' @param tol tolerance for solve(). Default is .Machine$double.eps^2
 #' @rdname fit_metalog
 #' @export
 #' @examples
 #' p <- c(0.1, 0.5, 0.9)
 #' q <- c(4, 9, 12)
 #' fit_metalog(p,q)
-fit_metalog <- function(p, q, bl=-Inf, bu=Inf, log.p=FALSE){
+fit_metalog <- function(p, q, bl=-Inf, bu=Inf, log.p=FALSE, tol=.Machine$double.eps^2){
   n <- length(q)
   if(length(p)!=n) stop("Length of p and q must be equal")
   if(log.p) p <- exp(p)
   z <- metalog_prepare_z(q, bl, bu)
   Y <- metalog_prepare_Y(p, n, n)
-  solve(Y, z)
+  solve(Y, z, tol=tol)
 }
 
 #' @param nterms integer number of terms for approximating metalog. Default is 3
@@ -64,11 +65,11 @@ fit_metalog <- function(p, q, bl=-Inf, bu=Inf, log.p=FALSE){
 #' @param thin logical. Should original data be thinned. Default is FALSE.
 #' @param n_grid in case data thinning is performed, integer number of quantiles to extract from data, if data vector `q` is longer than this value
 #' @param s_grid in case data thinning is performed, probability grid shape parameter passed to `qpd::make_pgrid()`. Default is 10.
-#' @param tol tolerance for qr.solve()
+#' @param tol tolerance for solve() and qr.solve(), default is .Machine$double.eps^2
 #' @rdname fit_metalog
 #' @importFrom stats quantile
 #' @export
-approx_metalog <- function(q, nterms=3L, bl=-Inf, bu=Inf, p_grid=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
+approx_metalog <- function(q, nterms=3L, bl=-Inf, bu=Inf, p_grid=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=.Machine$double.eps^2){
   stopifnot("Metalog should have at least 2 terms!"=nterms>1)
   n <- length(q)
   if (is.null(p_grid)){ # do it if p_grid is not specified
@@ -94,7 +95,7 @@ approx_metalog <- function(q, nterms=3L, bl=-Inf, bu=Inf, p_grid=NULL, thin=FALS
   M4i <- t(Y) %*% Y
   Mi <- tryCatch({
      #message("Trying to invert the matrix with solve()")
-     solve(M4i)
+     solve(M4i, tol=tol)
     },
     error = function(e) {
       #message("Solve failed. Trying Cholesky decomposition.")

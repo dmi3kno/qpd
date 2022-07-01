@@ -5,6 +5,8 @@
 \alias{dMyerson}
 \alias{pMyerson}
 \alias{qMyerson}
+\alias{fMyerson}
+\alias{dqMyerson}
 \alias{rMyerson}
 \title{Density function for Generalized Lognormal distribution (aka Myerson).}
 \usage{
@@ -14,7 +16,11 @@ pMyerson(q, q1, q2, q3, alpha = 0.25)
 
 qMyerson(p, q1, q2, q3, alpha = 0.25)
 
-rMyerson(n, q1, q2, q3, lower = -Inf, upper = Inf, alpha = 0.25)
+fMyerson(p, q1, q2, q3, alpha = 0.25)
+
+dqMyerson(p, q1, q2, q3, alpha = 0.25)
+
+rMyerson(n, q1, q2, q3, alpha = 0.25)
 }
 \arguments{
 \item{x, q}{vector of quantiles.}
@@ -28,8 +34,6 @@ Default value is 0.25}
 \item{p}{vector of probabilities}
 
 \item{n}{number of observations. If `length(n)>1``, the length is taken to be the number required.}
-
-\item{lower, upper}{vectors of lower and upper bounds of distribution}
 }
 \value{
 a vector of probabilities of length equal to \code{length(x)}
@@ -43,5 +47,7 @@ Density function for Generalized Lognormal distribution (aka Myerson).
 dMyerson(0.25, 10, 20, 40)
 pMyerson(0.25, 10, 20, 40)
 qMyerson(0.25, 10, 20, 40)
+fMyerson(0.25, 10, 20, 40)
+fMyerson(0.25, 10, 20, 40)
 rMyerson(1, 10, 20, 40)
 }

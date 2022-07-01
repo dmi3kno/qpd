@@ -13,7 +13,7 @@ pSkewNorm(x, q1, q3, s = 0)
 
 qSkewNorm(p, q1, q3, s = 0)
 
-rSkewNorm(n, q1, q3, s = 0, lower = -Inf, upper = Inf)
+rSkewNorm(n, q1, q3, s = 0)
 }
 \arguments{
 \item{x}{vector of quantiles. If `length(n)>1``, the length is taken to be the number required.}
@@ -27,10 +27,6 @@ rSkewNorm(n, q1, q3, s = 0, lower = -Inf, upper = Inf)
 \item{p}{numeric vector of probabilities}
 
 \item{n}{number of observations. If `length(n)>1``, the length is taken to be the number required.}
-
-\item{lower}{lower bound for distribution}
-
-\item{upper}{upper bound for distribution}
 }
 \value{
 a vector of probabilities of length equal to \code{length(x)}.

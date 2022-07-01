@@ -45,19 +45,17 @@ qSkewNorm <- function(p,q1, q3,s=0){
 }
 
 #' @param n number of observations. If `length(n)>1``, the length is taken to be the number required.
-#' @param lower lower bound for distribution
-#' @param upper upper bound for distribution
 #'
 #' @return a length `n` vector of random values.
 #' @export
 #' @rdname SkewNorm
 #' @examples
 #' rSkewNorm(1, 10, 20, 0.5)
-rSkewNorm <- function(n,q1,q3,s=0, lower=-Inf, upper=Inf){
+rSkewNorm <- function(n,q1,q3,s=0){
   # random number generator
   stopifnot(s>-1, s<1)
   q2 <- q1 + (s + 1) * (q3 - q1) / 2
-  rMyerson(n, q1, q2, q3, alpha=pnorm(-3), lower=lower, upper=upper)
+  rMyerson(n, q1, q2, q3, alpha=pnorm(-3))
 }
 
 

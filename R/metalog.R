@@ -21,7 +21,7 @@ metalog_prepare_Y <- function(p, n, nterms){
   if (nterms>4)
     for (m in 5:nterms){
       if(odd){
-        pmhalf <- pmhalf*pmhalf;
+        pmhalf <- pmhalf*(p-0.5);
         Y[,m] <- pmhalf;
       } else {
         Y[,m] <- pmhalf*log_odds

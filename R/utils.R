@@ -1,3 +1,11 @@
+#' internal function for calculating the logit
+#' @keywords  internal
+logit <- function(x){log(x)-log1p(-x)}
+
+#' internal function for calculating the inverse logit
+#' @keywords  internal
+invlogit <- function(x){1/(1+exp(-x))}
+
 #' internal function for checking if the number is odd
 #' @keywords  internal
 is.odd <- function(x){round(x,0) %% 2 != 0}

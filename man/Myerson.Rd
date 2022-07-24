@@ -2,18 +2,14 @@
 % Please edit documentation in R/Myerson.R
 \name{Myerson}
 \alias{Myerson}
-\alias{dMyerson}
-\alias{pMyerson}
 \alias{qMyerson}
 \alias{fMyerson}
 \alias{dqMyerson}
 \alias{rMyerson}
-\title{Density function for Generalized Lognormal distribution (aka Myerson).}
+\alias{dMyerson}
+\alias{pMyerson}
+\title{Density function for Generalized Lognormal distribution (aka probit Myerson).}
 \usage{
-dMyerson(x, q1, q2, q3, alpha = 0.25)
-
-pMyerson(q, q1, q2, q3, alpha = 0.25)
-
 qMyerson(p, q1, q2, q3, alpha = 0.25)
 
 fMyerson(p, q1, q2, q3, alpha = 0.25)
@@ -21,9 +17,13 @@ fMyerson(p, q1, q2, q3, alpha = 0.25)
 dqMyerson(p, q1, q2, q3, alpha = 0.25)
 
 rMyerson(n, q1, q2, q3, alpha = 0.25)
+
+dMyerson(x, q1, q2, q3, alpha = 0.25)
+
+pMyerson(q, q1, q2, q3, alpha = 0.25)
 }
 \arguments{
-\item{x, q}{vector of quantiles.}
+\item{p}{vector of probabilities}
 
 \item{q1, q2, q3}{numeric values representing bottom quantile, middle quantile (50th percentile)
 and top quantile. Quantiles are assumed to be symmetrical.}
@@ -31,9 +31,9 @@ and top quantile. Quantiles are assumed to be symmetrical.}
 \item{alpha}{numerical fixed proportion of distribution below the bottom quantile.
 Default value is 0.25}
 
-\item{p}{vector of probabilities}
-
 \item{n}{number of observations. If `length(n)>1``, the length is taken to be the number required.}
+
+\item{x, q}{vector of quantiles.}
 }
 \value{
 a vector of probabilities of length equal to \code{length(x)}
@@ -41,13 +41,13 @@ a vector of probabilities of length equal to \code{length(x)}
 a vector of exceedance probabilities of length equal to \code{length(x)}.
 }
 \description{
-Density function for Generalized Lognormal distribution (aka Myerson).
+Density function for Generalized Lognormal distribution (aka probit Myerson).
 }
 \examples{
-dMyerson(0.25, 10, 20, 40)
-pMyerson(0.25, 10, 20, 40)
 qMyerson(0.25, 10, 20, 40)
 fMyerson(0.25, 10, 20, 40)
 fMyerson(0.25, 10, 20, 40)
 rMyerson(1, 10, 20, 40)
+dMyerson(15, 10, 20, 40)
+pMyerson(0.25, 10, 20, 40)
 }

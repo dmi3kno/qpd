@@ -7,6 +7,24 @@ seq_grid <- function(f, t, n){
   f+(t-f)*(seq_len(n)-0.5)/n
 }
 
+#' Compute ECDF for a sample
+#'
+#' Function for creating an empirical CDF from a numerical sample
+#' @param x numeric sample
+#' @return data frame with 2 columns p - vector of empirical probabilities, q - vector of sorted original sample values
+#'
+#' @rdname ecdf
+#' @export
+#'
+#' @examples
+#' make_ecdf_df(runif(10))
+#'
+make_ecdf_df <- function(x){
+  # ecdf assignment trick to avoid 0 and 1
+  data.frame(p=(seq_along(x)-0.5)/length(x),
+             q=sort(x), stringsAsFactors = FALSE)
+}
+
 #' Make probability grid
 #' @description Functions for creating a probability grid using different method
 #' `make_pgrid` uses beta-distribution method

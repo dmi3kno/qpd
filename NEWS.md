@@ -14,7 +14,7 @@
  - Singe and two-parameter Rayleigh distribution
  - Normal distribution (quantile density functions)
  - Generalized Exponential distribution
- - Myerson distribution
+ - Myerson distribution and its variations (logit-Myerson, sech-Myerson and cauchy-Myerson)
 * Function for fitting beta distribution to 3 elicited quantiles
 * Service functions for accumulating simplices
 * HDR pseudo random numbers algorithm by Hubbard Decision Research
@@ -22,3 +22,4 @@
 * Service functions for checking the validity of quantile functions by proxy root finding with Chebyshev polynomials
 * Added generic inverse quantile function factory `iqf` for creating approximated CDFs for quantile distributions.
 * Change default metalog bounds to (-Inf,Inf)
+* Add `make_ecdf_df()` for creating ECDF from sample.

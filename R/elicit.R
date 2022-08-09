@@ -124,7 +124,6 @@ fit_dir <- function(df, id_col, spt_col, prb_col){
 
 
 #' @rdname elicit
-#' @return
 #' @export
 fit_gendir <- function(df, id_col, spt_col, prb_col){
   spt_v <- unique(df[[spt_col]])

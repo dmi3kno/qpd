@@ -21,8 +21,6 @@ fit_gendir(df, id_col, spt_col, prb_col)
 \value{
 data frame with 2(3) columns containing category id and the parameters of Dirichlet or
 Generalized Dirichlet distribution
-
-
 }
 \description{
 Fit Dirichlet or Generalized Dirichlet distribution to the dataframe of elicited conditional QPPs

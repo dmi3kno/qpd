@@ -16,8 +16,7 @@
 #' dqlogis(p_grd)
 flogis <- function(p, location=0, scale=1, log=FALSE){
   ifelse(p<0 | p>1, NA_real_, p) # replace invalid inputs with NA
-  z <- stats::qlogis(p, location, scale)
-  res <- 1/stats::dlogis(z, location, scale)
+  res <- -scale/(p*(p-1))
   if(log) return(log(res))
   res
 }
@@ -27,8 +26,7 @@ flogis <- function(p, location=0, scale=1, log=FALSE){
 #' @importFrom stats qlogis dlogis
 dqlogis <- function(p, location=0, scale=1, log=FALSE){
   ifelse(p<0 | p>1, NA_real_, p) # replace invalid inputs with NA
-  z <- stats::qlogis(p, location, scale)
-  res <- stats::dlogis(z, location, scale)
+  res <- 1/flogis(p, location, scale)
   if(log) return(ifelse(is.finite(res),log(res),res))
   res
 }

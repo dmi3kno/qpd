@@ -107,9 +107,9 @@ frayleigh <- function(p, sigma){
 #' @rdname rayleigh
 #' @export
 dqrayleigh <- function(p, sigma, log=FALSE){
-  res <- 1/frayleigh(p, sigma)
-  if(log) return(ifelse(is.finite(res),log(res),res))
-  res
+  res <- frayleigh(p, sigma)
+  if(log) return(ifelse(is.finite(res),-log(res),res))
+  1/res
 }
 
 #' @rdname rayleigh

@@ -26,7 +26,7 @@ flogis <- function(p, location=0, scale=1, log=FALSE){
 #' @importFrom stats qlogis dlogis
 dqlogis <- function(p, location=0, scale=1, log=FALSE){
   ifelse(p<0 | p>1, NA_real_, p) # replace invalid inputs with NA
-  res <- 1/flogis(p, location, scale)
-  if(log) return(ifelse(is.finite(res),log(res),res))
-  res
+  res <- flogis(p, location, scale)
+  if(log) return(ifelse(is.finite(res),-log(res),res))
+  1/res
 }

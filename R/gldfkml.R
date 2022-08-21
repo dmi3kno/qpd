@@ -39,9 +39,9 @@ fGLDfkml <- function(u, l1, l2, l3, l4){
 #' @rdname GLDfkml
 #' @export
 dqGLDfkml <- function(u, l1, l2, l3, l4, log=FALSE){
-  res <- 1/fGLDfkml(u, l1, l2, l3, l4)
-  if(log) return(ifelse(is.finite(res),log(res),res))
-  res
+  res <- fGLDfkml(u, l1, l2, l3, l4)
+  if(log) return(ifelse(is.finite(res),-log(res),res))
+  1/res
 }
 
 #' @rdname GLDfkml

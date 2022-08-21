@@ -224,9 +224,9 @@ fmetalog <- function(p, a, bl=-Inf, bu=Inf, log.p=FALSE, log=FALSE){
 #' @examples
 #' dqmetalog(p, a)
 dqmetalog <- function(p, a, bl=-Inf, bu=Inf, log.p=FALSE, log=FALSE){
-  res <- 1/fmetalog(p,a,bl, bu, log.p, log=FALSE)
-  if(log) return(ifelse(is.finite(res),log(res),res))
-  res
+  res <- fmetalog(p,a,bl, bu, log.p, log=FALSE)
+  if(log) return(ifelse(is.finite(res),-log(res),res))
+  1/res
 }
 
 #' @param q real vector of values

@@ -21,9 +21,9 @@ fexp <- function(u, lambda){
 #' @export
 dqexp <- function(u, lambda, log=FALSE){
   stopifnot(lambda>0)
-  res <- lambda*(1-u)
-  if(log) return(ifelse(is.finite(res),log(res),res))
-  res
+  res <- fexp(u,lambda)
+  if(log) return(ifelse(is.finite(res),-log(res),res))
+  1/res
 }
 
 #' @rdname exp

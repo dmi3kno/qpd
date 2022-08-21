@@ -39,9 +39,9 @@ ffsld <- function(p, bt, k, dlt=0.5, a=0){
 #' @rdname fsld
 #' @export
 dqfsld <- function(p, bt, k, dlt=0.5, a=0, log=FALSE){
-  res <- 1/ffsld(p, bt=bt, k=k, dlt=dlt, a=a)
-  if(log) return(ifelse(is.finite(res),log(res),res))
-  res
+  res <- ffsld(p, bt=bt, k=k, dlt=dlt, a=a)
+  if(log) return(ifelse(is.finite(res),-log(res),res))
+  1/res
 }
 
 #' @param n numeric; number of samples to draw from FLD distribution

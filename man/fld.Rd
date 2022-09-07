@@ -17,7 +17,7 @@ dqfld(p, bt, k, a = 0, log = FALSE)
 
 rfld(n, bt, k, a = 0)
 
-pfld(q, bt, k, a = 0, tol = 1e-06)
+pfld(q, ..., lower = 0, upper = 1, tol = 1e-06, silent = TRUE, trace = 0)
 }
 \arguments{
 \item{p}{vector of probabilities}
@@ -34,7 +34,15 @@ pfld(q, bt, k, a = 0, tol = 1e-06)
 
 \item{q}{vector of quantiles}
 
-\item{tol}{tolerance value for optimization. Default value 1e-06}
+\item{...}{used by method}
+
+\item{lower, upper}{the \code{stats::uniroot} lower and upper end points of the interval to be searched. Defaults are 0 and 1, respectively}
+
+\item{tol}{the \code{stats::uniroot} desired accuracy (convergence tolerance). Default value 1e-06}
+
+\item{silent}{the \code{base::try} argument. Default is TRUE}
+
+\item{trace}{integer number passed to \code{stats::uniroot}; if positive, tracing information is produced. Higher values giving more details.}
 }
 \value{
 vector

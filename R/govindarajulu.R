@@ -40,27 +40,39 @@ dqgovindarajulu <- function(p, sg, bt, log=FALSE){
 }
 
 #' @param q vector of quantiles
-#' @param tol tolerance value for optimization. Default value 1e-06
+#' @param ... used by method
+#' @param lower,upper the `stats::uniroot` lower and upper end points of the interval to be searched. Defaults are 0 and 1, respectively
+#' @param tol the `stats::uniroot` desired accuracy (convergence tolerance). Default value 1e-06
+#' @param silent the `base::try` argument. Default is TRUE
+#' @param trace integer number passed to `stats::uniroot`; if positive, tracing information is produced. Higher values giving more details.
 #' @rdname govindarajulu
 #' @importFrom stats uniroot
+#' @include iqf.R
 #' @export
-pgovindarajulu <- function(q, sg, bt, tol=1e-06){
-  stopifnot(sg>0 & bt>0)
+pgovindarajulu <- iqf(qgovindarajulu)
 
-  afun <- function(x, p) {x - qgovindarajulu(p, sg, bt)}
-  ps <- sapply(q, function(.q) {
-    tmp_ps <- NULL
-    tmp_ps <- try(stats::uniroot(afun, lower=0, upper = 1, x=.q, tol = tol), silent=TRUE)
-    ifelse(is.null(tmp_ps) || inherits(tmp_ps, "try-error"), NA, tmp_ps$root)
-    #tmp_ps
-  })
-
-  ps[ps < 0] <- 0
-  ps[ps>sg] <- 1
-
-  ps[!is.finite(ps)] <- NA
-  ps
-}
+# ' @param q vector of quantiles
+# ' @param tol tolerance value for optimization. Default value 1e-06
+# ' @rdname govindarajulu
+# ' @importFrom stats uniroot
+# ' @export
+# pgovindarajulu <- function(q, sg, bt, tol=1e-06){
+#   stopifnot(sg>0 & bt>0)
+#
+#   afun <- function(x, p) {x - qgovindarajulu(p, sg, bt)}
+#   ps <- sapply(q, function(.q) {
+#     tmp_ps <- NULL
+#     tmp_ps <- try(stats::uniroot(afun, lower=0, upper = 1, x=.q, tol = tol), silent=TRUE)
+#     ifelse(is.null(tmp_ps) || inherits(tmp_ps, "try-error"), NA, tmp_ps$root)
+#     #tmp_ps
+#   })
+#
+#   ps[ps < 0] <- 0
+#   ps[ps>sg] <- 1
+#
+#   ps[!is.finite(ps)] <- NA
+#   ps
+# }
 
 #' @param x numeric vector
 #' @rdname govindarajulu

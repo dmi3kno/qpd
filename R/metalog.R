@@ -242,7 +242,6 @@ dqmetalog <- function(p, a, bl=-Inf, bu=Inf, log.p=FALSE, log=FALSE){
 #' x <- c(5, 9, 14)
 #' pmetalog(x, a)
 #' @importFrom stats approx
-
 pmetalog <- function(q, a, bl=-Inf, bu=Inf, n_grid=50L, s_grid=2L, tol=1e-15, maxiter=1e3, log.p=FALSE){
 
   afun <- function(u, q, a, bl, bu) {q - qmetalog(u, a, bl, bu)}

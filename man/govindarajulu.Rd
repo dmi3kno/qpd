@@ -15,7 +15,15 @@ fgovindarajulu(p, sg, bt)
 
 dqgovindarajulu(p, sg, bt, log = FALSE)
 
-pgovindarajulu(q, sg, bt, tol = 1e-06)
+pgovindarajulu(
+  q,
+  ...,
+  lower = 0,
+  upper = 1,
+  tol = 1e-06,
+  silent = TRUE,
+  trace = 0
+)
 
 dgovindarajulu(x, sg, bt, tol = 1e-06)
 }
@@ -30,7 +38,15 @@ dgovindarajulu(x, sg, bt, tol = 1e-06)
 
 \item{q}{vector of quantiles}
 
-\item{tol}{tolerance value for optimization. Default value 1e-06}
+\item{...}{used by method}
+
+\item{lower, upper}{the \code{stats::uniroot} lower and upper end points of the interval to be searched. Defaults are 0 and 1, respectively}
+
+\item{tol}{the \code{stats::uniroot} desired accuracy (convergence tolerance). Default value 1e-06}
+
+\item{silent}{the \code{base::try} argument. Default is TRUE}
+
+\item{trace}{integer number passed to \code{stats::uniroot}; if positive, tracing information is produced. Higher values giving more details.}
 
 \item{x}{numeric vector}
 }

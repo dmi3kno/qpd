@@ -61,47 +61,61 @@ rwakeby <- function(n, alpha, beta, gamma, delta, xi){
 }
 
 
-#' @param q quantile value for which the corresponding cumulative probability value should be found.
-#' @param tol numeric tolerance value for approximating CDF. Default 1e-15
-#' @param maxiter numeric maximum number of iteration
-#' @param n_grid integer size of helper grid to be passed to `make_pgrid`. Default is 50
-#' @param s_grid integer beta shape of helper grid to be passed to `make_pgrid`. Default is 5
+#' @param q vector of quantiles
+#' @param ... used by method
+#' @param lower,upper the `stats::uniroot` lower and upper end points of the interval to be searched. Defaults are 0 and 1, respectively
+#' @param tol the `stats::uniroot` desired accuracy (convergence tolerance). Default value 1e-06
+#' @param silent the `base::try` argument. Default is TRUE
+#' @param trace integer number passed to `stats::uniroot`; if positive, tracing information is produced. Higher values giving more details.
 #' @rdname wakeby
+#' @importFrom stats uniroot
+#' @include iqf.R
 #' @export
-pwakeby <- function(q, alpha, beta, gamma, delta, xi, n_grid=50L, s_grid=5L, tol=1e-15, maxiter=1e3){
+pwakeby <- iqf(qwakeby)
 
-  afun <- function(u, q, alpha, beta, gamma, delta, xi) {q - qwakeby(u, alpha, beta, gamma, delta, xi)}
-  p_grd <- sort(c(tol, qpd::make_pgrid(n=n_grid, s=s_grid), 1-tol))
-  q_grd <- qwakeby(p_grd, alpha, beta, gamma, delta, xi)
-  idx_lower <- findInterval(q, q_grd, all.inside = TRUE)
-  idx_upper <- idx_lower+1L
-  int_lower <- p_grd[idx_lower]
-  int_upper <- p_grd[idx_upper]
-  ps <- mapply(function(.q, .il, .iu) {
-    tmp_us <- NULL
-    tmp_us <- stats::uniroot(afun, q=.q, alpha=alpha, beta=beta, gamma=gamma, delta=delta, xi=xi,
-                             interval=c(.il, .iu), extendInt="no", check.conv=TRUE, tol = tol, maxiter = maxiter)
-    if(is.null(tmp_us)) res <- NA else res <- tmp_us$root
-  },  q, int_lower, int_upper)
-  ps <- pmin(1, pmax(0, ps))
-
-  ps[!is.finite(ps)] <- NA
-  ps
-}
+# ' @param q quantile value for which the corresponding cumulative probability value should be found.
+# ' @param tol numeric tolerance value for approximating CDF. Default 1e-15
+# ' @param maxiter numeric maximum number of iteration
+# ' @param n_grid integer size of helper grid to be passed to `make_pgrid`. Default is 50
+# ' @param s_grid integer beta shape of helper grid to be passed to `make_pgrid`. Default is 5
+# ' @rdname wakeby
+# ' @export
+# pwakeby <- function(q, alpha, beta, gamma, delta, xi, n_grid=50L, s_grid=5L, tol=1e-15, maxiter=1e3){
+#
+#   afun <- function(u, q, alpha, beta, gamma, delta, xi) {q - qwakeby(u, alpha, beta, gamma, delta, xi)}
+#   p_grd <- sort(c(tol, qpd::make_pgrid(n=n_grid, s=s_grid), 1-tol))
+#   q_grd <- qwakeby(p_grd, alpha, beta, gamma, delta, xi)
+#   idx_lower <- findInterval(q, q_grd, all.inside = TRUE)
+#   idx_upper <- idx_lower+1L
+#   int_lower <- p_grd[idx_lower]
+#   int_upper <- p_grd[idx_upper]
+#   ps <- mapply(function(.q, .il, .iu) {
+#     tmp_us <- NULL
+#     tmp_us <- stats::uniroot(afun, q=.q, alpha=alpha, beta=beta, gamma=gamma, delta=delta, xi=xi,
+#                              interval=c(.il, .iu), extendInt="no", check.conv=TRUE, tol = tol, maxiter = maxiter)
+#     if(is.null(tmp_us)) res <- NA else res <- tmp_us$root
+#   },  q, int_lower, int_upper)
+#   ps <- pmin(1, pmax(0, ps))
+#
+#   ps[!is.finite(ps)] <- NA
+#   ps
+# }
 
 #' @param x numeric vector of data
 #' @rdname wakeby
 #' @export
-dwakeby <- function(x, alpha, beta, gamma, delta, xi, n_grid=50L, s_grid=5L, tol=1e-15, maxiter=1e3, log=FALSE){
+dwakeby <- function(x, alpha, beta, gamma, delta, xi, tol=1e-6, log=FALSE){
   # Johnson, Kotz, Balakrishnan (1994). Continuous univariate distributions. Vol1 p. 46. ISBN 0-471-58495-9
   stopifnot(wakeby_params_valid(alpha, beta, gamma, delta, xi))
-  u <- pwakeby(x, alpha, beta, gamma, delta, xi, n_grid, s_grid, tol, maxiter)
+  u <- pwakeby(x, alpha, beta, gamma, delta, xi, tol)
   tt <- (1-u)^(beta+delta)
   res <- ((1-u)^(delta+1))/(alpha*tt+gamma)
   if(log) return(log(res))
   res
 }
 
+#' @param n_grid integer size of helper grid to be passed to `make_pgrid`. Default is 50
+#' @param s_grid integer beta shape of helper grid to be passed to `make_pgrid`. Default is 5
 #' @rdname wakeby
 #' @export
 is_wakeby_valid <- function(alpha, beta, gamma, delta, xi, n_grid=100L, s_grid=2L){

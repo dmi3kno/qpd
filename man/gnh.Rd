@@ -17,18 +17,7 @@ dqgnh(p, A, B, C = 0.8, g, h, log = FALSE, zscale = FALSE)
 
 rgnh(n, A, B, C = 0.8, g, h)
 
-pgnh(
-  q,
-  A,
-  B,
-  C = 0.8,
-  g,
-  h,
-  n_grid = 100L,
-  s_grid = 5L,
-  tol = 1e-15,
-  maxiter = 1000
-)
+pgnh(q, ..., lower = 0, upper = 1, tol = 1e-06, silent = TRUE, trace = 0)
 
 is_gnh_valid(A, B, C = 0.8, g, h, n_grid = 100L, s_grid = 2L)
 }
@@ -51,15 +40,21 @@ is_gnh_valid(A, B, C = 0.8, g, h, n_grid = 100L, s_grid = 2L)
 
 \item{n}{numeric number of samples to draw}
 
-\item{q}{quantile value for which the corresponding cumulative probability value should be found.}
+\item{q}{vector of quantiles}
+
+\item{...}{used by method}
+
+\item{lower, upper}{the \code{stats::uniroot} lower and upper end points of the interval to be searched. Defaults are 0 and 1, respectively}
+
+\item{tol}{the \code{stats::uniroot} desired accuracy (convergence tolerance). Default value 1e-06}
+
+\item{silent}{the \code{base::try} argument. Default is TRUE}
+
+\item{trace}{integer number passed to \code{stats::uniroot}; if positive, tracing information is produced. Higher values giving more details.}
 
 \item{n_grid}{integer size of helper grid to be passed to \code{make_pgrid}. Default is 50}
 
 \item{s_grid}{integer beta shape of helper grid to be passed to \code{make_pgrid}. Default is 5}
-
-\item{tol}{numeric tolerance balue for approximating CDF. Default 1e-15}
-
-\item{maxiter}{numeric maximum number of iteration}
 }
 \value{
 vector of quantiles for g-and-h distribution

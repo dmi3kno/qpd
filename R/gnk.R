@@ -51,37 +51,51 @@ rgnk <- function(n, A,B,C=0.8,g,k){
   qgnk(runif(n), A,B,C,g,k)
 }
 
-#' @param q quantile value for which the corresponding cumulative probability value should be found.
-#' @param tol numeric tolerance balue for approximating CDF. Default 1e-15
-#' @param maxiter numeric maximum number of iteration
+#' @param q vector of quantiles
+#' @param ... used by method
+#' @param lower,upper the `stats::uniroot` lower and upper end points of the interval to be searched. Defaults are 0 and 1, respectively
+#' @param tol the `stats::uniroot` desired accuracy (convergence tolerance). Default value 1e-06
+#' @param silent the `base::try` argument. Default is TRUE
+#' @param trace integer number passed to `stats::uniroot`; if positive, tracing information is produced. Higher values giving more details.
+#' @rdname gnk
+#' @importFrom stats uniroot
+#' @include iqf.R
+#' @export
+pgnk <- iqf(qgnk)
+
+# ' @param q quantile value for which the corresponding cumulative probability value should be found.
+# ' @param tol numeric tolerance balue for approximating CDF. Default 1e-15
+# ' @param maxiter numeric maximum number of iteration
+# ' @param n_grid integer size of helper grid to be passed to `make_pgrid`. Default is 50
+# ' @param s_grid integer beta shape of helper grid to be passed to `make_pgrid`. Default is 5
+# ' @importFrom stats pnorm qnorm uniroot
+# ' @rdname gnk
+# ' @export
+# pgnk <- function(q, A,B,C=0.8, g, k, n_grid=100L, s_grid=5L, tol=1e-15, maxiter=1e3, zscale=FALSE){
+#   afun <- function(z, q, A,B, C, g, k) {q - qgnk(z,A,B,C,g,k, zscale=TRUE)}
+#   stopifnot(B>0 && k>=-0.5)
+#   mtol <- .Machine$double.eps
+#   p_grd <- make_pgrid(n=n_grid, s=s_grid)
+#   q_grd <- qgnk(p_grd, A,B,C, g,k, zscale=FALSE)
+#   idx_lower <- findInterval(q, q_grd, all.inside = TRUE)
+#   idx_upper <- idx_lower+1L
+#   int_lower <- stats::qnorm(p_grd[idx_lower])
+#   int_upper <- stats::qnorm(p_grd[idx_upper])
+#   zs <- mapply(function(.q, .il, .iu) {
+#     tmp_zs <- NULL
+#     tmp_zs <- stats::uniroot(afun, q=.q, A=A, B=B, C=C, g=g, k=k,
+#                              interval=c(.il,.iu), extendInt="downX", check.conv=TRUE, tol = tol, maxiter = maxiter)
+#     if(is.null(tmp_zs)) res <- NA else res <- tmp_zs$root
+#     res
+#   }, q, int_lower, int_upper)
+#   ps <- stats::pnorm(zs)
+#
+#   ps[!is.finite(ps)] <- NA
+#   ps
+# }
+
 #' @param n_grid integer size of helper grid to be passed to `make_pgrid`. Default is 50
 #' @param s_grid integer beta shape of helper grid to be passed to `make_pgrid`. Default is 5
-#' @importFrom stats pnorm qnorm uniroot
-#' @rdname gnk
-#' @export
-pgnk <- function(q, A,B,C=0.8, g, k, n_grid=100L, s_grid=5L, tol=1e-15, maxiter=1e3, zscale=FALSE){
-  afun <- function(z, q, A,B, C, g, k) {q - qgnk(z,A,B,C,g,k, zscale=TRUE)}
-  stopifnot(B>0 && k>=-0.5)
-  mtol <- .Machine$double.eps
-  p_grd <- make_pgrid(n=n_grid, s=s_grid)
-  q_grd <- qgnk(p_grd, A,B,C, g,k, zscale=FALSE)
-  idx_lower <- findInterval(q, q_grd, all.inside = TRUE)
-  idx_upper <- idx_lower+1L
-  int_lower <- stats::qnorm(p_grd[idx_lower])
-  int_upper <- stats::qnorm(p_grd[idx_upper])
-  zs <- mapply(function(.q, .il, .iu) {
-    tmp_zs <- NULL
-    tmp_zs <- stats::uniroot(afun, q=.q, A=A, B=B, C=C, g=g, k=k,
-                             interval=c(.il,.iu), extendInt="downX", check.conv=TRUE, tol = tol, maxiter = maxiter)
-    if(is.null(tmp_zs)) res <- NA else res <- tmp_zs$root
-    res
-  }, q, int_lower, int_upper)
-  ps <- stats::pnorm(zs)
-
-  ps[!is.finite(ps)] <- NA
-  ps
-}
-
 #' @export
 #' @rdname gnk
 #' @importFrom stats uniroot

@@ -52,29 +52,16 @@ rfsld <- function(n, bt, k, dlt=0.5, a=0){
 }
 
 #' @param q vector of quantiles
-#' @param tol tolerance value for optimization. Default value 1e-06
+#' @param ... used by method
+#' @param lower,upper the `stats::uniroot` lower and upper end points of the interval to be searched. Defaults are 0 and 1, respectively
+#' @param tol the `stats::uniroot` desired accuracy (convergence tolerance). Default value 1e-06
+#' @param silent the `base::try` argument. Default is TRUE
+#' @param trace integer number passed to `stats::uniroot`; if positive, tracing information is produced. Higher values giving more details.
 #' @rdname fsld
 #' @importFrom stats uniroot
+#' @include iqf.R
 #' @export
-pfsld <- function(q, bt, k, dlt=0.5, a=0, tol=1e-06){
-  stopifnot("Beta parameter should be non-negative!"=(bt>=0))
-  stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
-  stopifnot("k parameter should be non-negative!"=(k>=0))
-
-  afun <- function(x, p) {x - qfsld(p, bt=bt, k=k, dlt=dlt, a=a)}
-  ps <- sapply(q, function(.q) {
-    tmp_ps <- NULL
-    tmp_ps <- try(stats::uniroot(afun, lower=0, upper = 1, x=.q, tol = tol), silent=TRUE)
-    ifelse(is.null(tmp_ps) || inherits(tmp_ps, "try-error"), NA, tmp_ps$root)
-    #tmp_ps
-  })
-
-  ps[ps < 0] <- 0
-  ps[ps > 1] <- 1
-
-  ps[!is.finite(ps)] <- NA
-  ps
-}
+pfsld <- iqf(qfsld)
 
 #' Flattened Logistic Distribution (FLD)
 #'
@@ -129,26 +116,13 @@ rfld <- function(n, bt, k, a=0){
 }
 
 #' @param q vector of quantiles
-#' @param tol tolerance value for optimization. Default value 1e-06
+#' @param ... used by method
+#' @param lower,upper the `stats::uniroot` lower and upper end points of the interval to be searched. Defaults are 0 and 1, respectively
+#' @param tol the `stats::uniroot` desired accuracy (convergence tolerance). Default value 1e-06
+#' @param silent the `base::try` argument. Default is TRUE
+#' @param trace integer number passed to `stats::uniroot`; if positive, tracing information is produced. Higher values giving more details.
 #' @rdname fld
 #' @importFrom stats uniroot
+#' @include iqf.R
 #' @export
-pfld <- function(q, bt, k, a=0, tol=1e-06){
-  stopifnot("Beta parameter should be non-negative!"=(bt>=0))
-  stopifnot("k parameter should be non-negative!"=(k>=0))
-
-  afun <- function(x, p) {x - qfld(p, bt=bt, k=k, a=a)}
-  ps <- sapply(q, function(.q) {
-    tmp_ps <- NULL
-    tmp_ps <- try(stats::uniroot(afun, lower=0, upper = 1, x=.q, tol = tol), silent=TRUE)
-    ifelse(is.null(tmp_ps) || inherits(tmp_ps, "try-error"), NA, tmp_ps$root)
-    #tmp_ps
-  })
-
-  ps[ps < 0] <- 0
-  ps[ps > 1] <- 1
-
-  ps[!is.finite(ps)] <- NA
-  ps
-}
-
+pfld <- iqf(qfld)

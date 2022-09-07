@@ -19,32 +19,9 @@ dqwakeby(u, alpha, beta, gamma, delta, xi, log = FALSE)
 
 rwakeby(n, alpha, beta, gamma, delta, xi)
 
-pwakeby(
-  q,
-  alpha,
-  beta,
-  gamma,
-  delta,
-  xi,
-  n_grid = 50L,
-  s_grid = 5L,
-  tol = 1e-15,
-  maxiter = 1000
-)
+pwakeby(q, ..., lower = 0, upper = 1, tol = 1e-06, silent = TRUE, trace = 0)
 
-dwakeby(
-  x,
-  alpha,
-  beta,
-  gamma,
-  delta,
-  xi,
-  n_grid = 50L,
-  s_grid = 5L,
-  tol = 1e-15,
-  maxiter = 1000,
-  log = FALSE
-)
+dwakeby(x, alpha, beta, gamma, delta, xi, tol = 1e-06, log = FALSE)
 
 is_wakeby_valid(alpha, beta, gamma, delta, xi, n_grid = 100L, s_grid = 2L)
 
@@ -67,17 +44,23 @@ ffwakeby(u, alpha, beta, gamma, delta, xi)
 
 \item{n}{numeric number of samples to draw}
 
-\item{q}{quantile value for which the corresponding cumulative probability value should be found.}
+\item{q}{vector of quantiles}
+
+\item{...}{used by method}
+
+\item{lower, upper}{the \code{stats::uniroot} lower and upper end points of the interval to be searched. Defaults are 0 and 1, respectively}
+
+\item{tol}{the \code{stats::uniroot} desired accuracy (convergence tolerance). Default value 1e-06}
+
+\item{silent}{the \code{base::try} argument. Default is TRUE}
+
+\item{trace}{integer number passed to \code{stats::uniroot}; if positive, tracing information is produced. Higher values giving more details.}
+
+\item{x}{numeric vector of data}
 
 \item{n_grid}{integer size of helper grid to be passed to \code{make_pgrid}. Default is 50}
 
 \item{s_grid}{integer beta shape of helper grid to be passed to \code{make_pgrid}. Default is 5}
-
-\item{tol}{numeric tolerance value for approximating CDF. Default 1e-15}
-
-\item{maxiter}{numeric maximum number of iteration}
-
-\item{x}{numeric vector of data}
 }
 \value{
 quantiles, QDF, DQF, random samples or probabilities of Wakeby disribution

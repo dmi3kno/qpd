@@ -19,17 +19,7 @@ dqGLDfkml(u, l1, l2, l3, l4, log = FALSE)
 
 rGLDfkml(n, l1, l2, l3, l4)
 
-pGLDfkml(
-  q,
-  l1,
-  l2,
-  l3,
-  l4,
-  n_grid = 50L,
-  s_grid = 5L,
-  tol = 1e-15,
-  maxiter = 1000
-)
+pGLDfkml(q, ..., lower = 0, upper = 1, tol = 1e-06, silent = TRUE, trace = 0)
 
 is_GLDfkml_valid(l1, l2, l3, l4)
 
@@ -52,15 +42,17 @@ aGLDfkml_median(l1, l2, l3, l4)
 
 \item{n}{numeric number of samples to draw}
 
-\item{q}{quantile value for which the corresponding cumulative probability value should be found.}
+\item{q}{vector of quantiles}
 
-\item{n_grid}{integer size of helper grid to be passed to \code{make_pgrid}. Default is 50}
+\item{...}{used by method}
 
-\item{s_grid}{integer beta shape of helper grid to be passed to \code{make_pgrid}. Default is 5}
+\item{lower, upper}{the \code{stats::uniroot} lower and upper end points of the interval to be searched. Defaults are 0 and 1, respectively}
 
-\item{tol}{numeric tolerance balue for approximating CDF. Default 1e-15}
+\item{tol}{the \code{stats::uniroot} desired accuracy (convergence tolerance). Default value 1e-06}
 
-\item{maxiter}{numeric maximum number of iteration}
+\item{silent}{the \code{base::try} argument. Default is TRUE}
+
+\item{trace}{integer number passed to \code{stats::uniroot}; if positive, tracing information is produced. Higher values giving more details.}
 }
 \value{
 quantiles, QDF, DQF, random samples or probabilities of GLD (FKML parameterization)

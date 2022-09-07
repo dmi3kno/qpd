@@ -3,10 +3,12 @@
 * Added a `NEWS.md` file to track changes to the package.
 * Added several distributions 
  - Metalog distribution (general metalog)
+ - Keelin-Powley Simple Q-Normal distribution
  - Johnson Quantile Parameterized Distribution (JQPDB, JQPDS, JQPDS2)
  - Generalized Normal distribution with skew parameter (QPD)
  - Govindarajulu distribution
  - Generalized Lambda Distribution (RS parameterization)
+ - Skew-Logistic Distribution
  - Flattened (Skew-) Logistic Distribution
  - Wakeby distribution
  - Exponential distribution (quantile density functions)
@@ -15,6 +17,7 @@
  - Normal distribution (quantile density functions)
  - Generalized Exponential distribution
  - Myerson distribution and its variations (logit-Myerson, sech-Myerson and cauchy-Myerson)
+ - Quantile-parameterized Skew-Logistic xPower distribution (x="exteded")
 * Function for fitting beta distribution to 3 elicited quantiles
 * Service functions for accumulating simplices
 * HDR pseudo random numbers algorithm by Hubbard Decision Research

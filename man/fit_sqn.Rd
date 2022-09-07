@@ -45,8 +45,10 @@ Number of sqn terms will match the number of QP pairs.
 }
 \examples{
 p <- c(0.1, 0.5, 0.6, 0.9)
-q <- c(4, 9, 10, 12)
-fit_sqn(p,q)
+q <- c(4, 9, 10, 13)
+a <- fit_sqn(p,q)
+x <- rsqn(100, a)
+approx_sqn(x)
 a <- c(9,  1.8, -1.13, 9)
 is_sqn_valid(a)
 }

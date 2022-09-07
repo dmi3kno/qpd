@@ -4,8 +4,8 @@ sqn_prepare_z <- function(q){
 }
 
 # internal function for preparing the matrix Y for sqn.
-sqn_prepare_Y <- function(p){
-  Y <- matrix(NA_real_, 4, 4)
+sqn_prepare_Y <- function(p, n){
+  Y <- matrix(NA_real_, n, 4)
   Y[,1] <- 1
   Y[,2] <- qnorm(p)
   Y[,3] <- p*qnorm(p)
@@ -28,11 +28,11 @@ sqn_prepare_Y <- function(p){
 #' @export
 #' @examples
 #' p <- c(0.1, 0.5, 0.6, 0.9)
-#' q <- c(4, 9, 10, 12)
-#' fit_sqn(p,q)
+#' q <- c(4, 9, 10, 13)
+#' a <- fit_sqn(p,q)
 fit_sqn <- function(p, q, tol=.Machine$double.eps^2){
   z <- sqn_prepare_z(q)
-  Y <- sqn_prepare_Y(p)
+  Y <- sqn_prepare_Y(p, 4)
   solve(Y, z, tol=tol)
 }
 
@@ -44,6 +44,9 @@ fit_sqn <- function(p, q, tol=.Machine$double.eps^2){
 #' @rdname fit_sqn
 #' @importFrom stats quantile
 #' @export
+#' @examples
+#' x <- rsqn(100, a)
+#' approx_sqn(x)
 approx_sqn <- function(q, p=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=.Machine$double.eps^2){
   n <- length(q)
   if (is.null(p)){ # do it if p is not specified
@@ -64,7 +67,7 @@ approx_sqn <- function(q, p=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=.Machin
   }
 
   z <- matrix(sqn_prepare_z(qs[is.finite(qs)]), ncol=1, byrow=FALSE)
-  Y <- sqn_prepare_Y(p[is.finite(qs)])
+  Y <- sqn_prepare_Y(p[is.finite(qs)], n)
   M4i <- t(Y) %*% Y
   Mi <- tryCatch({
      #message("Trying to invert the matrix with solve()")

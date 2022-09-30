@@ -118,7 +118,9 @@ qsqn <- function(p, a){
 #' @examples
 #' fsqn(p, a)
 fsqn <- function(p, a, log=FALSE){
-  a[2]*dqnorm(p)+a[3]*qnorm(p)+a[3]*p*dqnorm(p)+a[4]
+  res <- a[2]*fnorm(p)+a[3]*(p*fnorm(p)+qnorm(p))+a[4]
+  if(log) return(log(res))
+  res
 }
 
 #' @rdname sqn
@@ -130,6 +132,8 @@ dqsqn <- function(p, a, log=FALSE){
   if(log) return(ifelse(is.finite(res),-log(res),res))
   1/res
 }
+
+
 
 #' @param q real vector of values
 #' @param n_grid integer size of helper grid to be passed to `make_pgrid`. Default is 50

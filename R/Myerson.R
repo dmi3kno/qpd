@@ -7,6 +7,7 @@
 #' and top quantile. Quantiles are assumed to be symmetrical.
 #' @param alpha numerical fixed proportion of distribution below the bottom quantile.
 #' Default value is 0.25
+#' @param log logical; if TRUE, log density is returned
 #'
 #' @return a vector of probabilities of length equal to `length(x)`
 #' @name Myerson
@@ -32,16 +33,19 @@ qMyerson <- function(p, q1,q2,q3, alpha=0.25){
 #'
 #' @examples
 #' fMyerson(0.25, 10, 20, 40)
-fMyerson <- function(p, q1,q2,q3, alpha=0.25){
+fMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
   r <- (q3-q2)
   b <- r/(q2-q1)
   qn1ma <-stats::qnorm(1-alpha)
   k <- stats::qnorm(p)/qn1ma
 
-  if(b==1)
-    return(r*fnorm(p)/qn1ma)
-
-  r*log(b)*(b^k)*fnorm(p)/(b-1)/qn1ma
+  if(b==1){
+    res <- r*fnorm(p)/qn1ma
+  } else {
+    res <- r*log(b)*(b^k)*fnorm(p)/(b-1)/qn1ma
+  }
+  if(log) return(log(res))
+  res
 }
 
 #' @rdname Myerson
@@ -49,8 +53,10 @@ fMyerson <- function(p, q1,q2,q3, alpha=0.25){
 #'
 #' @examples
 #' fMyerson(0.25, 10, 20, 40)
-dqMyerson <- function(p, q1,q2,q3, alpha=0.25){
-  1/fMyerson(p, q1,q2,q3, alpha)
+dqMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
+  res <- fMyerson(p, q1,q2,q3, alpha, log=FALSE)
+  if(log) return(ifelse(is.finite(res),-log(res),res))
+  1/res
 }
 
 #' @rdname Myerson
@@ -70,18 +76,21 @@ rMyerson <- function(n,q1,q2,q3,alpha=0.25){
 #'
 #' @examples
 #' dMyerson(15, 10, 20, 40)
-dMyerson <- function(x, q1,q2,q3, alpha=0.25){
+dMyerson <- function(x, q1,q2,q3, alpha=0.25, log=FALSE){
   # Probability density function
   r <- (q3-q2)
   b <- r/(q2-q1)
   qn1ma <-stats::qnorm(1-alpha)
-  if(b==1)
-    return(stats::dnorm(x, mean=q2, sd=r/qn1ma))
-
-  psi <- qn1ma*(log1p((x-q2)*(b-1)/r)/log(b))
-  num <- qn1ma*(b-1)
-  den <- (r+(x-q2)*(b-1))*log(b)
-  num/den*stats::dnorm(psi)
+  if(b==1){
+    res <- stats::dnorm(x, mean=q2, sd=r/qn1ma)
+  }else{
+    psi <- qn1ma*(log1p((x-q2)*(b-1)/r)/log(b))
+    num <- qn1ma*(b-1)
+    den <- (r+(x-q2)*(b-1))*log(b)
+    res <- num/den*stats::dnorm(psi)
+  }
+  if(log) return(log(res))
+  res
 }
 
 
@@ -117,6 +126,7 @@ pMyerson <- function(q, q1,q2,q3, alpha=0.25){
 #' and top quantile. Quantiles are assumed to be symmetrical.
 #' @param alpha numerical fixed proportion of distribution below the bottom quantile.
 #' Default value is 0.25
+#' @param log logical; if TRUE, log density is returned
 #'
 #' @return a vector of probabilities of length equal to `length(x)`
 #' @name logitMyerson
@@ -142,16 +152,20 @@ qlogitMyerson <- function(p, q1,q2,q3, alpha=0.25){
 #'
 #' @examples
 #' flogitMyerson(0.25, 10, 20, 40)
-flogitMyerson <- function(p, q1,q2,q3, alpha=0.25){
+flogitMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
   r <- (q3-q2)
   b <- r/(q2-q1)
   qn1ma <-logit(1-alpha)
   k <- logit(p)/qn1ma
 
-  if(b==1)
-    return(r/(p*(1-p)*qn1ma))
+  if(b==1){
+    res <- r/(p*(1-p)*qn1ma)
+  } else {
+    res <- r*log(b)*(b^k)/(p*(1-p)*(b-1)*qn1ma)
+  }
 
-  r*log(b)*(b^k)/(p*(1-p)*(b-1)*qn1ma)
+  if(log) return(log(res))
+  res
 }
 
 #' @rdname logitMyerson
@@ -159,8 +173,10 @@ flogitMyerson <- function(p, q1,q2,q3, alpha=0.25){
 #'
 #' @examples
 #' dqlogitMyerson(0.25, 10, 20, 40)
-dqlogitMyerson <- function(p, q1,q2,q3, alpha=0.25){
-  1/flogitMyerson(p, q1,q2,q3, alpha)
+dqlogitMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
+   res <- flogitMyerson(p, q1,q2,q3, alpha, log=FALSE)
+   if(log) return(ifelse(is.finite(res),-log(res),res))
+   1/res
 }
 
 #' @rdname logitMyerson
@@ -204,19 +220,23 @@ plogitMyerson <- function(q, q1,q2,q3, alpha=0.25){
 #'
 #' @examples
 #' dlogitMyerson(15, 10, 20, 40)
-dlogitMyerson <- function(x, q1,q2,q3, alpha=0.25){
+dlogitMyerson <- function(x, q1,q2,q3, alpha=0.25, log=FALSE){
   # Probability density function
   r <- (q3-q2)
   b <- r/(q2-q1)
   qn1ma <-logit(1-alpha)
   psi <- qn1ma*(x-q2)/r
-  if(b==1)
-    return(stats::dlogis(psi))
+  if(b==1){
+    res <- stats::dlogis(psi)
+  }else{
+    psi <- qn1ma*(log(1+(x-q2)*(b-1)/r)/log(b))
+    num <- qn1ma*(b-1)
+    den <- (r+(x-q2)*(b-1))*log(b)
+    res <- num/den*stats::dlogis(psi)
+  }
 
-  psi <- qn1ma*(log(1+(x-q2)*(b-1)/r)/log(b))
-  num <- qn1ma*(b-1)
-  den <- (r+(x-q2)*(b-1))*log(b)
-  num/den*stats::dlogis(psi)
+  if(log) return(log(res))
+  res
 }
 
 
@@ -229,6 +249,7 @@ dlogitMyerson <- function(x, q1,q2,q3, alpha=0.25){
 #' and top quantile. Quantiles are assumed to be symmetrical.
 #' @param alpha numerical fixed proportion of distribution below the bottom quantile.
 #' Default value is 0.25
+#' @param log logical; if TRUE, log density is returned
 #'
 #' @return a vector of probabilities of length equal to `length(x)`
 #' @name cauchyMyerson
@@ -254,16 +275,20 @@ qcauchyMyerson <- function(p, q1,q2,q3, alpha=0.25){
 #'
 #' @examples
 #' fcauchyMyerson(0.25, 10, 20, 40)
-fcauchyMyerson <- function(p, q1,q2,q3, alpha=0.25){
+fcauchyMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
   r <- (q3-q2)
   b <- r/(q2-q1)
   qn1ma <-tan(pi*(0.5-alpha))
   k <- tan(pi*(p-0.5))/qn1ma
 
-  if(b==1)
-    return(r*pi*(1+tan(pi*(p-0.5))^2)/qn1ma)
+  if(b==1){
+    res <- r*pi*(1+tan(pi*(p-0.5))^2)/qn1ma
+  } else {
+    res <- r*log(b)*(b^k)*pi*(1+tan(pi*(p-0.5))^2)/((b-1)*qn1ma)
+  }
 
-  r*log(b)*(b^k)*pi*(1+tan(pi*(p-0.5))^2)/((b-1)*qn1ma)
+  if(log) return(log(res))
+  res
 }
 
 #' @rdname cauchyMyerson
@@ -271,8 +296,10 @@ fcauchyMyerson <- function(p, q1,q2,q3, alpha=0.25){
 #'
 #' @examples
 #' dqcauchyMyerson(0.25, 10, 20, 40)
-dqcauchyMyerson <- function(p, q1,q2,q3, alpha=0.25){
-  1/fcauchyMyerson(p, q1,q2,q3, alpha)
+dqcauchyMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
+  res <- fcauchyMyerson(p, q1,q2,q3, alpha, log=FALSE)
+  if(log) return(ifelse(is.finite(res),-log(res),res))
+  1/res
 }
 
 #' @rdname cauchyMyerson
@@ -316,19 +343,23 @@ pcauchyMyerson <- function(q, q1,q2,q3, alpha=0.25){
 #'
 #' @examples
 #' dcauchyMyerson(15, 10, 20, 40)
-dcauchyMyerson <- function(x, q1,q2,q3, alpha=0.25){
+dcauchyMyerson <- function(x, q1,q2,q3, alpha=0.25, log=FALSE){
   # Probability density function
   r <- (q3-q2)
   b <- r/(q2-q1)
   qn1ma <-tan(pi*(0.5-alpha))
   psi <- qn1ma*(x-q2)/r
-  if(b==1)
-    return(stats::dcauchy(psi))
+  if(b==1){
+    res <- stats::dcauchy(psi)
+  }else{
+    psi <- qn1ma*(log(1+(x-q2)*(b-1)/r)/log(b))
+    num <- qn1ma*(b-1)
+    den <- (r+(x-q2)*(b-1))*log(b)
+    res <- num/den*stats::dcauchy(psi)
+  }
 
-  psi <- qn1ma*(log(1+(x-q2)*(b-1)/r)/log(b))
-  num <- qn1ma*(b-1)
-  den <- (r+(x-q2)*(b-1))*log(b)
-  num/den*stats::dcauchy(psi)
+  if(log) return(log(res))
+  res
 }
 
 
@@ -341,6 +372,7 @@ dcauchyMyerson <- function(x, q1,q2,q3, alpha=0.25){
 #' and top quantile. Quantiles are assumed to be symmetrical.
 #' @param alpha numerical fixed proportion of distribution below the bottom quantile.
 #' Default value is 0.25
+#' @param log logical; if TRUE, log density is returned
 #'
 #' @return a vector of probabilities of length equal to `length(x)`
 #' @name sechMyerson
@@ -366,16 +398,19 @@ qsechMyerson <- function(p, q1,q2,q3, alpha=0.25){
 #'
 #' @examples
 #' fsechMyerson(0.25, 10, 20, 40)
-fsechMyerson <- function(p, q1,q2,q3, alpha=0.25){
+fsechMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
   r <- (q3-q2)
   b <- r/(q2-q1)
   qn1ma <-2/pi*log(tan(pi/2*(1-alpha)))
   k <- 2/pi*log(tan(pi/2*p))/qn1ma
 
-  if(b==1)
-    return(r*pi*(1+tan(pi*p/2)^2)/(pi*qn1ma*tan(pi*p/2)))
-
-  r*log(b)*(b^k)*pi*(1+tan(pi*p/2)^2)/((b-1)*pi*qn1ma*tan(pi*p/2))
+  if(b==1){
+    res <- r*pi*(1+tan(pi*p/2)^2)/(pi*qn1ma*tan(pi*p/2))
+  } else {
+    res <- r*log(b)*(b^k)*pi*(1+tan(pi*p/2)^2)/((b-1)*pi*qn1ma*tan(pi*p/2))
+  }
+  if(log) return(log(res))
+  res
 }
 
 #' @rdname sechMyerson
@@ -383,8 +418,10 @@ fsechMyerson <- function(p, q1,q2,q3, alpha=0.25){
 #'
 #' @examples
 #' dqsechMyerson(0.25, 10, 20, 40)
-dqsechMyerson <- function(p, q1,q2,q3, alpha=0.25){
-  1/fsechMyerson(p, q1,q2,q3, alpha)
+dqsechMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
+  res <- fsechMyerson(p, q1,q2,q3, alpha, log=FALSE)
+  if(log) return(ifelse(is.finite(res),-log(res),res))
+  1/res
 }
 
 #' @rdname sechMyerson
@@ -428,19 +465,22 @@ psechMyerson <- function(q, q1,q2,q3, alpha=0.25){
 #'
 #' @examples
 #' dsechMyerson(15, 10, 20, 40)
-dsechMyerson <- function(x, q1,q2,q3, alpha=0.25){
+dsechMyerson <- function(x, q1,q2,q3, alpha=0.25, log=FALSE){
   # Probability density function
   r <- (q3-q2)
   b <- r/(q2-q1)
   qn1ma <-2/pi*log(tan(pi/2*(1-alpha)))
   psi <- qn1ma*(x-q2)/r
-  if(b==1)
-    return(1/2*sech(pi/2*psi))
-
-  psi <- qn1ma*(log1p((x-q2)*(b-1)/r)/log(b))
-  num <- qn1ma*(b-1)
-  den <- (r+(x-q2)*(b-1))*log(b)
-  num/den*1/2*sech(pi/2*psi)
+  if(b==1) {
+    res <- 1/2*sech(pi/2*psi)
+  } else {
+    psi <- qn1ma*(log1p((x-q2)*(b-1)/r)/log(b))
+    num <- qn1ma*(b-1)
+    den <- (r+(x-q2)*(b-1))*log(b)
+    res <- num/den*1/2*sech(pi/2*psi)
+  }
+  if(log) return(log(res))
+  res
 }
 
 

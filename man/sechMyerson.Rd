@@ -12,15 +12,15 @@
 \usage{
 qsechMyerson(p, q1, q2, q3, alpha = 0.25)
 
-fsechMyerson(p, q1, q2, q3, alpha = 0.25)
+fsechMyerson(p, q1, q2, q3, alpha = 0.25, log = FALSE)
 
-dqsechMyerson(p, q1, q2, q3, alpha = 0.25)
+dqsechMyerson(p, q1, q2, q3, alpha = 0.25, log = FALSE)
 
 rsechMyerson(n, q1, q2, q3, alpha = 0.25)
 
 psechMyerson(q, q1, q2, q3, alpha = 0.25)
 
-dsechMyerson(x, q1, q2, q3, alpha = 0.25)
+dsechMyerson(x, q1, q2, q3, alpha = 0.25, log = FALSE)
 }
 \arguments{
 \item{p}{vector of probabilities}
@@ -30,6 +30,8 @@ and top quantile. Quantiles are assumed to be symmetrical.}
 
 \item{alpha}{numerical fixed proportion of distribution below the bottom quantile.
 Default value is 0.25}
+
+\item{log}{logical; if TRUE, log density is returned}
 
 \item{n}{number of observations. If `length(n)>1``, the length is taken to be the number required.}
 

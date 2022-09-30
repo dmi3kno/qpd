@@ -131,7 +131,7 @@ dJQPDB <- function(x, q1, q2, q3, lower, upper, alpha=0.1){
     (1/u_m_l)*
     stats::dnorm(-sgn*small_c+(1/sigma)*asinh((1/lambda)*(-zeta+q_xmlb_uml))) *
     (1/stats::dnorm(q_xmlb_uml))/
-    sqrt((lambda^2)+((-zeta+q_xmlb_uml)^2))
+    sqrt((lambda^2)+((-zeta+q_xmlb_uml))^2)
 }
 
 

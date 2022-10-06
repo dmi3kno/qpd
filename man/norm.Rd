@@ -5,9 +5,9 @@
 \alias{dqnorm}
 \title{Derivative quantile functions for normal distribution}
 \usage{
-fnorm(p, mean = 0, sd = 1, log = FALSE)
+fnorm(p, mean = 0, sd = 1, log = FALSE, log.p = FALSE)
 
-dqnorm(p, mean = 0, sd = 1, log = FALSE)
+dqnorm(p, mean = 0, sd = 1, log = FALSE, log.p = FALSE)
 }
 \arguments{
 \item{p}{numeric probability}
@@ -17,6 +17,8 @@ dqnorm(p, mean = 0, sd = 1, log = FALSE)
 \item{sd}{numeric parameter of normal distribution. Default is 1}
 
 \item{log}{logical, should the result be returned as a log. Default is FALSE}
+
+\item{log.p}{logical; if TRUE, probabilities p are given as log(p). Default is FALSE}
 }
 \value{
 returns QDF (\code{fnorm}) and DQF (\code{dqnorm}) of normal distribution

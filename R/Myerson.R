@@ -1,3 +1,23 @@
+#' @keywords internal
+sMyerson_rba <- function(p,r,b,alpha){
+  qn1ma <-stats::qnorm(1-alpha)
+  k <- stats::qnorm(p)/qn1ma
+  if(b==1) return(r*k)
+  r*(b^k-1)/(b-1)
+}
+
+fMyerson_rba <- function(p,r,b,alpha,log){
+  qn1ma <-stats::qnorm(1-alpha)
+  k <- stats::qnorm(p)/qn1ma
+  if(b==1){
+    res <- r*fnorm(p)/qn1ma
+  } else {
+    res <- r*log(b)*(b^k)*fnorm(p)/(b-1)/qn1ma
+  }
+  if(log) return(log(res))
+  res
+}
+
 #' Density function for Generalized Lognormal distribution (aka probit Myerson).
 #'
 #' @param x,q vector of quantiles.
@@ -19,13 +39,7 @@
 qMyerson <- function(p, q1,q2,q3, alpha=0.25){
   r <- (q3-q2)
   b <- r/(q2-q1)
-  qn1ma <-stats::qnorm(1-alpha)
-  k <- stats::qnorm(p)/qn1ma
-
-  if(b==1)
-    return(q2+r*k)
-
-  q2+r*(b^k-1)/(b-1)
+  q2+sMyerson_rba(p,r,b,alpha)
 }
 
 #' @rdname Myerson
@@ -36,16 +50,7 @@ qMyerson <- function(p, q1,q2,q3, alpha=0.25){
 fMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
   r <- (q3-q2)
   b <- r/(q2-q1)
-  qn1ma <-stats::qnorm(1-alpha)
-  k <- stats::qnorm(p)/qn1ma
-
-  if(b==1){
-    res <- r*fnorm(p)/qn1ma
-  } else {
-    res <- r*log(b)*(b^k)*fnorm(p)/(b-1)/qn1ma
-  }
-  if(log) return(log(res))
-  res
+  fMyerson_rba(p,r,b, alpha,log)
 }
 
 #' @rdname Myerson
@@ -117,6 +122,28 @@ pMyerson <- function(q, q1,q2,q3, alpha=0.25){
   stats::pnorm(psi)
 }
 
+########################### LOGIT MYERSON ###################################
+
+slogitMyerson_rba <- function(p,r,b,alpha){
+  qn1ma <-logit(1-alpha)
+  k <- logit(p)/qn1ma
+  if(b==1) return(r*k)
+  r*(b^k-1)/(b-1)
+}
+
+flogitMyerson_rba<- function(p,r,b,alpha,log){
+  qn1ma <-logit(1-alpha)
+  k <- logit(p)/qn1ma
+  if(b==1){
+    res <- r/(p*(1-p)*qn1ma)
+  } else {
+    res <- r*log(b)*(b^k)/(p*(1-p)*(b-1)*qn1ma)
+  }
+
+  if(log) return(log(res))
+  res
+}
+
 #' Density function for logit Myerson distribution (Myerson distribution with logit base function).
 #'
 #' @param x,q vector of quantiles.
@@ -138,13 +165,7 @@ pMyerson <- function(q, q1,q2,q3, alpha=0.25){
 qlogitMyerson <- function(p, q1,q2,q3, alpha=0.25){
   r <- (q3-q2)
   b <- r/(q2-q1)
-  qn1ma <-logit(1-alpha)
-  k <- logit(p)/qn1ma
-
-  if(b==1)
-    return(q2+r*k)
-
-  q2+r*(b^k-1)/(b-1)
+  q2+slogitMyerson_rba(p,r,b,alpha)
 }
 
 #' @rdname logitMyerson
@@ -155,17 +176,7 @@ qlogitMyerson <- function(p, q1,q2,q3, alpha=0.25){
 flogitMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
   r <- (q3-q2)
   b <- r/(q2-q1)
-  qn1ma <-logit(1-alpha)
-  k <- logit(p)/qn1ma
-
-  if(b==1){
-    res <- r/(p*(1-p)*qn1ma)
-  } else {
-    res <- r*log(b)*(b^k)/(p*(1-p)*(b-1)*qn1ma)
-  }
-
-  if(log) return(log(res))
-  res
+  flogitMyerson_rba(p,r,b,alpha,log)
 }
 
 #' @rdname logitMyerson
@@ -239,7 +250,26 @@ dlogitMyerson <- function(x, q1,q2,q3, alpha=0.25, log=FALSE){
   res
 }
 
+####################### CAUCHY MYERSON ###################################
+scauchyMyerson_rba <- function(p,r,b,alpha){
+  qn1ma <-tan(pi*(0.5-alpha))
+  k <- tan(pi*(p-0.5))/qn1ma
+  if(b==1) return(r*k)
+  r*(b^k-1)/(b-1)
+}
 
+fcauchyMyerson_rba <- function(p,r,b,alpha,log){
+  qn1ma <-tan(pi*(0.5-alpha))
+  k <- tan(pi*(p-0.5))/qn1ma
+  if(b==1){
+    res <- r*pi*(1+tan(pi*(p-0.5))^2)/qn1ma
+  } else {
+    res <- r*log(b)*(b^k)*pi*(1+tan(pi*(p-0.5))^2)/((b-1)*qn1ma)
+  }
+
+  if(log) return(log(res))
+  res
+}
 #' Density function for Cauchy Myerson distribution (Myerson distribution with Cauchy base function).
 #'
 #' @param x,q vector of quantiles.
@@ -261,13 +291,7 @@ dlogitMyerson <- function(x, q1,q2,q3, alpha=0.25, log=FALSE){
 qcauchyMyerson <- function(p, q1,q2,q3, alpha=0.25){
   r <- (q3-q2)
   b <- r/(q2-q1)
-  qn1ma <-tan(pi*(0.5-alpha))
-  k <- tan(pi*(p-0.5))/qn1ma
-
-  if(b==1)
-    return(q2+r*k)
-
-  q2+r*(b^k-1)/(b-1)
+  q2+scauchyMyerson_rba(p,r,b,alpha)
 }
 
 #' @rdname cauchyMyerson
@@ -278,17 +302,7 @@ qcauchyMyerson <- function(p, q1,q2,q3, alpha=0.25){
 fcauchyMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
   r <- (q3-q2)
   b <- r/(q2-q1)
-  qn1ma <-tan(pi*(0.5-alpha))
-  k <- tan(pi*(p-0.5))/qn1ma
-
-  if(b==1){
-    res <- r*pi*(1+tan(pi*(p-0.5))^2)/qn1ma
-  } else {
-    res <- r*log(b)*(b^k)*pi*(1+tan(pi*(p-0.5))^2)/((b-1)*qn1ma)
-  }
-
-  if(log) return(log(res))
-  res
+  fcauchyMyerson_rba(p,r,b,alpha,log)
 }
 
 #' @rdname cauchyMyerson
@@ -362,6 +376,26 @@ dcauchyMyerson <- function(x, q1,q2,q3, alpha=0.25, log=FALSE){
   res
 }
 
+######################### SECH MYERSON #######################################
+
+ssechMyerson_rba <- function(p,r,b,alpha){
+  qn1ma <-2/pi*log(tan(pi/2*(1-alpha))) #sech QF
+  k <- 2/pi*log(tan(pi/2*p))/qn1ma
+  if(b==1) return(r*k)
+  r*(b^k-1)/(b-1)
+}
+
+fsechMyerson_rba <- function(p,r,b,alpha,log){
+  qn1ma <-2/pi*log(tan(pi/2*(1-alpha))) #sech QF
+  k <- 2/pi*log(tan(pi/2*p))/qn1ma
+  if(b==1){
+    res <- r*pi*(1+tan(pi*p/2)^2)/(pi*qn1ma*tan(pi*p/2))
+  } else {
+    res <- r*log(b)*(b^k)*pi*(1+tan(pi*p/2)^2)/((b-1)*pi*qn1ma*tan(pi*p/2))
+  }
+  if(log) return(log(res))
+  res
+}
 
 #' Density function for Hyperbolic Secant Myerson distribution (Myerson distribution with hyperbolic secant base function).
 #'
@@ -384,13 +418,7 @@ dcauchyMyerson <- function(x, q1,q2,q3, alpha=0.25, log=FALSE){
 qsechMyerson <- function(p, q1,q2,q3, alpha=0.25){
   r <- (q3-q2)
   b <- r/(q2-q1)
-  qn1ma <-2/pi*log(tan(pi/2*(1-alpha))) #sech QF
-  k <- 2/pi*log(tan(pi/2*p))/qn1ma
-
-  if(b==1)
-    return(q2+r*k)
-
-  q2+r*(b^k-1)/(b-1)
+  q2+ssechMyerson_rba(p,r,b,alpha)
 }
 
 #' @rdname sechMyerson
@@ -403,14 +431,7 @@ fsechMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
   b <- r/(q2-q1)
   qn1ma <-2/pi*log(tan(pi/2*(1-alpha)))
   k <- 2/pi*log(tan(pi/2*p))/qn1ma
-
-  if(b==1){
-    res <- r*pi*(1+tan(pi*p/2)^2)/(pi*qn1ma*tan(pi*p/2))
-  } else {
-    res <- r*log(b)*(b^k)*pi*(1+tan(pi*p/2)^2)/((b-1)*pi*qn1ma*tan(pi*p/2))
-  }
-  if(log) return(log(res))
-  res
+  fsechMyerson_rba(p,r,b,alpha,log)
 }
 
 #' @rdname sechMyerson

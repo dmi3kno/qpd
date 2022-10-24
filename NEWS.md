@@ -8,6 +8,8 @@
  - Generalized Normal distribution with skew parameter (QPD)
  - Govindarajulu distribution
  - Generalized Lambda Distribution (RS parameterization)
+ - Generalized Lambda Distribution (FKML parameterization)
+ - Generalized Lambda Distribution (CSW parameterization)
  - Skew-Logistic Distribution
  - Flattened (Skew-) Logistic Distribution
  - Wakeby distribution

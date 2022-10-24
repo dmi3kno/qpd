@@ -14,6 +14,22 @@ qJDS_SB <- function(p, zeta, lambda, sigma, gamma){
   zeta+num/denom
 }
 
+#' @keywords internal
+sJQPDB_LBHa <- function(p, L, B, H, lower=0, upper=1, alpha){
+  small_c <- stats::qnorm(1-alpha)
+  u_m_l <- upper-lower
+  sgn <- sign(L+H-2*B)
+
+  if (sgn==0)
+    return(lower + u_m_l*stats::pnorm(B+0.5*(H-L)/small_c*stats::qnorm(p)))
+
+  sigma <- (1/small_c)*acosh(0.5*(H-L)/pmin(B-L, H-B))
+  lambda <- (H-L)/sinh(2*sigma*small_c)
+  zeta  <- 0.5*(L*(1+sgn)+H*(1-sgn)) # idea from Matlab code in Hadlock thesis
+
+  lower + u_m_l*stats::pnorm(qJDS_SU(p, zeta, lambda, sigma, gamma=sgn*small_c))
+}
+
 #' The J-QPD-B distribution
 #'
 #' Density, distribution function, quantile function and random generation for the
@@ -42,23 +58,12 @@ qJQPDB <- function(p, q1, q2, q3, lower, upper, alpha=0.1){
   stopifnot(all(lower < upper))
   stopifnot(all(q1<q2 & q2<q3))
   stopifnot(alpha>0 & alpha<0.5)
-  small_c <- stats::qnorm(1-alpha)
-
   u_m_l <- upper-lower
 
   L <- stats::qnorm((q1-lower)/u_m_l)
   B <- stats::qnorm((q2-lower)/u_m_l)
   H <- stats::qnorm((q3-lower)/u_m_l)
-  sgn <- sign(L+H-2*B)
-
-  if (sgn==0)
-      return(lower + u_m_l*stats::pnorm(B+0.5*(H-L)/small_c*stats::qnorm(p)))
-
-  sigma <- (1/small_c)*acosh(0.5*(H-L)/pmin(B-L, H-B))
-  lambda <- (H-L)/sinh(2*sigma*small_c)
-  zeta  <- 0.5*(L*(1+sgn)+H*(1-sgn)) # idea from Matlab code in Hadlock thesis
-
-  lower + u_m_l*stats::pnorm(qJDS_SU(p, zeta, lambda, sigma, gamma=sgn*small_c))
+  sJQPDB_LBHa(p, L,B,H, lower, upper, alpha)
 }
 
 
@@ -134,6 +139,20 @@ dJQPDB <- function(x, q1, q2, q3, lower, upper, alpha=0.1){
     sqrt((lambda^2)+((-zeta+q_xmlb_uml))^2)
 }
 
+#' @keywords internal
+sJQPDS_LBHa <- function(p, L, B, H, lower=0, alpha){
+  sgn <- sign(L+H-2*B)
+  small_c <- stats::qnorm(1-alpha)
+  theta  <- 0.5*(exp(L)*(1+sgn)+exp(H)*(1-sgn)) # idea from Matlab code in Hadlock thesis
+
+  if (sgn==0)
+    return(stats::qlnorm(p,meanlog=log(theta), sdlog=(H-B)/small_c))
+
+  sigma <- (1/small_c)*sinh(acosh(0.5*(H-L)/pmin(B-L, H-B)))
+  lambda <- 1/(sigma*small_c)*pmin(H-B, B-L)
+
+  lower + theta*exp(lambda*sinh(asinh(sigma*stats::qnorm(p))+asinh(sgn*small_c*sigma)))
+  }
 
 #' The J-QPD-S distribution
 #'
@@ -163,22 +182,11 @@ dJQPDB <- function(x, q1, q2, q3, lower, upper, alpha=0.1){
 qJQPDS <- function(p, q1, q2, q3, lower=0, alpha=0.1){
   stopifnot(all(q1<q2 & q2<q3))
   stopifnot(alpha>0 & alpha<0.5)
-  small_c <- stats::qnorm(1-alpha)
 
   L <- log(q1-lower)
   B <- log(q2-lower)
   H <- log(q3-lower)
-  sgn <- sign(L+H-2*B)
-
-  theta  <- 0.5*(exp(L)*(1+sgn)+exp(H)*(1-sgn)) # idea from Matlab code in Hadlock thesis
-
-  if (sgn==0)
-    return(stats::qlnorm(p,meanlog=log(theta), sdlog=(H-B)/small_c))
-
-  sigma <- (1/small_c)*sinh(acosh(0.5*(H-L)/pmin(B-L, H-B)))
-  lambda <- 1/(sigma*small_c)*pmin(H-B, B-L)
-
-  lower + theta*exp(lambda*sinh(asinh(sigma*stats::qnorm(p))+asinh(sgn*small_c*sigma)))
+  sJQPDS_LBHa(p, L,B,H,lower, alpha)
 }
 
 
@@ -245,7 +253,21 @@ dJQPDS <- function(x, q1, q2, q3, lower=0, alpha=0.1){
 
 }
 
+sJQPDS2_LBHa <- function(p, L, B, H, lower=0, alpha){
+  s1 <- B/H
+  s2 <- L/B
+  sgn <- sign(log(s2/s1))
+  small_c <- stats::qnorm(1-alpha)
+  theta  <- 0.5*(L*(1+sgn)+H*(1-sgn)) # idea from Matlab code in Hadlock thesis
 
+  if (sgn==0)
+    return(lower + B*(s1^(-stats::qnorm(p)/small_c)))
+
+  sigma <- (1/small_c)*acosh(0.5*log(s1*s2)/log(pmax(s1, s2)))
+  lambda <- (-log(pmax(s1, s2)))/sinh(sigma*small_c)
+
+  lower + theta*exp(lambda*sinh(sigma*(stats::qnorm(p)+sgn*small_c)))
+}
 
 #' The J-QPD-S Type II distribution
 #'
@@ -274,24 +296,11 @@ dJQPDS <- function(x, q1, q2, q3, lower=0, alpha=0.1){
 qJQPDS2 <- function(p, q1, q2, q3, lower=0, alpha=0.1){
   stopifnot(all(q1<q2 & q2<q3))
   stopifnot(alpha>0 & alpha<0.5)
-  small_c <- stats::qnorm(1-alpha)
 
   L <- q1-lower
   B <- q2-lower
   H <- q3-lower
-  s1 <- B/H
-  s2 <- L/B
-  sgn <- sign(log(s2/s1))
-
-  theta  <- 0.5*(L*(1+sgn)+H*(1-sgn)) # idea from Matlab code in Hadlock thesis
-
-  if (sgn==0)
-    return(lower + B*(s1^(-stats::qnorm(p)/small_c)))
-
-  sigma <- (1/small_c)*acosh(0.5*log(s1*s2)/log(pmax(s1, s2)))
-  lambda <- (-log(pmax(s1, s2)))/sinh(sigma*small_c)
-
-  lower + theta*exp(lambda*sinh(sigma*(stats::qnorm(p)+sgn*small_c)))
+  sJQPDS2_LBHa(p, L, B, H, lower=0, alpha)
 }
 
 

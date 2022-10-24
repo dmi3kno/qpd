@@ -30,6 +30,7 @@ Collate:
     'iqf.R'
     'fsld.R'
     'genexp.R'
+    'gldcsw.R'
     'gldfkml.R'
     'gldrs.R'
     'gnh.R'

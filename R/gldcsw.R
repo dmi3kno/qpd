@@ -7,9 +7,9 @@ sGLDcsw <- function(u, chi, xi){
   if(chi==0 && xi==0.5)  return(log(u) - log(1-u))
   if(chi!=0){
     if(xi==0.5*(1+chi)) return(log(u) - 0.5/al*((1-u)^(2*al)-1))
-    if(xi==0.5*(1-chi)) return(0.5/bt(u^(2*bt)-1)-log(1-u))
+    if(xi==0.5*(1-chi)) return(0.5/bt*(u^(2*bt)-1)-log(1-u))
   }
-  1/(al+bt)*(u^(al+bt)-1)-1/(al+bt)*((1-u)^(al-bt)-1)
+  1/(al+bt)*(u^(al+bt)-1)-1/(al-bt)*((1-u)^(al-bt)-1)
 }
 
 #' Generalized Lambda Distribution (GLD) CSW parameterization

@@ -1,3 +1,29 @@
+#' Quantile function for Modified Myerson distribution.
+#'
+#' @param p vector of probabilities
+#' @param q1,q2,q3 numeric values representing bottom quantile, middle quantile (50th percentile)
+#' and top quantile. Quantiles are assumed to be symmetrical.
+#' @param alpha numerical fixed proportion of distribution below the bottom quantile.
+#' Default value is 0.25
+#' @param sfun function; standard vectorized quantile function with a single depth parameter
+#'
+#' @return a vector of quantilesof length equal to `length(x)`
+#' @name MMyerson
+#' @export
+#' @importFrom stats qnorm
+#'
+#' @examples
+#' pgrd <- make_pgrid()
+#' qMMyerson(pgrd, 10, 20, 40, alpha=0.1, sfun=stats::qlogis)
+
+qMMyerson <- function(p, q1,q2,q3, alpha=0.25, sfun=stats::qnorm){
+  rho <- (q3-q2)
+  bt <- rho/(q2-q1)
+  k <- sfun(p)/sfun(1-alpha)
+  if(bt==1) return(q2+rho*k)
+  q2+rho*(bt^k-1)/(bt-1)
+}
+
 #' @keywords internal
 sMyerson_rba <- function(p,r,b,alpha){
   bt <- r/b

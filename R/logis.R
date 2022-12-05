@@ -15,7 +15,7 @@
 #' fslogis(p_grd)
 #' dqslogis(p_grd)
 qslogis <- function(p, location=0, scale=1, dlt=0.5){
-  location+scale*(dlt*(-log(1-p)+(1-dlt)*log(p)))
+  location+scale*(dlt*(-log1p(-p)+(1-dlt)*log(p)))
 }
 
 #' @rdname slogis

@@ -36,7 +36,7 @@ qgenexp <- function(p, alpha, lambda){
   stopifnot(lambda>0)
   inv_lambda <- 1/lambda
   inv_alpha <- 1/alpha
-  -(inv_lambda)*log(1-p^inv_alpha)
+  -(inv_lambda)*log1p(-p^inv_alpha)
 }
 
 #' @rdname genexp

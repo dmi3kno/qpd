@@ -21,7 +21,7 @@ qfsld<- function(p, bt, k, dlt=0.5, a=0){
   stopifnot("Beta parameter should be non-negative!"=(bt>=0))
   stopifnot("Delta parameter should be between 0 and 1!"=(dlt>=0 && dlt<=1))
   stopifnot("k parameter should be non-negative!"=(k>=0))
-  Qslogis <- (1-dlt)*log(p)-dlt*log(1-p)
+  Qslogis <- (1-dlt)*log(p)-dlt*log1p(-p)
   Qunf <- k*p
   return(a+bt*(Qslogis+Qunf))
 }

@@ -274,7 +274,7 @@ dlogitMyerson <- function(x, q1,q2,q3, alpha=0.25, log=FALSE){
   if(bt==1){
     res <- stats::dlogis(psi)
   }else{
-    psi <- qn1ma*(log(1+(x-q2)*(bt-1)/r)/log(bt))
+    psi <- qn1ma*(log1p((x-q2)*(bt-1)/r)/log(bt))
     num <- qn1ma*(bt-1)
     den <- (r+(x-q2)*(bt-1))*log(bt)
     res <- num/den*stats::dlogis(psi)
@@ -404,7 +404,7 @@ dcauchyMyerson <- function(x, q1,q2,q3, alpha=0.25, log=FALSE){
   if(bt==1){
     res <- stats::dcauchy(psi)
   }else{
-    psi <- qn1ma*(log(1+(x-q2)*(bt-1)/r)/log(bt))
+    psi <- qn1ma*(log1p((x-q2)*(bt-1)/r)/log(bt))
     num <- qn1ma*(bt-1)
     den <- (r+(x-q2)*(bt-1))*log(bt)
     res <- num/den*stats::dcauchy(psi)

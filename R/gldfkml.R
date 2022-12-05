@@ -19,7 +19,7 @@
 #' qGLDfkml(p_grd, 1, 1, -1/8, -1/32)
 qGLDfkml <- function(u, l1, l2, l3, l4){
   stopifnot("l2 must be non-negative!"=(l2>=0))
-  l4t <- ifelse(l4==0,log(1-u),((1-u)^l4-1)/l4)
+  l4t <- ifelse(l4==0,log1p(-u),((1-u)^l4-1)/l4)
   l3t <- ifelse(l3==0,log(u),(u^l3-1)/l3)
 
   res <- l1+(l3t-l4t)/l2

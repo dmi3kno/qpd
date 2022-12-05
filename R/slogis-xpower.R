@@ -120,7 +120,7 @@ qslogis_xpower <- function(u, a){
   n <- length(a)
   stopifnot(n>=3)
   #stopifnot(all(tail(a,-1)>0))
-  res <- a[1] + a[2]*log(u)-a[3]*log(1-u)
+  res <- a[1] + a[2]*log(u)-a[3]*log1p(-u)
   if(n>3)
     for(i in 4:n)
       if(i%%2==0) res <- res + a[i]*(u)^((i-2)/2)

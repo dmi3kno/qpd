@@ -4,10 +4,10 @@ sGLDcsw <- function(u, chi, xi){
   al <- 0.5*(0.5-xi)/sqrt(xi*(1-xi))
   bt <- 0.5*(chi/sqrt(1-chi^2))
 
-  if(chi==0 && xi==0.5)  return(log(u) - log(1-u))
+  if(chi==0 && xi==0.5)  return(log(u) - log1p(-u))
   if(chi!=0){
     if(xi==0.5*(1+chi)) return(log(u) - 0.5/al*((1-u)^(2*al)-1))
-    if(xi==0.5*(1-chi)) return(0.5/bt*(u^(2*bt)-1)-log(1-u))
+    if(xi==0.5*(1-chi)) return(0.5/bt*(u^(2*bt)-1)-log1p(-u))
   }
   1/(al+bt)*(u^(al+bt)-1)-1/(al-bt)*((1-u)^(al-bt)-1)
 }

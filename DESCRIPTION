@@ -42,6 +42,7 @@ Collate:
     'logis.R'
     'metalog.R'
     'norm.R'
+    'qmom.R'
     'qpd-package.R'
     'rayleigh.R'
     'slogis-xpower.R'

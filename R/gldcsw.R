@@ -21,8 +21,9 @@ sGLDcsw <- function(u, chi, xi){
 #' @param u numeric vector of probabilities
 #' @param mu CSW GLD median parameter \eqn{\mu}
 #' @param sg CSW GLD interquartile range parameter \eqn{\sg}
-#' @param chi CSW GLD assymetry parameter \eqn{\chi}
-#' @param xi CSW GLD steepness parameter \eqn{\lambda_4}
+#' @param chi CSW GLD assymetry parameter \eqn{-1<\chi<1}
+#' @param xi CSW GLD steepness parameter \eqn{0<\xi<1}
+#' @param alpha CSW GLD tail parameter \eqn{\alpha < 0.5} for interquantile range. Default is 0.25
 #'
 #' @return quantiles, QDF, DQF, random samples or probabilities of GLD (CSW parameterization)
 #' @rdname GLDcsw
@@ -31,7 +32,7 @@ sGLDcsw <- function(u, chi, xi){
 #' @examples
 #' p_grd <- make_pgrid()
 #' qGLDcsw(p_grd, 1, 1, -1/8, 1/32)
-qGLDcsw <- function(u, mu, sg, chi, xi){
+qGLDcsw <- function(u, mu, sg, chi, xi, alpha=0.25){
   stopifnot("chi must be in c(-1,1)!"=((chi>=-1)&&(chi<=1)))
   stopifnot("xi must be in c(0,1)!"=((xi>=0)&&(xi<=1)))
   al <- 0.5*(0.5-xi)/sqrt(xi*(1-xi))
@@ -41,22 +42,22 @@ qGLDcsw <- function(u, mu, sg, chi, xi){
   if (xi<0.5*(1+chi)) lb <- (-1/(al+bt))
   if (xi<0.5*(1-chi)) ub <- (1/(al-bt))
 
-  iqr <- sGLDcsw(0.75, chi, xi)-sGLDcsw(0.25, chi, xi)
+  iqr <- sGLDcsw(1-alpha, chi, xi)-sGLDcsw(alpha, chi, xi)
   med <- sGLDcsw(0.5, chi, xi)
 
   s <-   sGLDcsw(u, chi, xi)
   s[u==0] <- lb
   s[u==1] <- ub
-
-  mu + sg*(s-med)/iqr
+  # this check for iqr is questionable. Should probably be an error.
+  mu + sg*(s-med)/ifelse(iqr==0, 1, iqr)
 }
 
 #' @rdname GLDcsw
 #' @export
-fGLDcsw <- function(u, mu, sg, chi, xi){
+fGLDcsw <- function(u, mu, sg, chi, xi, alpha=0.25){
   al <- 0.5*(0.5-xi)/sqrt(xi*(1-xi))
   bt <- 0.5*(chi/sqrt(1-chi^2))
-  iqr <- sGLDcsw(0.75, chi, xi)-sGLDcsw(0.25, chi, xi)
+  iqr <- sGLDcsw(1-alpha, chi, xi)-sGLDcsw(alpha, chi, xi)
 
   sg/iqr*(u^(al+bt-1)+(1-u)^(al-bt-1))
 }
@@ -64,8 +65,8 @@ fGLDcsw <- function(u, mu, sg, chi, xi){
 #' @param log should the log density be returned. Default=FALSE
 #' @rdname GLDcsw
 #' @export
-dqGLDcsw <- function(u, mu, sg, chi, xi, log=FALSE){
-  res <- fGLDcsw(u, mu, sg, chi, xi)
+dqGLDcsw <- function(u, mu, sg, chi, xi, alpha=0.25, log=FALSE){
+  res <- fGLDcsw(u, mu, sg, chi, xi, alpha)
   if(log) return(ifelse(is.finite(res),-log(res),res))
   1/res
 }
@@ -73,8 +74,8 @@ dqGLDcsw <- function(u, mu, sg, chi, xi, log=FALSE){
 #' @rdname GLDcsw
 #' @export
 #' @param n numeric number of samples to draw
-rGLDcsw <- function(n, mu, sg, chi, xi){
-  qGLDcsw(runif(n), mu, sg, chi, xi)
+rGLDcsw <- function(n, mu, sg, chi, xi, alpha=0.25){
+  qGLDcsw(runif(n), mu, sg, chi, xi, alpha)
 }
 
 #' @param q vector of quantiles

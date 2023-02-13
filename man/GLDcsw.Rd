@@ -8,13 +8,13 @@
 \alias{pGLDcsw}
 \title{Generalized Lambda Distribution (GLD) CSW parameterization}
 \usage{
-qGLDcsw(u, mu, sg, chi, xi)
+qGLDcsw(u, mu, sg, chi, xi, alpha = 0.25)
 
-fGLDcsw(u, mu, sg, chi, xi)
+fGLDcsw(u, mu, sg, chi, xi, alpha = 0.25)
 
-dqGLDcsw(u, mu, sg, chi, xi, log = FALSE)
+dqGLDcsw(u, mu, sg, chi, xi, alpha = 0.25, log = FALSE)
 
-rGLDcsw(n, mu, sg, chi, xi)
+rGLDcsw(n, mu, sg, chi, xi, alpha = 0.25)
 
 pGLDcsw(q, ..., lower = 0, upper = 1, tol = 1e-06, silent = TRUE, trace = 0)
 }
@@ -25,9 +25,11 @@ pGLDcsw(q, ..., lower = 0, upper = 1, tol = 1e-06, silent = TRUE, trace = 0)
 
 \item{sg}{CSW GLD interquartile range parameter \eqn{\sg}}
 
-\item{chi}{CSW GLD assymetry parameter \eqn{\chi}}
+\item{chi}{CSW GLD assymetry parameter \eqn{-1<\chi<1}}
 
-\item{xi}{CSW GLD steepness parameter \eqn{\lambda_4}}
+\item{xi}{CSW GLD steepness parameter \eqn{0<\xi<1}}
+
+\item{alpha}{CSW GLD tail parameter \eqn{\alpha < 0.5} for interquantile range. Default is 0.25}
 
 \item{log}{should the log density be returned. Default=FALSE}
 

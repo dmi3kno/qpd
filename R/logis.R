@@ -61,7 +61,7 @@ rslogis <- function(n, location, scale, dlt){
 #' dqlogis(p_grd)
 flogis <- function(p, location=0, scale=1, log=FALSE){
   ifelse(p<0 | p>1, NA_real_, p) # replace invalid inputs with NA
-  res <- -scale/(p*(p-1))
+  res <- scale/(p*(1-p))
   if(log) return(log(res))
   res
 }

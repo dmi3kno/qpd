@@ -16,10 +16,11 @@ Encoding: UTF-8
 Language: en
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Suggests: tinytest
 Collate: 
     'JQPD.R'
+    'iqf.R'
     'Myerson.R'
     'SkewNorm.R'
     'beta.R'
@@ -27,7 +28,6 @@ Collate:
     'dirichlet.R'
     'elicit.R'
     'exp.R'
-    'iqf.R'
     'fsld.R'
     'genexp.R'
     'gldcsw.R'
@@ -45,7 +45,9 @@ Collate:
     'qmom.R'
     'qpd-package.R'
     'rayleigh.R'
+    'sech.R'
     'slogis-xpower.R'
     'sqn.R'
+    'tlambda.R'
     'utils.R'
     'wakeby.R'

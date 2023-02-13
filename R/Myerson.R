@@ -433,12 +433,12 @@ qsechMyerson <- function(p, q1,q2,q3, alpha=0.25){
 fsechMyerson <- function(p, q1,q2,q3, alpha=0.25, log=FALSE){
   rho <- (q3-q2)
   b <- rho/(q2-q1)
-  qn1ma <-2/pi*log(tan(pi/2*(1-alpha))) #sech QF
-  k <- 2/pi*log(tan(pi/2*p))/qn1ma
+  qn1ma <-qsech(1-alpha) #sech QF
+  k <- qsech(p)/qn1ma
   if(b==1){
-    res <- rho*pi*(1+tan(pi*p/2)^2)/(pi*qn1ma*tan(pi*p/2))
+    res <- rho*fsech(p)/qn1ma
   } else {
-    res <- rho*log(b)*(b^k)*pi*(1+tan(pi*p/2)^2)/((b-1)*pi*qn1ma*tan(pi*p/2))
+    res <- rho*log(b)*(b^k)*fsech(p)/(b-1)/qn1ma
   }
   if(log) return(log(res))
   res
@@ -480,7 +480,7 @@ psechMyerson <- function(q, q1,q2,q3, alpha=0.25){
   # cumulative density
   rho <- (q3-q2)
   b <- rho/(q2-q1)
-  qn1ma <-2/pi*log(tan(pi/2*(1-alpha)))
+  qn1ma <-qsech(1-alpha)
   if(b==1)
     return(2/pi*atan(exp(pi/2*(qn1ma*(q-q2)/rho))))
 
@@ -500,7 +500,7 @@ dsechMyerson <- function(x, q1,q2,q3, alpha=0.25, log=FALSE){
   # Probability density function
   rho <- (q3-q2)
   b <- rho/(q2-q1)
-  qn1ma <-2/pi*log(tan(pi/2*(1-alpha)))
+  qn1ma <-qsech(1-alpha)
   psi <- qn1ma*(x-q2)/rho
   if(b==1) {
     res <- 1/2*sech(pi/2*psi)
@@ -514,9 +514,99 @@ dsechMyerson <- function(x, q1,q2,q3, alpha=0.25, log=FALSE){
   res
 }
 
+######################### TUKEY MYERSON #######################################
+# Q(u)= 1/lambda*(u^lambda-(1-p)^lambda) ,for lamba!=0
+# Q(u)=logit(p) for lambda==0
+stukeyMyerson_ba <- function(p,b, alpha, tlambda){
+  qn1ma <-qtlambda(1-alpha, tlambda)
+  k <- qtlambda(p, tlambda)/qn1ma # here the scale parameters 1/lambda cancel out
+  if(b==1) return(k)
+  (b^k-1)/(b-1)
+}
 
+#' Density function for Tukey-Myerson distribution (Myerson distribution with Tukey lambda base function).
+#'
+#' @param q vector of quantiles.
+#' @param p vector of probabilities
+#' @param n number of observations. If `length(n)>1``, the length is taken to be the number required.
+#' @param q1,q2,q3 numeric values representing bottom quantile, middle quantile (50th percentile)
+#' and top quantile. Quantiles are assumed to be symmetrical.
+#' @param alpha numerical fixed proportion of distribution below the bottom quantile.
+#' Default value is 0.25
+#' @param tlambda numerical Tukey lambda `lambda` parameter
+#' @param log logical; if TRUE, log density is returned
+#'
+#' @return a vector of probabilities of length equal to `length(x)`
+#' @name tukeyMyerson
+#' @export
+#' @importFrom stats qnorm dnorm pnorm rnorm runif
+#'
+#' @examples
+#' qtukeyMyerson(0.25, 10, 20, 40)
+qtukeyMyerson <- function(p, q1,q2,q3, alpha=0.25, tlambda=0){
+  if(tlambda==0) return(qlogitMyerson(p,q1,q2,q3,alpha))
+  rho <- (q3-q2)
+  b <- rho/(q2-q1)
+  q2+rho*stukeyMyerson_ba(p,b,alpha, tlambda)
+}
 
+#' @rdname tukeyMyerson
+#' @export
+#'
+#' @examples
+#' flogitMyerson(0.25, 10, 20, 40)
+ftukeyMyerson <- function(p, q1,q2,q3, alpha=0.25, tlambda=0, log=FALSE){
+  if(tlambda==0) return(flogitMyerson(p,q1=q1,q2=q2,q3=q3,alpha=alpha, log=log))
+  rho <- (q3-q2)
+  b <- rho/(q2-q1)
+  qn1ma <-qtlambda(1-alpha, tlambda)
+  k <- qtlambda(p, tlambda)/qn1ma # here the scale parameters 1/lambda cancel out
+  if(b==1){
+    res <- rho*ftlambda(p, tlambda)/qn1ma
+  } else {
+    res <- rho*log(b)*(b^k)*ftlambda(p, tlambda)/(b-1)/qn1ma
+  }
 
+  if(log) return(log(res))
+  res
+}
 
+#' @rdname tukeyMyerson
+#' @export
+#'
+#' @examples
+#' dqlogitMyerson(0.25, 10, 20, 40)
+dqtukeyMyerson <- function(p, q1,q2,q3, alpha=0.25, tlambda=0, log=FALSE){
+  res <- ftukeyMyerson(p, q1,q2,q3, alpha, tlambda=tlambda, log=FALSE)
+  if(log) return(ifelse(is.finite(res),-log(res),res))
+  1/res
+}
 
+#' @rdname tukeyMyerson
+#' @export
+#' @importFrom stats qnorm dnorm pnorm rnorm runif
+#'
+#' @examples
+#' rlogitMyerson(1, 10, 20, 40)
+rtukeyMyerson <- function(n,q1,q2,q3,alpha=0.25, tlambda=0){
+  # random number generator
+  if(length(n)>1) n <-length(n)
+  qtukeyMyerson(stats::runif(n), q1, q2, q3, alpha, tlambda)
+}
+
+#' @param ... used by method
+#' @param lower,upper the `stats::uniroot` lower and upper end points of the interval to be searched. Defaults are 0 and 1, respectively
+#' @param tol the `stats::uniroot` desired accuracy (convergence tolerance). Default value 1e-06
+#' @param silent the `base::try` argument. Default is TRUE
+#' @param trace integer number passed to `stats::uniroot`; if positive, tracing information is produced. Higher values giving more details.
+#' @include iqf.R
+#' @rdname tukeyMyerson
+#'
+#' @return a vector of exceedance probabilities of length equal to `length(x)`.
+#' @export
+#' @importFrom stats uniroot
+#'
+#' @examples
+#' ptukeyMyerson(0.25, 10, 20, 40)
+ptukeyMyerson <- iqf(qtukeyMyerson)
 

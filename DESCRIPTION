@@ -23,6 +23,7 @@ Collate:
     'iqf.R'
     'Myerson.R'
     'SkewNorm.R'
+    'atanpow.R'
     'beta.R'
     'chebyshev.R'
     'dirichlet.R'

@@ -1,4 +1,4 @@
-#'Tpkey lambda distribption
+#'Tukey lambda distribption
 #'
 #' Defines quantile function (ICDF), and quantile density function as well as probability function (CDF) for Tukey lambda distribution
 #' @param p vector of probabilities

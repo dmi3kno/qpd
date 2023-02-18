@@ -7,7 +7,7 @@
 \alias{dqtlambda}
 \alias{ptlambda}
 \alias{rtlambda}
-\title{Tpkey lambda distribption}
+\title{Tukey lambda distribption}
 \usage{
 qtlambda(p, lambda)
 

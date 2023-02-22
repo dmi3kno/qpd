@@ -31,6 +31,7 @@ fchen <- function(p, lambda, beta){
   stopifnot(lambda>0, beta>0)
   num <- (log1p(-log1p(-p)/lambda))^(1/beta-1)
   den <- beta*(log1p(-p)-lambda)*(p-1)
+  num/den
 }
 
 #' @param log logical; if TRUE, log density is returnes. Default is FALSE

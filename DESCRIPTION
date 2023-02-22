@@ -26,6 +26,7 @@ Collate:
     'atanpow.R'
     'beta.R'
     'chebyshev.R'
+    'chen.R'
     'dirichlet.R'
     'elicit.R'
     'exp.R'

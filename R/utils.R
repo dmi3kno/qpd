@@ -62,3 +62,13 @@ diago <- function(x=1, nrow=NA, ncol=NA, names=TRUE, offset = 1L){
         m[, s_col_idx],
         post)
 }
+
+#' internal function for monotonic power
+#' @references Ahmadabadi MN, Farjami Y, Moghadam MB. 2012. Approximating Distributions by Extended Generalized Lambda Distribution (XGLD). Communications in Statistics - Simulation and Computation. 41(1):1–23. https://doi.org/10.1080/03610911003681503
+#' @param x numeric vector of centered depths i.e. x=u-0.5
+#' @param pow numeric power to raise the depth into
+#' @return monopowered centered depth
+#' @keywords  internal
+monopower <- function(x, pow=1){
+  ifelse(x>=0, x^pow, -abs(x)^pow)
+}

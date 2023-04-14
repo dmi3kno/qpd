@@ -21,8 +21,8 @@ seq_grid <- function(f, t, n){
 #'
 make_ecdf_df <- function(x){
   # ecdf assignment trick to avoid 0 and 1
-  data.frame(p=(seq_along(x)-0.5)/length(x),
-             q=sort(x), stringsAsFactors = FALSE)
+  data.frame(p=(rank(x, na.last = "keep")-0.5)/length(x),
+             q=x, stringsAsFactors = FALSE)
 }
 
 #' Make probability grid

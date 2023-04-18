@@ -10,8 +10,10 @@ seq_grid <- function(f, t, n){
 #' Compute ECDF for a sample
 #'
 #' Function for creating an empirical CDF from a numerical sample
-#' @param x numeric sample
+#' @param x numeric sample (vector)
+#' @param m numeric matrix
 #' @return data frame with 2 columns p - vector of empirical probabilities, q - vector of sorted original sample values
+#' `make_ecdf_matrix()` returns a matrix with added probability columns denoted with postfix "_p"
 #'
 #' @rdname ecdf
 #' @export
@@ -24,6 +26,15 @@ make_ecdf_df <- function(x){
   data.frame(p=(rank(x, na.last = "keep")-0.5)/length(x),
              q=x, stringsAsFactors = FALSE)
 }
+
+#' @rdname ecdf
+#' @export
+make_ecdf_matrix <- function(m){
+  res <- apply(m, 2, function(x) (rank(x, na.last = "keep")-0.5)/length(x),
+          simplify  = TRUE)
+  colnames(res) <- paste0(colnames(m), "_p")
+  cbind(m, res)
+  }
 
 #' Make probability grid
 #' @description Functions for creating a probability grid using different method

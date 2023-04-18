@@ -123,9 +123,18 @@ approx_max_metalog <- function(q, bl=-Inf, bu=Inf, p_grid=NULL, thin=FALSE, n_gr
   a <- stats::median(q)
   metalog_valid <- TRUE
   while(metalog_valid){
-    tmp_a <- approx_metalog(q, nterms =nterms, bl=bl, bu=bu, p_grid=p_grid, thin=thin, n_grid=n_grid, s_grid=s_grid, tol=tol)
-    metalog_valid <- is_metalog_valid(tmp_a, bl=bl, bu=bu, n_grid=n_grid, s_grid=s_grid)
-    if(metalog_valid) a <- tmp_a
+    tmp_a <- tryCatch({
+      approx_metalog(q, nterms =nterms, bl=bl, bu=bu, p_grid=p_grid, thin=thin, n_grid=n_grid, s_grid=s_grid, tol=tol)
+    }, error=function(e){
+      message("Failed to fit. Returning null")
+      NULL
+    })
+    if(is.null(tmp_a)){
+      metalog_valid <- FALSE
+    }else{
+      metalog_valid <- is_metalog_valid(tmp_a, bl=bl, bu=bu, n_grid=n_grid, s_grid=s_grid)
+    }
+    if(!is.na(metalog_valid) && isTRUE(metalog_valid)) a <- tmp_a
     nterms <- nterms+1L
   }
   a

@@ -2,15 +2,21 @@
 % Please edit documentation in R/grid.R
 \name{make_ecdf_df}
 \alias{make_ecdf_df}
+\alias{make_ecdf_matrix}
 \title{Compute ECDF for a sample}
 \usage{
 make_ecdf_df(x)
+
+make_ecdf_matrix(m)
 }
 \arguments{
-\item{x}{numeric sample}
+\item{x}{numeric sample (vector)}
+
+\item{m}{numeric matrix}
 }
 \value{
 data frame with 2 columns p - vector of empirical probabilities, q - vector of sorted original sample values
+\code{make_ecdf_matrix()} returns a matrix with added probability columns denoted with postfix "_p"
 }
 \description{
 Function for creating an empirical CDF from a numerical sample

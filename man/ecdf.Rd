@@ -5,12 +5,14 @@
 \alias{make_ecdf_matrix}
 \title{Compute ECDF for a sample}
 \usage{
-make_ecdf_df(x)
+make_ecdf_df(x, boundedness = c("none", "left", "right", "both"))
 
 make_ecdf_matrix(m)
 }
 \arguments{
 \item{x}{numeric sample (vector)}
+
+\item{boundedness}{should the sample be bounded by the minimum("left"), maximum("right") or both values ("both"). Default is "none".}
 
 \item{m}{numeric matrix}
 }
@@ -20,6 +22,10 @@ data frame with 2 columns p - vector of empirical probabilities, q - vector of s
 }
 \description{
 Function for creating an empirical CDF from a numerical sample
+}
+\details{
+If boundedness is "none" the ties method in the \code{rank()} function is "average" (meaning that two equal samples can get the same probability).
+Otherwise the ties method is "first", meaning that all probabilities will be unique and the first sample will get the lower probability.
 }
 \examples{
 make_ecdf_df(runif(10))

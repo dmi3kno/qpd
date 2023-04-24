@@ -3,6 +3,7 @@
 \name{qGLDcsw}
 \alias{qGLDcsw}
 \alias{fGLDcsw}
+\alias{frGLDcsw}
 \alias{dqGLDcsw}
 \alias{rGLDcsw}
 \alias{pGLDcsw}
@@ -11,6 +12,8 @@
 qGLDcsw(u, mu, sg, chi, xi, alpha = 0.25)
 
 fGLDcsw(u, mu, sg, chi, xi, alpha = 0.25)
+
+frGLDcsw(u, chi, xi, alpha = 0.25)
 
 dqGLDcsw(u, mu, sg, chi, xi, alpha = 0.25, log = FALSE)
 
@@ -53,8 +56,7 @@ quantiles, QDF, DQF, random samples or probabilities of GLD (CSW parameterizatio
 \description{
 Quantile function, quantile density, density quantile and inverse quantile
 functions for GLD distribution with CSW parameterization.
-\code{aGLDcsw_mean} and \code{aGLDcsw_median} are theoretical mean and median, which can be used
-for adjusting the quantile likelihood.
+\code{frGLDcsw} is quantile optimality ratio for choosing the density bandwidth (see Predengast & Staudte, 2016)
 }
 \examples{
 p_grd <- make_pgrid()

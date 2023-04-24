@@ -11,6 +11,11 @@ seq_grid <- function(f, t, n){
 #'
 #' Function for creating an empirical CDF from a numerical sample
 #' @param x numeric sample (vector)
+#' @param boundedness should the sample be bounded by the minimum("left"), maximum("right") or both values ("both"). Default is "none".
+#' @details
+#' If boundedness is "none" the ties method in the `rank()` function is "average" (meaning that two equal samples can get the same probability).
+#' Otherwise the ties method is "first", meaning that all probabilities will be unique and the first sample will get the lower probability.
+#'
 #' @return data frame with 2 columns p - vector of empirical probabilities, q - vector of sorted original sample values
 #' `make_ecdf_matrix()` returns a matrix with added probability columns denoted with postfix "_p"
 #'
@@ -20,9 +25,20 @@ seq_grid <- function(f, t, n){
 #' @examples
 #' make_ecdf_df(runif(10))
 #'
-make_ecdf_df <- function(x){
+make_ecdf_df <- function(x, boundedness=c("none", "left", "right", "both")){
+  bound <- match.arg(boundedness)
+  if (bound=="none") ties <- "average" else ties <- "first"
+  r <- rank(x, na.last = "keep", ties.method = ties)
+  b <- 0
+  a <- switch(bound,
+              "none"=0.5,
+              "left"=1,
+              "right"=0,
+              "both"=1
+              )
+  if(bound=="both") b <- 1
   # ecdf assignment trick to avoid 0 and 1
-  data.frame(p=(rank(x, na.last = "keep")-0.5)/length(x),
+  data.frame(p=(r-a)/(length(x)-b),
              q=x, stringsAsFactors = FALSE)
 }
 

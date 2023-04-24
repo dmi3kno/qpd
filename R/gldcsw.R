@@ -16,8 +16,7 @@ sGLDcsw <- function(u, chi, xi){
 #'
 #' Quantile function, quantile density, density quantile and inverse quantile
 #' functions for GLD distribution with CSW parameterization.
-#' `aGLDcsw_mean` and `aGLDcsw_median` are theoretical mean and median, which can be used
-#'  for adjusting the quantile likelihood.
+#'  `frGLDcsw` is quantile optimality ratio for choosing the density bandwidth (see Predengast & Staudte, 2016)
 #' @param u numeric vector of probabilities
 #' @param mu CSW GLD median parameter \eqn{\mu}
 #' @param sg CSW GLD interquartile range parameter \eqn{\sg}
@@ -60,6 +59,19 @@ fGLDcsw <- function(u, mu, sg, chi, xi, alpha=0.25){
   iqr <- sGLDcsw(1-alpha, chi, xi)-sGLDcsw(alpha, chi, xi)
 
   sg/iqr*(u^(al+bt-1)+(1-u)^(al-bt-1))
+}
+
+#' @rdname GLDcsw
+#' @export
+frGLDcsw<- function(u, chi, xi, alpha=0.25){
+  al <- 0.5*(0.5-xi)/sqrt(xi*(1-xi))
+  bt <- 0.5*(chi/sqrt(1-chi^2))
+  # QOR(u) <- q(u)/q''(u) quantile density divided by its second derivative
+  # location- and scale-independent
+  f <- u^(al+bt-1)+(1-u)^(al-bt-1)
+  fff <- (al+bt-2)*(al+bt-1)*u^(al+bt-3)+
+         (al-bt-2)*(al-bt-1)*(1-u)^(al-bt-3)
+  f/fff
 }
 
 #' @param log should the log density be returned. Default=FALSE

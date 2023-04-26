@@ -63,7 +63,7 @@ fGLDcsw <- function(u, mu, sg, chi, xi, alpha=0.25){
 
 #' @rdname GLDcsw
 #' @export
-frGLDcsw<- function(u, chi, xi, alpha=0.25){
+frGLDcsw<- function(u, chi, xi){
   al <- 0.5*(0.5-xi)/sqrt(xi*(1-xi))
   bt <- 0.5*(chi/sqrt(1-chi^2))
   # QOR(u) <- q(u)/q''(u) quantile density divided by its second derivative

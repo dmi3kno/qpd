@@ -61,7 +61,7 @@ fit_metalog <- function(p, q, bl=-Inf, bu=Inf, log.p=FALSE, tol=.Machine$double.
 }
 
 #' @param nterms integer number of terms for approximating metalog. Default is 3
-#' @param p_grid the grid of probability values the quantiles q correspond to. This would be specified if metalog is fitted to the empirical CDF. Default is NULL.
+#' @param p the grid of probability values the quantiles q correspond to. This would be specified if metalog is fitted to the empirical CDF. Default is NULL.
 #' @param thin logical. Should original data be thinned. Default is FALSE.
 #' @param n_grid in case data thinning is performed, integer number of quantiles to extract from data, if data vector `q` is longer than this value
 #' @param s_grid in case data thinning is performed, probability grid shape parameter passed to `qpd::make_pgrid()`. Default is 10.
@@ -69,10 +69,10 @@ fit_metalog <- function(p, q, bl=-Inf, bu=Inf, log.p=FALSE, tol=.Machine$double.
 #' @rdname fit_metalog
 #' @importFrom stats quantile
 #' @export
-approx_metalog <- function(q, nterms=3L, bl=-Inf, bu=Inf, p_grid=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=.Machine$double.eps^2){
+approx_metalog <- function(q, nterms=3L, bl=-Inf, bu=Inf, p=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=.Machine$double.eps^2){
   stopifnot("Metalog should have at least 2 terms!"=nterms>1)
   n <- length(q)
-  if (is.null(p_grid)){ # do it if p_grid is not specified
+  if (is.null(p)){ # do it if p is not specified
     if(thin && (n > n_grid)){
       n <- n_grid
       p <- make_pgrid(n_grid, s=s_grid, trim=TRUE)
@@ -83,9 +83,9 @@ approx_metalog <- function(q, nterms=3L, bl=-Inf, bu=Inf, p_grid=NULL, thin=FALS
       p <- (seq_along(qs)-0.5)/n
     }
   } else {
-    stopifnot("Lengths of q and p_grid vectors do not match"=length(p_grid)==n)
-    idx <- p_grid!=0 & p_grid!=1
-    p <-p_grid[idx]
+    stopifnot("Lengths of q and p vectors do not match"=length(p)==n)
+    idx <- p!=0 & p!=1
+    p <-p[idx]
     qs <- q[idx]
   }
 
@@ -115,16 +115,17 @@ approx_metalog <- function(q, nterms=3L, bl=-Inf, bu=Inf, p_grid=NULL, thin=FALS
   ((Mi %*% t(Y)) %*% z)[,1]
 }
 
+#' @param max_nterms Maximum number of terms to be used for fitting
 #' @rdname fit_metalog
 #' @importFrom stats  median
 #' @export
-approx_max_metalog <- function(q, bl=-Inf, bu=Inf, p_grid=NULL, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
+approx_max_metalog <- function(q, p=NULL, bl=-Inf, bu=Inf, max_nterms=Inf, thin=FALSE, n_grid=1e3, s_grid=2L, tol=1e-7){
   nterms <- 2
   a <- stats::median(q)
   metalog_valid <- TRUE
-  while(metalog_valid){
+  while(metalog_valid && (nterms<=max_nterms)){
     tmp_a <- tryCatch({
-      approx_metalog(q, nterms =nterms, bl=bl, bu=bu, p_grid=p_grid, thin=thin, n_grid=n_grid, s_grid=s_grid, tol=tol)
+      approx_metalog(q, nterms =nterms, bl=bl, bu=bu, p=p, thin=thin, n_grid=n_grid, s_grid=s_grid, tol=tol)
     }, error=function(e){
       message("Failed to fit. Returning null")
       NULL

@@ -21,7 +21,7 @@ approx_metalog(
   nterms = 3L,
   bl = -Inf,
   bu = Inf,
-  p_grid = NULL,
+  p = NULL,
   thin = FALSE,
   n_grid = 1000,
   s_grid = 2L,
@@ -30,9 +30,10 @@ approx_metalog(
 
 approx_max_metalog(
   q,
+  p = NULL,
   bl = -Inf,
   bu = Inf,
-  p_grid = NULL,
+  max_nterms = Inf,
   thin = FALSE,
   n_grid = 1000,
   s_grid = 2L,
@@ -42,7 +43,7 @@ approx_max_metalog(
 is_metalog_valid(a, bl = -Inf, bu = Inf, n_grid = 50L, s_grid = 2L)
 }
 \arguments{
-\item{p}{vector of cumulative probabilities corresponding to quantile values}
+\item{p}{the grid of probability values the quantiles q correspond to. This would be specified if metalog is fitted to the empirical CDF. Default is NULL.}
 
 \item{q}{vector of quantile values (data)}
 
@@ -56,13 +57,13 @@ is_metalog_valid(a, bl = -Inf, bu = Inf, n_grid = 50L, s_grid = 2L)
 
 \item{nterms}{integer number of terms for approximating metalog. Default is 3}
 
-\item{p_grid}{the grid of probability values the quantiles q correspond to. This would be specified if metalog is fitted to the empirical CDF. Default is NULL.}
-
 \item{thin}{logical. Should original data be thinned. Default is FALSE.}
 
 \item{n_grid}{in case data thinning is performed, integer number of quantiles to extract from data, if data vector \code{q} is longer than this value}
 
 \item{s_grid}{in case data thinning is performed, probability grid shape parameter passed to \code{qpd::make_pgrid()}. Default is 10.}
+
+\item{max_nterms}{Maximum number of terms to be used for fitting}
 
 \item{a}{vector of \code{a}-coefficient parameters of metalog distribution}
 }

@@ -13,7 +13,7 @@ qGLDcsw(u, mu, sg, chi, xi, alpha = 0.25)
 
 fGLDcsw(u, mu, sg, chi, xi, alpha = 0.25)
 
-frGLDcsw(u, chi, xi, alpha = 0.25)
+frGLDcsw(u, chi, xi)
 
 dqGLDcsw(u, mu, sg, chi, xi, alpha = 0.25, log = FALSE)
 

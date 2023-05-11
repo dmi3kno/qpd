@@ -19,7 +19,7 @@ sGLDcsw <- function(u, chi, xi){
 #'  `frGLDcsw` is quantile optimality ratio for choosing the density bandwidth (see Predengast & Staudte, 2016)
 #' @param u numeric vector of probabilities
 #' @param mu CSW GLD median parameter \eqn{\mu}
-#' @param sg CSW GLD interquartile range parameter \eqn{\sg}
+#' @param sg CSW GLD interquartile range parameter \eqn{\sigma}
 #' @param chi CSW GLD assymetry parameter \eqn{-1<\chi<1}
 #' @param xi CSW GLD steepness parameter \eqn{0<\xi<1}
 #' @param alpha CSW GLD tail parameter \eqn{\alpha < 0.5} for interquantile range. Default is 0.25

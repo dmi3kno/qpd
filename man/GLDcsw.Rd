@@ -26,7 +26,7 @@ pGLDcsw(q, ..., lower = 0, upper = 1, tol = 1e-06, silent = TRUE, trace = 0)
 
 \item{mu}{CSW GLD median parameter \eqn{\mu}}
 
-\item{sg}{CSW GLD interquartile range parameter \eqn{\sg}}
+\item{sg}{CSW GLD interquartile range parameter \eqn{\sigma}}
 
 \item{chi}{CSW GLD assymetry parameter \eqn{-1<\chi<1}}
 

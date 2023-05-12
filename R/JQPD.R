@@ -148,6 +148,72 @@ dJQPDB <- function(x, q1, q2, q3, lower, upper, alpha=0.1){
     sqrt((lambda^2)+((-zeta+q_xmlb_uml))^2)
 }
 
+#' @param N number of samples to draw
+#' @rdname JQPDB
+#' @export
+#' @importFrom stats qnorm dnorm pnorm rnorm
+rJQPDB <- function(N, q1, q2, q3, lower=0, upper=1, alpha=0.1){
+  qJQPDB(runif(N), q1, q2, q3, lower, upper, alpha)
+  }
+
+
+##################
+
+
+#' The  G-QPD-B distribution
+#'
+#' Quantile function and random generation for the
+#' Generalized Quantile Parametrized (Bounded) distribution parametrized by three symmetrical
+#' quantiles (`q1`, `q2` and `q3`) and an `alpha` argument, representing the proportion of
+#' density below the bottom quantile. All functions are vectorized.
+#'
+#' @details The distribution is created by applying the inverse probit transform T(x)=Phi(x) to the Johnson SU distribution
+#'
+#' @param p vector of probabilities
+#' @param q1,q2,q3 vectors of values, corresponding to lower, median and upper (symmetrical) quantiles
+#' @param lower,upper vectors of lower and upper bounds of distribution
+#' @param alpha vector of proportions of probability density under the lower bound
+#' (or above the upper bound, since the quantiles are symmetrical)
+#' @param qf quantile function
+#' @param pf distribution function
+#'
+#' @return vector of values
+#' @name GQPDB
+#' @export
+#' @importFrom stats qnorm dnorm pnorm rnorm
+#'
+qGQPDB <- function(p, q1, q2, q3, lower, upper, alpha=0.1, qf=stats::qnorm, pf=stats::pnorm){
+  stopifnot(all(lower < upper))
+  stopifnot(all(q1<q2 & q2<q3))
+  stopifnot(alpha>0 & alpha<0.5)
+  u_m_l <- upper-lower
+
+  L <- qf((q1-lower)/u_m_l)
+  B <- qf((q2-lower)/u_m_l)
+  H <- qf((q3-lower)/u_m_l)
+  small_c <- qf(1-alpha)
+  sgn <- sign(L+H-2*B)
+
+  if (sgn==0) return(lower + u_m_l*pf(B+0.5*(H-L)/small_c*qf(p)))
+
+  sigma <- (1/small_c)*acosh(0.5*(H-L)/pmin(B-L, H-B))
+  lambda <- (H-L)/sinh(2*sigma*small_c)
+  zeta  <- 0.5*(L*(1+sgn)+H*(1-sgn)) # idea from Matlab code in Hadlock thesis
+
+  lower + u_m_l*pf(qJDS_SU(p, zeta, lambda, sigma, gamma=sgn*small_c))
+}
+
+#' @param N number of samples to draw
+#' @name GQPDB
+#' @export
+#' @importFrom stats qnorm dnorm pnorm rnorm
+#'
+rGQPDB <- function(N, q1, q2, q3, lower, upper, alpha=0.1, qf=stats::qnorm, pf=stats::pnorm){
+  rGQPDB(runif(N), q1, q2, q3, lower, upper, alpha, qf, pf)
+}
+
+###########################################
+
 #' @keywords internal
 sJQPDS_HBBLa <- function(p, HB, BL, alpha){
   HL <- HB+BL
@@ -272,6 +338,69 @@ dJQPDS <- function(x, q1, q2, q3, lower=0, alpha=0.1){
 
 }
 
+#' @param N number of samples for draw
+#' @rdname JQPDS
+#' @export
+#' @importFrom stats dlnorm plnorm qnorm dnorm pnorm rnorm
+#' @examples
+#' # should return vector with first and last element equal to NaN
+rJQPDS <- function(N, q1, q2, q3, lower=0, alpha=0.1){
+  qJQPDS(runif(N), q1, q2, q3, lower, alpha)
+  }
+
+
+#' The Generalized QPD-S distribution
+#'
+#' Quantile function and random generation for the
+#' Generalized Quantile Parametrized (Semibounded) distribution parametrized by three symmetrical
+#' quantiles (`q1`, `q2` and `q3`) and an `alpha` argument, representing the proportion of
+#' density below the bottom quantile. All functions are vectorized.
+#'
+#' @details The distribution is created by applying the exponential transform T(x)=exp(x) to the Johnson SU distribution
+#'
+#' @param p vector of probabilities
+#' @param q1,q2,q3 vectors of values, corresponding to lower, median and upper (symmetrical) quantiles
+#' @param lower vector of lower bounds of distribution
+#' @param alpha vector of proportions of probability density under the lower bound
+#' (or above the upper bound, since the quantiles are symmetrical)
+#' @param qf bare symmetrical unbounded standard quantile function
+#'
+#' @return vector of values
+#' @name GQPDS
+#' @export
+#' @importFrom stats qlnorm plnorm dlnorm qnorm dnorm pnorm rnorm
+#'
+#' @examples
+#' qGQPDS(0.6, 20,50,90)
+qGQPDS <- function(p, q1, q2, q3, lower=0, alpha=0.1, qf=stats::qnorm){
+  stopifnot(all(q1<q2 & q2<q3))
+  stopifnot(alpha>0 & alpha<0.5)
+
+  L <- log(q1-lower)
+  B <- log(q2-lower)
+  H <- log(q3-lower)
+  sgn <- sign(L+H-2*B)
+  small_c <- qf(1-alpha)
+  theta  <- 0.5*(exp(L)*(1+sgn)+exp(H)*(1-sgn)) # idea from Matlab code in Hadlock thesis
+
+  if (sgn==0) return(lower + theta*exp(lambda*sigma*qf(p)))
+
+  sigma <- (1/small_c)*sinh(acosh(0.5*(H-L)/pmin(B-L, H-B)))
+  lambda <- 1/(sigma*small_c)*pmin(H-B, B-L)
+
+  lower + theta*exp(lambda*sinh(asinh(sigma*qf(p))+asinh(sgn*small_c*sigma)))
+}
+
+#' @param N number of samples to draw from GQPDS
+#' @rdname GQPDS
+#' @export
+#' @importFrom stats qlnorm plnorm dlnorm qnorm dnorm pnorm rnorm
+#'
+rGQPDS <- function(N, q1, q2, q3, lower=0, alpha=0.1, qf=stats::qnorm){
+  qGQPDS(runif(N), q1, q2, q3, lower, alpha, qf)
+}
+
+############################
 sJQPDS2_BHLBa <- function(p, BH, LB, alpha){
   sgn <- sign(log(LB/BH))
   small_c <- stats::qnorm(1-alpha)
@@ -395,3 +524,11 @@ dJQPDS2 <- function(x, q1, q2, q3, lower=0, alpha=0.1){
     (1/((x-lower)*lambda))
 
 }
+
+#' @param N number of samples to draw
+#' @rdname JQPDS2
+#' @export
+#' @importFrom stats dlnorm plnorm qnorm dnorm pnorm rnorm
+rJQPDS2 <- function(N, q1, q2, q3, lower=0, alpha=0.1){
+  qJQPDS2(runif(N), q1, q2, q3, lower, alpha)
+  }

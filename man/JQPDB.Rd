@@ -5,6 +5,7 @@
 \alias{qJQPDB}
 \alias{pJQPDB}
 \alias{dJQPDB}
+\alias{rJQPDB}
 \title{The J-QPD-B distribution}
 \usage{
 qJQPDB(p, q1, q2, q3, lower, upper, alpha = 0.1)
@@ -12,6 +13,8 @@ qJQPDB(p, q1, q2, q3, lower, upper, alpha = 0.1)
 pJQPDB(q, q1, q2, q3, lower, upper, alpha = 0.1)
 
 dJQPDB(x, q1, q2, q3, lower, upper, alpha = 0.1)
+
+rJQPDB(N, q1, q2, q3, lower = 0, upper = 1, alpha = 0.1)
 }
 \arguments{
 \item{p}{vector of probabilities}
@@ -24,6 +27,8 @@ dJQPDB(x, q1, q2, q3, lower, upper, alpha = 0.1)
 (or above the upper bound, since the quantiles are symmetrical)}
 
 \item{x, q}{vector of quantiles}
+
+\item{N}{number of samples to draw}
 }
 \value{
 vector of values

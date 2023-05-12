@@ -5,6 +5,7 @@
 \alias{qJQPDS}
 \alias{pJQPDS}
 \alias{dJQPDS}
+\alias{rJQPDS}
 \title{The J-QPD-S distribution}
 \usage{
 qJQPDS(p, q1, q2, q3, lower = 0, alpha = 0.1)
@@ -12,6 +13,8 @@ qJQPDS(p, q1, q2, q3, lower = 0, alpha = 0.1)
 pJQPDS(q, q1, q2, q3, lower = 0, alpha = 0.1)
 
 dJQPDS(x, q1, q2, q3, lower = 0, alpha = 0.1)
+
+rJQPDS(N, q1, q2, q3, lower = 0, alpha = 0.1)
 }
 \arguments{
 \item{p}{vector of probabilities}
@@ -26,6 +29,8 @@ dJQPDS(x, q1, q2, q3, lower = 0, alpha = 0.1)
 \item{q}{vector of quantiles}
 
 \item{x}{vector of observations}
+
+\item{N}{number of samples for draw}
 }
 \value{
 vector of values
@@ -47,4 +52,5 @@ qJQPDS(0.6, 20,50,90)
 pJQPDB(c(0, 1, 5, 12, 20), 1,5,12, 0, 20, alpha=0.05)
 # should return vector with first and last element equal to NaN
 dJQPDB(c(0, 1, 5, 12, 20), 1,5,12, 0, 20, alpha=0.05)
+# should return vector with first and last element equal to NaN
 }

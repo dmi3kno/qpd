@@ -5,7 +5,7 @@
 \title{Quantile function of Johnson Distribution System (JDS) SU distribution
 The transformation function is hyperbolic sine transform}
 \usage{
-qJDS_SU(p, zeta, lambda, sigma, gamma)
+qJDS_SU(p, zeta, lambda, sigma, gamma, qf = stats::qnorm)
 }
 \description{
 Quantile function of Johnson Distribution System (JDS) SU distribution

@@ -1,8 +1,8 @@
 #' Quantile function of Johnson Distribution System (JDS) SU distribution
 #' The transformation function is hyperbolic sine transform
 #' @keywords internal
-qJDS_SU <- function(p, zeta, lambda, sigma, gamma){
-  zeta+lambda*sinh(sigma*(stats::qnorm(p)+gamma))
+qJDS_SU <- function(p, zeta, lambda, sigma, gamma, qf=stats::qnorm){
+  zeta+lambda*sinh(sigma*(qf(p)+gamma))
 }
 
 #' Quantile function of Johnson Distribution System (JDS) SB distribution
@@ -26,7 +26,7 @@ sJQPDB_HBBLa <- function(p, HB, BL, alpha){
   sigma <- (1/small_c)*acosh(0.5*(HL)/pmin(BL, HB))
   lambda <- (HL)/sinh(2*sigma*small_c)
 
-  stats::pnorm(qJDS_SU(p, zeta=0, lambda, sigma, gamma=sgn*small_c))
+  stats::pnorm(qJDS_SU(p, zeta=0, lambda, sigma, gamma=sgn*small_c, qf=stats::qnorm))
 }
 
 #' The J-QPD-B distribution
@@ -72,7 +72,7 @@ qJQPDB <- function(p, q1, q2, q3, lower, upper, alpha=0.1){
   lambda <- (H-L)/sinh(2*sigma*small_c)
   zeta  <- 0.5*(L*(1+sgn)+H*(1-sgn)) # idea from Matlab code in Hadlock thesis
 
-  lower + u_m_l*stats::pnorm(qJDS_SU(p, zeta, lambda, sigma, gamma=sgn*small_c))
+  lower + u_m_l*stats::pnorm(qJDS_SU(p, zeta, lambda, sigma, gamma=sgn*small_c, qf=stats::qnorm))
 }
 
 
@@ -200,7 +200,7 @@ qGQPDB <- function(p, q1, q2, q3, lower, upper, alpha=0.1, qf=stats::qnorm, pf=s
   lambda <- (H-L)/sinh(2*sigma*small_c)
   zeta  <- 0.5*(L*(1+sgn)+H*(1-sgn)) # idea from Matlab code in Hadlock thesis
 
-  lower + u_m_l*pf(qJDS_SU(p, zeta, lambda, sigma, gamma=sgn*small_c))
+  lower + u_m_l*pf(qJDS_SU(p, zeta, lambda, sigma, gamma=sgn*small_c, qf=qf))
 }
 
 #' @param N number of samples to draw

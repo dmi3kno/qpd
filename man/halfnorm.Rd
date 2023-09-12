@@ -6,11 +6,11 @@
 \alias{dhalfnorm}
 \title{Half normal distribution}
 \usage{
-qhalfnorm(p, location = 0, scale = 1, log.p = FALSE)
+qhalfnorm(p, location = 0, scale = 1, lower.tail = TRUE, log.p = FALSE)
 
-phalfnorm(x, location = 0, scale = 1, log.p = FALSE)
+phalfnorm(x, location = 0, scale = 1, lower.tail = TRUE, log.p = FALSE)
 
-dhalfnorm(x, location = 0, scale = 1, log.p = FALSE)
+dhalfnorm(x, location = 0, scale = 1, log = FALSE)
 }
 \arguments{
 \item{p}{numeric probability}
@@ -18,6 +18,8 @@ dhalfnorm(x, location = 0, scale = 1, log.p = FALSE)
 \item{location}{numeric parameter of halfnormal distribution. Default is 0}
 
 \item{scale}{numeric parameter of halfnormal distribution. Default is 1}
+
+\item{lower.tail}{logical; if TRUE (default), probabilities are \eqn{P[X\leq x]}, otherwise \eqn{P[X>x]}}
 
 \item{log.p}{logical; if TRUE, probabilities p are given as log(p). Default is FALSE}
 

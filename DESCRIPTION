@@ -54,3 +54,5 @@ Collate:
     'tlambda.R'
     'utils.R'
     'wakeby.R'
+Imports: 
+    Rmpfr

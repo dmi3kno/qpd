@@ -72,3 +72,4 @@ diago <- function(x=1, nrow=NA, ncol=NA, names=TRUE, offset = 1L){
 monopower <- function(x, pow=1){
   ifelse(x>=0, x^pow, -abs(x)^pow)
 }
+

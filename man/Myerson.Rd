@@ -10,17 +10,35 @@
 \alias{pMyerson}
 \title{Density function for Generalized Lognormal distribution (aka probit Myerson).}
 \usage{
-qMyerson(p, q1, q2, q3, alpha = 0.25)
+qMyerson(p, q1, q2, q3, alpha = 0.25, lower.tail = TRUE, log.p = FALSE)
 
-fMyerson(p, q1, q2, q3, alpha = 0.25, log = FALSE)
+fMyerson(
+  p,
+  q1,
+  q2,
+  q3,
+  alpha = 0.25,
+  log = FALSE,
+  lower.tail = TRUE,
+  log.p = FALSE
+)
 
-dqMyerson(p, q1, q2, q3, alpha = 0.25, log = FALSE)
+dqMyerson(
+  p,
+  q1,
+  q2,
+  q3,
+  alpha = 0.25,
+  log = FALSE,
+  lower.tail = TRUE,
+  log.p = FALSE
+)
 
 rMyerson(n, q1, q2, q3, alpha = 0.25)
 
 dMyerson(x, q1, q2, q3, alpha = 0.25, log = FALSE)
 
-pMyerson(q, q1, q2, q3, alpha = 0.25)
+pMyerson(q, q1, q2, q3, alpha = 0.25, lower.tail = TRUE, log.p = FALSE)
 }
 \arguments{
 \item{p}{vector of probabilities}
@@ -31,7 +49,9 @@ and top quantile. Quantiles are assumed to be symmetrical.}
 \item{alpha}{numerical fixed proportion of distribution below the bottom quantile.
 Default value is 0.25}
 
-\item{log}{logical; if TRUE, log density is returned}
+\item{lower.tail}{logical; if TRUE (default), probabilities are \eqn{P[X\leq x]}, otherwise, \eqn{P[X > x]}}
+
+\item{log, log.p}{logical; if TRUE, probabilities p are given as log(p)}
 
 \item{n}{number of observations. If `length(n)>1``, the length is taken to be the number required.}
 

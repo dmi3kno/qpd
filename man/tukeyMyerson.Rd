@@ -9,11 +9,40 @@
 \alias{ptukeyMyerson}
 \title{Density function for Tukey-Myerson distribution (Myerson distribution with Tukey lambda base function).}
 \usage{
-qtukeyMyerson(p, q1, q2, q3, alpha = 0.25, tlambda = 0)
+qtukeyMyerson(
+  p,
+  q1,
+  q2,
+  q3,
+  alpha = 0.25,
+  tlambda = 0,
+  lower.tail = TRUE,
+  log.p = FALSE
+)
 
-ftukeyMyerson(p, q1, q2, q3, alpha = 0.25, tlambda = 0, log = FALSE)
+ftukeyMyerson(
+  p,
+  q1,
+  q2,
+  q3,
+  alpha = 0.25,
+  tlambda = 0,
+  log = FALSE,
+  lower.tail = TRUE,
+  log.p = FALSE
+)
 
-dqtukeyMyerson(p, q1, q2, q3, alpha = 0.25, tlambda = 0, log = FALSE)
+dqtukeyMyerson(
+  p,
+  q1,
+  q2,
+  q3,
+  alpha = 0.25,
+  tlambda = 0,
+  log = FALSE,
+  lower.tail = TRUE,
+  log.p = FALSE
+)
 
 rtukeyMyerson(n, q1, q2, q3, alpha = 0.25, tlambda = 0)
 
@@ -38,7 +67,9 @@ Default value is 0.25}
 
 \item{tlambda}{numerical Tukey lambda \code{lambda} parameter}
 
-\item{log}{logical; if TRUE, log density is returned}
+\item{lower.tail}{logical; if TRUE (default), probabilities are \eqn{P[X\leq x]}, otherwise, \eqn{P[X > x]}}
+
+\item{log, log.p}{logical; if TRUE, probabilities p are given as log(p)}
 
 \item{n}{number of observations. If `length(n)>1``, the length is taken to be the number required.}
 

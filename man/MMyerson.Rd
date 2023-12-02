@@ -5,7 +5,16 @@
 \alias{qMMyerson}
 \title{Quantile function for Modified Myerson distribution.}
 \usage{
-qMMyerson(p, q1, q2, q3, alpha = 0.25, sfun = stats::qnorm)
+qMMyerson(
+  p,
+  q1,
+  q2,
+  q3,
+  alpha = 0.25,
+  sfun = stats::qnorm,
+  lower.tail = TRUE,
+  log.p = FALSE
+)
 }
 \arguments{
 \item{p}{vector of probabilities}
@@ -17,9 +26,13 @@ and top quantile. Quantiles are assumed to be symmetrical.}
 Default value is 0.25}
 
 \item{sfun}{function; standard vectorized quantile function with a single depth parameter}
+
+\item{lower.tail}{logical; if TRUE (default), probabilities are \eqn{P[X\leq x]}, otherwise, \eqn{P[X > x]}}
+
+\item{log, log.p}{logical; if TRUE, probabilities p are given as log(p)}
 }
 \value{
-a vector of quantilesof length equal to \code{length(x)}
+a vector of quantiles of length equal to \code{length(x)}
 }
 \description{
 Quantile function for Modified Myerson distribution.

@@ -49,7 +49,7 @@ rHDR <- function(x, t1=c(2499997, 1800451, 2000371, 1796777, 2299603), a1=745058
   w <- seq.int(min(dim(x)[2], length(t1)))
   s1 <- as.vector(x %*% t1[w])
   s2 <- as.vector(x %*% t2[w])
-  
+
   rx <- `%%`(
     (`%%`(
       `%%`(1e15-11L,
@@ -57,8 +57,27 @@ rHDR <- function(x, t1=c(2499997, 1800451, 2000371, 1796777, 2299603), a1=745058
        `%%`(
          `%%`(1e15-11L,
               `%%`(s2,a2)*b2 + c2)*d2, e2))*f2, 2^32)
-  
+
   (rx +.5)/2^32
-  
+
 }
 
+#' Multivariate version of the Hubbard Decision Research (HDR) Pseudo-Random Number Generator (PRNG)
+#' @param n number of samples to return.
+#' @param var_ids variable IDs
+#' @param seed seed. Used as a starting index for series of observations
+#' @return matrix with columns corresponding to variables
+#' @example
+#' rMHDR(10, 1:2)
+#' @export
+rMHDR <- function(n, var_ids=NULL, seed=1){
+  obs_ids <- seq(from=seed, length.out=n)
+  grd <- obs_ids
+  ncol <- 1
+  if(!is.null(var_ids))
+  {
+    ncol <- length(var_ids)
+    grd <- expand.grid(obs_ids, var_ids) |> as.matrix()
+  }
+  matrix(rHDR(grd), ncol=ncol, byrow = FALSE)
+}

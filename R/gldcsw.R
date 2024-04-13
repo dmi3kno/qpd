@@ -6,8 +6,10 @@ sGLDcsw <- function(u, chi, xi){
 
   if(chi==0 && xi==0.5)  return(log(u) - log1p(-u))
   if(chi!=0){
-    if(xi==0.5*(1+chi)) return(log(u) - 0.5/al*((1-u)^(2*al)-1))
-    if(xi==0.5*(1-chi)) return(0.5/bt*(u^(2*bt)-1)-log1p(-u))
+    if(round(xi,7)==round(0.5*(1+chi),7))
+      return(log(u) - 0.5/al*((1-u)^(2*al)-1))
+    if(round(xi,7)==round(0.5*(1-chi), 7))
+      return(0.5/bt*(u^(2*bt)-1)-log1p(-u))
   }
   1/(al+bt)*(u^(al+bt)-1)-1/(al-bt)*((1-u)^(al-bt)-1)
 }

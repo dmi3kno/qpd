@@ -2,6 +2,7 @@
 % Please edit documentation in R/qpd-package.R
 \docType{package}
 \name{qpd}
+\alias{qpd-package}
 \alias{qpd}
 \title{qpd: A package for quantile parametrized distributions in R}
 \description{
@@ -12,3 +13,15 @@ The qpd package provides functions for samping quantile parametrized distibution
 The qpd functions implement Johnson QPD, Generalized Johnson QPD, Myerson distribution, Skew-Normal QPD, Q-normal. For metalog distribution, please consult rmetalog package.
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/dmi3kno/qpd}
+  \item Report bugs at \url{https://github.com/dmi3kno/qpd/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Dmytro Perepolkin \email{dperepolkin@gmail.com} (\href{https://orcid.org/0000-0001-8558-6183}{ORCID})
+
+}

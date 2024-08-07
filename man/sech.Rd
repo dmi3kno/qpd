@@ -27,15 +27,15 @@ sech(x)
 \arguments{
 \item{x}{numeric vector}
 
+\item{location}{parameter of hyperbolic secant distribution}
+
+\item{scale}{parameter of yperbolic secant distribution}
+
 \item{p}{numeric vector of cumulative probabilities}
 
 \item{log}{logical; if TRUE, log density is returned. Default is FALSE}
 
 \item{n}{number of samples to draw}
-
-\item{alpha}{parameter of generalized exponential distribution}
-
-\item{lambda}{parameter of generalized exponential distribution}
 }
 \value{
 cum

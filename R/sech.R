@@ -3,14 +3,14 @@
 #' Hyperbolic secant distribution with CDF \eqn{F(x)=\frac{2}{\pi}\arctan(\exp(\frac{\pi}{2}\frac{(x-\mu)}{\sigma}))} where \eqn{\mu} and \eqn{\sigma} are location and scale, respectively.
 #'
 #' @param x numeric vector of values
-#' @param alpha parameter of generalized exponential distribution
-#' @param lambda parameter of generalized exponential distribution
+#' @param location parameter of hyperbolic secant distribution
+#' @param scale parameter of yperbolic secant distribution
 #' @rdname sech
 #'
 #' @return cum
 #'
 #' @examples
-#' pgenexp(1, 1, 1)
+#' psech(1, 1, 1)
 #' @export
 psech <- function(x, location=0, scale=1){
   stopifnot(scale>0)

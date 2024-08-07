@@ -29,6 +29,24 @@ sech <- function(x){
   1 / cosh(x)  # 2 / (exp(x) + exp(-x))
 }
 
+#' internal function for hyperbolic cotangent borrowed from {pracma}
+#' @param x numeric vector
+#' @return vector of hyperbolic secants
+#' @keywords  internal
+coth <- function(x){
+  stopifnot(is.numeric(x) || is.complex(x)) 
+  cosh(x)/sinh(x)
+}
+
+#' internal function for hyperbolic cosecant borrowed from {pracma}
+#' @param x numeric vector
+#' @return vector of hyperbolic secants
+#' @keywords  internal
+csch <- function(x){
+  stopifnot(is.numeric(x) || is.complex(x)) 
+  1/sinh(x)
+}
+
 #' Diagonal matrix with offset
 #'
 #' @param x a matrix, vector or 1D array, or missing.

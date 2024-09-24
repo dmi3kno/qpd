@@ -39,6 +39,7 @@
 #' @examples
 #' rHDR(c(1:10))
 #' rHDR(matrix(c(1:10), byrow=TRUE, nrow=5))
+#' @rdname hdr
 #' @export
 rHDR <- function(x, t1=c(2499997, 1800451, 2000371, 1796777, 2299603), a1=7450589, b1=4658, c1=7450581, d1=383, e1=99991, f1=7440893,
                  t2=c(2246527, 2399993, 2100869, 1918303, 1624729), a2=7450987, b2=7580, c2=7560584, d2=17669, e2=7440893, f2=1343){
@@ -67,8 +68,9 @@ rHDR <- function(x, t1=c(2499997, 1800451, 2000371, 1796777, 2299603), a1=745058
 #' @param var_ids variable IDs
 #' @param seed seed. Used as a starting index for series of observations
 #' @return matrix with columns corresponding to variables
-#' @example
+#' @examples
 #' rMHDR(10, 1:2)
+#' @rdname hdr
 #' @export
 rMHDR <- function(n, var_ids=NULL, seed=1){
   obs_ids <- seq(from=seed, length.out=n)

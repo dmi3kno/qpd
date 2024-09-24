@@ -46,6 +46,6 @@ vector of hyperbolic secants
 Hyperbolic secant distribution with CDF \eqn{F(x)=\frac{2}{\pi}\arctan(\exp(\frac{\pi}{2}\frac{(x-\mu)}{\sigma}))} where \eqn{\mu} and \eqn{\sigma} are location and scale, respectively.
 }
 \examples{
-pgenexp(1, 1, 1)
+psech(1, 1, 1)
 }
 \keyword{internal}

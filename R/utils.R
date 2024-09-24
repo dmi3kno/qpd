@@ -20,7 +20,7 @@ split_int <- function(x, d){
     c(rep(1, x%%d), rep(0, d-x%%d))
 }
 
-#' internal function for hyperbolic secant borrowed from {pracma}
+#' internal function for hyperbolic secant borrowed from `pracma`
 #' @param x numeric vector
 #' @return vector of hyperbolic secants
 #' @keywords  internal
@@ -29,7 +29,7 @@ sech <- function(x){
   1 / cosh(x)  # 2 / (exp(x) + exp(-x))
 }
 
-#' internal function for hyperbolic cotangent borrowed from {pracma}
+#' internal function for hyperbolic cotangent borrowed from `pracma`
 #' @param x numeric vector
 #' @return vector of hyperbolic secants
 #' @keywords  internal
@@ -38,7 +38,7 @@ coth <- function(x){
   cosh(x)/sinh(x)
 }
 
-#' internal function for hyperbolic cosecant borrowed from {pracma}
+#' internal function for hyperbolic cosecant borrowed from `pracma`
 #' @param x numeric vector
 #' @return vector of hyperbolic secants
 #' @keywords  internal

@@ -2,6 +2,7 @@
 % Please edit documentation in R/hdr.R
 \name{rHDR}
 \alias{rHDR}
+\alias{rMHDR}
 \title{Hubbard Decision Research Pseudo-Random Number Generator}
 \usage{
 rHDR(
@@ -21,6 +22,8 @@ rHDR(
   e2 = 7440893,
   f2 = 1343
 )
+
+rMHDR(n, var_ids = NULL, seed = 1)
 }
 \arguments{
 \item{x}{a vector (or a \code{n * m} matrix) of seeds, where \verb{m`` corresponds to dimensions of random numbers. Default }m<=5`. See \strong{HDR Dimensions} section below.}
@@ -41,9 +44,17 @@ and t2=c(2246527, 2399993, 2100869, 1918303, 1624729)}
 \item{e1, e2}{E constants. Default values are e1=99991, e2=7440893}
 
 \item{f1, f2}{F constants. Default values are f1=7440893, f2=1343}
+
+\item{n}{number of samples to return.}
+
+\item{var_ids}{variable IDs}
+
+\item{seed}{seed. Used as a starting index for series of observations}
 }
 \value{
 vector or pseudo-random numbers related for every one of (combination of) seeds.
+
+matrix with columns corresponding to variables
 }
 \description{
 Hubbard Decision Research (HDR) Pseudo-Random Number Generator (PRNG)
@@ -66,6 +77,7 @@ Further details on each of the dimensions\tabular{lll}{
 \examples{
 rHDR(c(1:10))
 rHDR(matrix(c(1:10), byrow=TRUE, nrow=5))
+rMHDR(10, 1:2)
 }
 \references{
 D. W. Hubbard, "A Multi-Dimensional, Counter-Based Pseudo Random Number Generator

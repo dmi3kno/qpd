@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{coth}
 \alias{coth}
-\title{internal function for hyperbolic cotangent borrowed from {pracma}}
+\title{internal function for hyperbolic cotangent borrowed from \code{pracma}}
 \usage{
 coth(x)
 }
@@ -13,6 +13,6 @@ coth(x)
 vector of hyperbolic secants
 }
 \description{
-internal function for hyperbolic cotangent borrowed from {pracma}
+internal function for hyperbolic cotangent borrowed from \code{pracma}
 }
 \keyword{internal}

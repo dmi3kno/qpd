@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{csch}
 \alias{csch}
-\title{internal function for hyperbolic cosecant borrowed from {pracma}}
+\title{internal function for hyperbolic cosecant borrowed from \code{pracma}}
 \usage{
 csch(x)
 }
@@ -13,6 +13,6 @@ csch(x)
 vector of hyperbolic secants
 }
 \description{
-internal function for hyperbolic cosecant borrowed from {pracma}
+internal function for hyperbolic cosecant borrowed from \code{pracma}
 }
 \keyword{internal}

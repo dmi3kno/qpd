@@ -7,5 +7,5 @@
 #'
 #' @docType package
 #' @name qpd
-NULL
+"_PACKAGE"
 

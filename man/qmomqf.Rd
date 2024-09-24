@@ -6,14 +6,14 @@
 \alias{qkr_qf}
 \title{Robust moments}
 \usage{
-qdv_qf(qf, ..., lambda = 0.25)
+qdv_qf(.qf, ..., lambda = 0.25)
 
-qsk_qf(qf, ..., lambda = 0.25)
+qsk_qf(.qf, ..., lambda = 0.25)
 
-qkr_qf(qf, ..., lambda = 0.25, zeta = lambda/2)
+qkr_qf(.qf, ..., lambda = 0.25, zeta = lambda/2)
 }
 \arguments{
-\item{qf}{quantile function}
+\item{.qf}{quantile function}
 
 \item{...}{parameters, passed to the of quantile function}
 
